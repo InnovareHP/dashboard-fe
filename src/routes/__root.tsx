@@ -1,0 +1,43 @@
+import { authClient } from "@/lib/auth-client";
+import { TanstackDevtools } from "@tanstack/react-devtools";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Outlet, createRootRoute } from "@tanstack/react-router";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+
+const queryClient = new QueryClient();
+
+function App() {
+  return (
+    // Provide the client to your App
+    <QueryClientProvider client={queryClient}>
+      <Outlet />
+    </QueryClientProvider>
+  );
+}
+
+export const Route = createRootRoute({
+  beforeLoad: async () => {
+    const { data } = await authClient.getSession();
+
+    return {
+      user: data?.user || null,
+      session: data?.session || null,
+    };
+  },
+  component: () => (
+    <>
+      <App />
+      <TanstackDevtools
+        config={{
+          position: "bottom-left",
+        }}
+        plugins={[
+          {
+            name: "Tanstack Router",
+            render: <TanStackRouterDevtoolsPanel />,
+          },
+        ]}
+      />
+    </>
+  ),
+});
