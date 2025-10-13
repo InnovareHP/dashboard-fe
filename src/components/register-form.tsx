@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import z from "zod/v3";
 import {
@@ -19,6 +20,7 @@ export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const navigate = useNavigate();
   const formSchema = z
     .object({
       email: z.string().email(),
@@ -43,16 +45,18 @@ export function RegisterForm({
 
   const handleLogin = async (values: z.infer<typeof formSchema>) => {
     try {
-      const { data, error } = await authClient.signUp.email({
+      const { error } = await authClient.signUp.email({
         email: values.email,
         password: values.password,
         name: values.name,
-        callbackURL: "/",
+        callbackURL: "/onboarding",
       });
+
       if (error) {
         console.error(error);
       }
-      console.log(data);
+
+      navigate({ to: "/onboarding" });
     } catch (error) {
       console.error(error);
     }

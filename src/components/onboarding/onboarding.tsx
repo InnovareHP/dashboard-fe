@@ -1,6 +1,8 @@
-import { authClient } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth-client";
 import { pageVariants } from "@/lib/framer";
+import { toSlug } from "@/lib/utils";
 import { onboardUser } from "@/services/user/user-service";
+import { useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Book,
@@ -40,6 +42,10 @@ const OnBoardingPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedUsage, setSelectedUsage] = useState("");
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+
+  const { refetch } = useSession();
+
+  const navigate = useNavigate();
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -188,15 +194,6 @@ const OnBoardingPage = () => {
     form.setValue("interests", next as never[]);
   };
 
-  const toSlug = (name: string) =>
-    name
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "") // drop non-url-safe chars
-      .replace(/\s+/g, "-") // collapse whitespace to hyphens
-      .replace(/-+/g, "-") // collapse multiple hyphens
-      .replace(/^-+|-+$/g, "");
-
   const onSubmit = async (data: FormValues) => {
     try {
       const slug = toSlug(data.organizationName);
@@ -208,10 +205,11 @@ const OnBoardingPage = () => {
       }
 
       const slugCheck = await authClient.organization.checkSlug({ slug });
-      const slugErr = (slugCheck as any)?.error;
+      const slugErr = slugCheck.error;
+
       if (slugErr) throw slugErr;
 
-      const available = (slugCheck as any)?.available;
+      const available = slugCheck.data?.status;
 
       if (!available) {
         form.setError("organizationName", {
@@ -228,24 +226,23 @@ const OnBoardingPage = () => {
 
       await onboardUser(data);
 
-      const createErr = (createRes as any)?.error;
+      const createErr = createRes.error;
       if (createErr) throw createErr;
 
-      const org =
-        (createRes as any)?.data ??
-        (createRes as any)?.organization ??
-        createRes;
-      if (!org?.id) {
+      const org = createRes.data?.slug;
+
+      if (!org) {
         throw new Error("Organization was not returned by the server.");
       }
+
+      refetch();
+      navigate({ to: `/${org}` });
     } catch (err: any) {
-      // Surface useful info instead of silently swallowing it
       const message =
         err?.message ??
         err?.data?.message ??
         "Something went wrong while creating the organization.";
       form.setError("root", { message });
-      // console.error(err); // keep this during debugging
     }
   };
 

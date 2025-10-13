@@ -1,4 +1,4 @@
-import { ChevronsUpDown, Plus, User } from "lucide-react";
+import { ChevronsUpDown, User } from "lucide-react";
 import * as React from "react";
 
 import {
@@ -6,7 +6,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -28,24 +27,12 @@ type Organization = {
   metadata?: any;
 };
 
-type OrganizationsResponse = {
-  data: Organization[];
-};
-
-type ActiveMemberResponse = {
-  data: Organization;
-};
-
 export function TeamSwitcher() {
   const { isMobile } = useSidebar();
   const queryClient = useQueryClient();
-  const orgData = queryClient.getQueryData([
-    "organizations",
-  ]) as OrganizationsResponse;
+  const orgData = queryClient.getQueryData(["organizations"]) as Organization[];
 
-  const activeOrg = queryClient.getQueryData([
-    "active-org",
-  ]) as ActiveMemberResponse;
+  const activeOrg = queryClient.getQueryData(["active-org"]) as Organization;
 
   const fetchOrganizations = React.useCallback(
     () => authClient.organization.list(),
@@ -60,7 +47,7 @@ export function TeamSwitcher() {
     });
   }, [queryClient, fetchOrganizations]);
 
-  const teams: Organization[] = orgData?.data ?? [];
+  const teams: Organization[] = orgData ?? [];
 
   const [activeTeam, setActiveTeam] = React.useState<Organization | null>(null);
 
@@ -89,10 +76,10 @@ export function TeamSwitcher() {
 
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
-                    {activeOrg?.data?.name ?? "User"}
+                    {activeOrg?.name ?? "User"}
                   </span>
                   <span className="truncate text-xs">
-                    {activeOrg?.data?.name ?? "Select a team"}
+                    {activeOrg?.name ?? "Select a team"}
                   </span>
                 </div>
 
@@ -131,19 +118,6 @@ export function TeamSwitcher() {
                 </DropdownMenuItem>
               );
             })}
-
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem
-              className="gap-2 p-2"
-              onMouseEnter={prefetchOrganizations}
-              onFocus={prefetchOrganizations}
-            >
-              <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
-                <Plus className="size-4" />
-              </div>
-              <div className="text-muted-foreground font-medium">Add team</div>
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

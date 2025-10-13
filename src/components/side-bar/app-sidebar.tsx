@@ -8,126 +8,98 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  GalleryVerticalEnd,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import type { Organization } from "better-auth/plugins/organization";
+import { BookOpen, Bot, Settings2, SquareTerminal } from "lucide-react";
 import * as React from "react";
 
 // This is sample data.
-const data = {
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const qc = useQueryClient();
+  const activeMember = qc.getQueryData(["active-org"]) as Organization;
+
+  const data = {
+    navMain: [
+      {
+        title: "Dashboard",
+        url: "#",
+        icon: SquareTerminal,
+        isActive: true,
+        items: [
+          {
+            title: "Analytics",
+            url: `/${activeMember?.slug}`,
+          },
+        ],
+      },
+      {
+        title: "Models",
+        url: `/${activeMember?.slug}/models`,
+        icon: Bot,
+        items: [
+          {
+            title: "Genesis",
+            url: `/${activeMember?.slug}/models/genesis`,
+          },
+          {
+            title: "Explorer",
+            url: `/${activeMember?.slug}/models/explorer`,
+          },
+          {
+            title: "Quantum",
+            url: `/${activeMember?.slug}/models/quantum`,
+          },
+        ],
+      },
+      {
+        title: "Documentation",
+        url: `/${activeMember?.slug}/documentation`,
+        icon: BookOpen,
+        items: [
+          {
+            title: "Introduction",
+            url: `/${activeMember?.slug}/documentation/introduction`,
+          },
+          {
+            title: "Get Started",
+            url: `/${activeMember?.slug}/documentation/get-started`,
+          },
+          {
+            title: "Tutorials",
+            url: `/${activeMember?.slug}/documentation/tutorials`,
+          },
+          {
+            title: "Changelog",
+            url: `/${activeMember?.slug}/documentation/changelog`,
+          },
+        ],
+      },
+      {
+        title: "Settings",
+        url: `/${activeMember?.slug}/settings`,
+        icon: Settings2,
+        items: [
+          {
+            title: "General",
+            url: "#",
+          },
+          {
+            title: "Team",
+            url: "#",
+          },
+          {
+            title: "Billing",
+            url: "#",
+          },
+          {
+            title: "Limits",
+            url: "#",
+          },
+        ],
+      },
+    ],
+  };
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

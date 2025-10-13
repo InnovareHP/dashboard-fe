@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import z from "zod/v3";
 import {
@@ -20,6 +20,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const navigate = useRouter();
   const formSchema = z.object({
     email: z.string().email(),
     password: z.string().min(8),
@@ -35,17 +36,17 @@ export function LoginForm({
 
   const handleLogin = async (values: z.infer<typeof formSchema>) => {
     try {
-      const { data, error } = await authClient.signIn.email({
+      const { error } = await authClient.signIn.email({
         email: values.email,
         password: values.password,
       });
+
       if (error) {
         console.error(error);
       }
-      console.log(data);
-    } catch (error) {
-      console.error(error);
-    }
+
+      navigate.invalidate();
+    } catch (error) {}
   };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
