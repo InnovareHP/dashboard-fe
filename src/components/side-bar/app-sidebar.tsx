@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useQueryClient } from "@tanstack/react-query";
 import type { Organization } from "better-auth/plugins/organization";
-import { BookOpen, Bot, Settings2, SquareTerminal } from "lucide-react";
+import { CircuitBoard, Settings2, SquareTerminal } from "lucide-react";
 import * as React from "react";
 
 // This is sample data.
@@ -34,47 +34,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ],
       },
       {
-        title: "Models",
-        url: `/${activeMember?.slug}/models`,
-        icon: Bot,
+        title: "Marketing",
+        icon: CircuitBoard,
         items: [
           {
-            title: "Genesis",
-            url: `/${activeMember?.slug}/models/genesis`,
-          },
-          {
-            title: "Explorer",
-            url: `/${activeMember?.slug}/models/explorer`,
-          },
-          {
-            title: "Quantum",
-            url: `/${activeMember?.slug}/models/quantum`,
+            title: "Master List",
+            url: `/${activeMember?.slug}/master-list`,
           },
         ],
       },
-      {
-        title: "Documentation",
-        url: `/${activeMember?.slug}/documentation`,
-        icon: BookOpen,
-        items: [
-          {
-            title: "Introduction",
-            url: `/${activeMember?.slug}/documentation/introduction`,
-          },
-          {
-            title: "Get Started",
-            url: `/${activeMember?.slug}/documentation/get-started`,
-          },
-          {
-            title: "Tutorials",
-            url: `/${activeMember?.slug}/documentation/tutorials`,
-          },
-          {
-            title: "Changelog",
-            url: `/${activeMember?.slug}/documentation/changelog`,
-          },
-        ],
-      },
+
       {
         title: "Settings",
         url: `/${activeMember?.slug}/settings`,
