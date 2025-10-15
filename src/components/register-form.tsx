@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Loader2, Lock, Mail, User, UserPlus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import z from "zod/v3";
 import {
@@ -62,99 +63,141 @@ export function RegisterForm({
     }
   };
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="overflow-hidden p-0">
-        <CardContent className="grid p-0">
-          <Form {...form}>
-            <form
-              className="p-6 md:p-8"
-              onSubmit={form.handleSubmit(handleLogin)}
-            >
-              <div className="flex flex-col gap-6">
-                <div className="flex flex-col items-center text-center">
-                  <h1 className="text-2xl font-bold">Welcome to Dashboard</h1>
-                  <p className="text-muted-foreground text-balance">
+    <div className={cn("flex items-center justify-center p-4", className)} {...props}>
+      <div className="w-full max-w-md">
+        <Card className="overflow-hidden shadow-xl border-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm">
+          <CardContent className="p-6">
+            <Form {...form}>
+              <form
+                className="space-y-5"
+                onSubmit={form.handleSubmit(handleLogin)}
+              >
+                 <div className="space-y-2 text-center">
+                   <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl mb-4">
+                     <UserPlus className="w-6 h-6 text-white" />
+                   </div>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+                    Welcome to Dashboard
+                  </h1>
+                  <p className="text-slate-600 dark:text-slate-400">
                     Create an account to get started
                   </p>
                 </div>
 
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Email" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="space-y-4">
+                   <FormField
+                     control={form.control}
+                     name="name"
+                     render={({ field }) => (
+                       <FormItem>
+                         <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">Full Name</FormLabel>
+                         <FormControl>
+                           <div className="relative">
+                             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                             <Input 
+                               {...field} 
+                               placeholder="Enter your name" 
+                               className="h-10 pl-10 border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
+                             />
+                           </div>
+                         </FormControl>
+                         <FormMessage />
+                       </FormItem>
+                     )}
+                   />
 
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Name" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                   <FormField
+                     control={form.control}
+                     name="email"
+                     render={({ field }) => (
+                       <FormItem>
+                         <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">Email</FormLabel>
+                         <FormControl>
+                           <div className="relative">
+                             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                             <Input 
+                               {...field} 
+                               placeholder="Enter your email" 
+                               className="h-10 pl-10 border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
+                             />
+                           </div>
+                         </FormControl>
+                         <FormMessage />
+                       </FormItem>
+                     )}
+                   />
 
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
+                   <FormField
+                     control={form.control}
+                     name="password"
+                     render={({ field }) => (
+                       <FormItem>
+                         <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">Password</FormLabel>
+                         <FormControl>
+                           <div className="relative">
+                             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                             <Input
+                               {...field}
+                               placeholder="Create a password"
+                               type="password"
+                               className="h-10 pl-10 border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
+                             />
+                           </div>
+                         </FormControl>
+                         <FormMessage />
+                       </FormItem>
+                     )}
+                   />
 
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Password"
-                          type="password"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                   <FormField
+                     control={form.control}
+                     name="confirmPassword"
+                     render={({ field }) => (
+                       <FormItem>
+                         <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">Confirm Password</FormLabel>
+                         <FormControl>
+                           <div className="relative">
+                             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                             <Input
+                               {...field}
+                               placeholder="Confirm your password"
+                               type="password"
+                               className="h-10 pl-10 border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
+                             />
+                           </div>
+                         </FormControl>
+                         <FormMessage />
+                       </FormItem>
+                     )}
+                   />
 
-                <FormField
-                  control={form.control}
-                  name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Confirm Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Confirm Password"
-                          type="password"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                  <Button
+                    disabled={form.formState.isSubmitting}
+                    type="submit"
+                    className="w-full h-10 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02] shadow-lg hover:shadow-xl cursor-pointer"
+                  >
+                     {form.formState.isSubmitting ? (
+                       <div className="flex items-center space-x-2">
+                         <Loader2 className="w-4 h-4 animate-spin" />
+                         <span>Creating account...</span>
+                       </div>
+                     ) : (
+                       "Create Account"
+                     )}
+                  </Button>
 
-                <Button
-                  disabled={form.formState.isSubmitting}
-                  type="submit"
-                  className="w-full"
-                >
-                  Register
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+                  <div className="text-center text-sm text-slate-600 dark:text-slate-400">
+                    Already have an account?{" "}
+                      <Link to="/" className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
+                      Sign in
+                    </Link>
+                  </div>
+                </div>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
