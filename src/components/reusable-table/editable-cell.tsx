@@ -1,8 +1,7 @@
-"use client";
-
 import { leadCollection } from "@/collection/leads/lead-collection";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -17,15 +16,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { Link } from "@tanstack/react-router";
 import { format } from "date-fns";
-import { CalendarIcon, Check } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
+import LocationCell from "./location-cell";
 
 type EditableCellProps = {
   leadId: string;
   fieldKey: string;
   value: string;
-  type: string;
+  type: string; // Should match FieldType enum
 };
 
 export function EditableCell({
@@ -37,31 +38,37 @@ export function EditableCell({
   const [editing, setEditing] = useState(false);
   const [val, setVal] = useState(value);
 
-  const handleBlur = async () => {
-    setEditing(false);
-    leadCollection.update({ id: leadId }, (draft) => {
-      draft[fieldKey] = val;
-    });
+  const handleUpdate = (newVal: string, location?: boolean) => {
+    if (!newVal || newVal === value) return;
+    setVal(newVal);
+
+    if (location) {
+      console.log(newVal);
+      leadCollection.update(leadId, (draft) => {
+        draft.field_id = fieldKey;
+        draft.value = JSON.stringify(newVal);
+      });
+    } else {
+      leadCollection.update(leadId, (draft) => {
+        draft.field_id = fieldKey;
+        draft.value = newVal;
+      });
+    }
   };
 
-  // ---- STATUS (Dropdown) ----
+  const handleBlur = () => {
+    setEditing(false);
+    handleUpdate(val);
+  };
+
+  // ---- STATUS ----
   if (type === "STATUS") {
     return (
       <Select
         defaultValue={val || "New Lead"}
-        onValueChange={(v) => {
-          setVal(v);
-          leadCollection.update({ id: leadId }, (draft) => {
-            draft[fieldKey] = v;
-          });
-        }}
+        onValueChange={(v) => handleUpdate(v)}
       >
-        <SelectTrigger
-          className={cn(
-            "w-[140px] text-sm",
-            leadCollection.isReady() && "opacity-50 cursor-wait"
-          )}
-        >
+        <SelectTrigger className="w-[140px] text-sm">
           <SelectValue placeholder="Select status" />
         </SelectTrigger>
         <SelectContent>
@@ -73,7 +80,7 @@ export function EditableCell({
     );
   }
 
-  // ---- DATE (Calendar Picker) ----
+  // ---- DATE ----
   if (type === "DATE") {
     const [date, setDate] = useState<Date | undefined>(
       val ? new Date(val) : undefined
@@ -85,7 +92,7 @@ export function EditableCell({
           <Button
             variant="outline"
             className={cn(
-              "w-[160px] justify-start text-left font-normal",
+              "w-full justify-start text-left font-normal h-8 text-sm",
               !date && "text-muted-foreground"
             )}
           >
@@ -101,10 +108,7 @@ export function EditableCell({
               if (!selectedDate) return;
               setDate(selectedDate);
               const iso = selectedDate.toISOString().split("T")[0];
-              setVal(iso);
-              leadCollection.update({ id: leadId }, (draft) => {
-                draft[fieldKey] = iso;
-              });
+              handleUpdate(iso);
             }}
           />
         </PopoverContent>
@@ -112,7 +116,119 @@ export function EditableCell({
     );
   }
 
-  // ---- TEXT (Inline Editable) ----
+  // ---- TIME ----
+  if (type === "TIMELINE") {
+    return (
+      <Link to={`leads/${leadId}/timeline` as any}>
+        <Button variant="secondary" className="h-8 text-sm">
+          View Timeline
+        </Button>
+      </Link>
+    );
+  }
+
+  // ---- CHECKBOX ----
+  if (type === "CHECKBOX") {
+    return (
+      <Checkbox
+        checked={val === "true"}
+        onCheckedChange={(checked) => handleUpdate(checked ? "true" : "false")}
+      />
+    );
+  }
+
+  // ---- DROPDOWN ----
+  if (type === "DROPDOWN") {
+    return (
+      <Select defaultValue={val} onValueChange={(v) => handleUpdate(v)}>
+        <SelectTrigger className="w-[140px] text-sm">
+          <SelectValue placeholder="Select option" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="Facebook">Facebook</SelectItem>
+          <SelectItem value="Website">Website</SelectItem>
+          <SelectItem value="Referral">Referral</SelectItem>
+        </SelectContent>
+      </Select>
+    );
+  }
+
+  if (type === "LOCATION") {
+    return (
+      <LocationCell
+        value={String(value || "")}
+        onChange={(newLocation) => handleUpdate(newLocation, true)}
+      />
+    );
+  }
+
+  // ---- NUMBER ----
+  if (type === "NUMBER") {
+    return editing ? (
+      <Input
+        type="number"
+        value={val}
+        onChange={(e) => setVal(e.target.value)}
+        onBlur={handleBlur}
+        onKeyDown={(e) => e.key === "Enter" && handleBlur()}
+        className="h-8 text-sm"
+        autoFocus
+      />
+    ) : (
+      <span
+        onClick={() => setEditing(true)}
+        className="cursor-pointer text-sm hover:underline"
+      >
+        {val || <span className="text-muted-foreground">—</span>}
+      </span>
+    );
+  }
+
+  // ---- EMAIL ----
+  if (type === "EMAIL") {
+    return editing ? (
+      <Input
+        type="email"
+        value={val}
+        onChange={(e) => setVal(e.target.value)}
+        onBlur={handleBlur}
+        onKeyDown={(e) => e.key === "Enter" && handleBlur()}
+        className="h-8 text-sm"
+        autoFocus
+      />
+    ) : (
+      <span
+        onClick={() => setEditing(true)}
+        className="cursor-pointer text-sm hover:underline text-blue-500"
+      >
+        {val || <span className="text-muted-foreground">—</span>}
+      </span>
+    );
+  }
+
+  // ---- PHONE ----
+  if (type === "PHONE") {
+    return editing ? (
+      <Input
+        type="tel"
+        value={val}
+        onChange={(e) => setVal(e.target.value)}
+        onBlur={handleBlur}
+        onKeyDown={(e) => e.key === "Enter" && handleBlur()}
+        className="h-8 text-sm"
+        autoFocus
+      />
+    ) : (
+      <span
+        onClick={() => setEditing(true)}
+        className="cursor-pointer text-sm hover:underline"
+      >
+        {val || <span className="text-muted-foreground">—</span>}
+      </span>
+    );
+  }
+
+  // ---- TEXT (default) ----
   return editing ? (
     <Input
       value={val}
@@ -128,7 +244,6 @@ export function EditableCell({
       className="cursor-pointer text-sm hover:underline flex items-center gap-1"
     >
       {val || <span className="text-muted-foreground">—</span>}
-      {val && <Check className="h-3 w-3 text-muted-foreground" />}
     </span>
   );
 }

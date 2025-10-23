@@ -1,72 +1,70 @@
 // components/master-list/master-list-column.tsx
+"use client";
+
+import { EditableCell } from "@/components/reusable-table/editable-cell";
 import { type ColumnDef } from "@tanstack/react-table";
-import { EditableCell } from "../reusable-table/editable-cell";
+import { CreateColumnModal } from "../reusable-table/create-column";
+import { Checkbox } from "../ui/checkbox";
 
-const LeadTableColumns = () => {
-  const columns: ColumnDef<any>[] = [
-    {
-      header: "Lead",
-      accessorKey: "lead_name",
-      cell: ({ row }) => (
-        <EditableCell
-          leadId={row.original.id}
-          fieldKey="lead_name"
-          value={row.original.lead_name}
-          type="TEXT"
-        />
-      ),
-    },
-    {
-      header: "Status",
-      accessorKey: "status",
-      cell: ({ row }) => (
-        <EditableCell
-          leadId={row.original.id}
-          fieldKey="status"
-          value={row.original.status}
-          type="STATUS"
-        />
-      ),
-    },
-    {
-      header: "Email",
-      accessorKey: "email",
-      cell: ({ row }) => (
-        <EditableCell
-          leadId={row.original.id}
-          fieldKey="email"
-          value={row.original.email}
-          type="EMAIL"
-        />
-      ),
-    },
-    {
-      header: "Phone",
-      accessorKey: "phone",
-      cell: ({ row }) => (
-        <EditableCell
-          leadId={row.original.id}
-          fieldKey="phone"
-          value={row.original.phone}
-          type="PHONE"
-        />
-      ),
-    },
-    {
-      header: "Company",
-      accessorKey: "company",
-      cell: ({ row }) => (
-        <EditableCell
-          leadId={row.original.id}
-          fieldKey="company"
-          value={row.original.company}
-          type="TEXT"
-        />
-      ),
-    },
-  ];
-
-  return { columns };
+type ColumnType = {
+  id: string;
+  name: string;
+  type: string;
 };
 
-export default LeadTableColumns;
+type LeadRow = {
+  id: string;
+  lead_name: string;
+  [key: string]: any;
+};
+
+export function generateLeadColumns(
+  columnsFromApi: ColumnType[]
+): ColumnDef<LeadRow>[] {
+  const dynamicColumns: ColumnDef<LeadRow>[] = columnsFromApi.map((col) => ({
+    header: col.name,
+    accessorKey: col.name, // column name from API
+    cell: ({ row }) => (
+      <EditableCell
+        leadId={row.original.id}
+        fieldKey={col.name}
+        value={row.original[col.name] ?? ""}
+        type={col.type}
+      />
+    ),
+  }));
+
+  const selectColumn: ColumnDef<LeadRow> = {
+    id: "select",
+    header: () => <div className="px-4"></div>,
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  };
+
+  const leadNameColumn: ColumnDef<LeadRow> = {
+    header: "Lead Name",
+    accessorKey: "lead_name",
+    cell: ({ row }) => (
+      <EditableCell
+        leadId={row.original.id}
+        fieldKey="lead_name"
+        value={row.original.lead_name}
+        type="TEXT"
+      />
+    ),
+  };
+
+  const createNewColumn: ColumnDef<LeadRow> = {
+    header: () => <CreateColumnModal />,
+    accessorKey: "create_column",
+  };
+
+  return [selectColumn, leadNameColumn, ...dynamicColumns, createNewColumn];
+}

@@ -25,3 +25,4 @@ export const Route = createFileRoute("/onboarding")({
 function RouteComponent() {
   return <OnboardingPage />;
 }
+  

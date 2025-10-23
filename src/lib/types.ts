@@ -18,3 +18,12 @@ export type ColumnsType = {
   name: string;
   type: string;
 };
+
+export type LeadHistoryItem = {
+  id: string;
+  created_at: Date;
+  created_by: string;
+  action: string;
+  old_value: string;
+  new_value: string;
+};

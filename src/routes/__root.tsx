@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner";
 import { authClient } from "@/lib/auth-client";
 import { TanstackDevtools } from "@tanstack/react-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -10,7 +11,10 @@ function App() {
   return (
     // Provide the client to your App
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <main className="overflow-x-hidden">
+        <Outlet />
+      </main>
+      <Toaster />
     </QueryClientProvider>
   );
 }

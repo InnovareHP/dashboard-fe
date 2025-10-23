@@ -17,6 +17,8 @@ import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as TeamTeamIndexRouteImport } from './routes/_team/$team/index'
 import { Route as TeamTeamTeamRouteImport } from './routes/_team/$team/team'
 import { Route as TeamTeamMasterListIndexRouteImport } from './routes/_team/$team/master-list/index'
+import { Route as TeamTeamMasterListLeadsLeadIndexRouteImport } from './routes/_team/$team/master-list/leads/$lead/index'
+import { Route as TeamTeamMasterListLeadsLeadTimelineRouteImport } from './routes/_team/$team/master-list/leads/$lead/timeline'
 
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
@@ -56,6 +58,18 @@ const TeamTeamMasterListIndexRoute = TeamTeamMasterListIndexRouteImport.update({
   path: '/$team/master-list/',
   getParentRoute: () => TeamRoute,
 } as any)
+const TeamTeamMasterListLeadsLeadIndexRoute =
+  TeamTeamMasterListLeadsLeadIndexRouteImport.update({
+    id: '/$team/master-list/leads/$lead/',
+    path: '/$team/master-list/leads/$lead/',
+    getParentRoute: () => TeamRoute,
+  } as any)
+const TeamTeamMasterListLeadsLeadTimelineRoute =
+  TeamTeamMasterListLeadsLeadTimelineRouteImport.update({
+    id: '/$team/master-list/leads/$lead/timeline',
+    path: '/$team/master-list/leads/$lead/timeline',
+    getParentRoute: () => TeamRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRoute
@@ -64,6 +78,8 @@ export interface FileRoutesByFullPath {
   '/$team/team': typeof TeamTeamTeamRoute
   '/$team': typeof TeamTeamIndexRoute
   '/$team/master-list': typeof TeamTeamMasterListIndexRoute
+  '/$team/master-list/leads/$lead/timeline': typeof TeamTeamMasterListLeadsLeadTimelineRoute
+  '/$team/master-list/leads/$lead': typeof TeamTeamMasterListLeadsLeadIndexRoute
 }
 export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
@@ -72,6 +88,8 @@ export interface FileRoutesByTo {
   '/$team/team': typeof TeamTeamTeamRoute
   '/$team': typeof TeamTeamIndexRoute
   '/$team/master-list': typeof TeamTeamMasterListIndexRoute
+  '/$team/master-list/leads/$lead/timeline': typeof TeamTeamMasterListLeadsLeadTimelineRoute
+  '/$team/master-list/leads/$lead': typeof TeamTeamMasterListLeadsLeadIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -83,6 +101,8 @@ export interface FileRoutesById {
   '/_team/$team/team': typeof TeamTeamTeamRoute
   '/_team/$team/': typeof TeamTeamIndexRoute
   '/_team/$team/master-list/': typeof TeamTeamMasterListIndexRoute
+  '/_team/$team/master-list/leads/$lead/timeline': typeof TeamTeamMasterListLeadsLeadTimelineRoute
+  '/_team/$team/master-list/leads/$lead/': typeof TeamTeamMasterListLeadsLeadIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -93,6 +113,8 @@ export interface FileRouteTypes {
     | '/$team/team'
     | '/$team'
     | '/$team/master-list'
+    | '/$team/master-list/leads/$lead/timeline'
+    | '/$team/master-list/leads/$lead'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/onboarding'
@@ -101,6 +123,8 @@ export interface FileRouteTypes {
     | '/$team/team'
     | '/$team'
     | '/$team/master-list'
+    | '/$team/master-list/leads/$lead/timeline'
+    | '/$team/master-list/leads/$lead'
   id:
     | '__root__'
     | '/_auth'
@@ -111,6 +135,8 @@ export interface FileRouteTypes {
     | '/_team/$team/team'
     | '/_team/$team/'
     | '/_team/$team/master-list/'
+    | '/_team/$team/master-list/leads/$lead/timeline'
+    | '/_team/$team/master-list/leads/$lead/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -177,6 +203,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamTeamMasterListIndexRouteImport
       parentRoute: typeof TeamRoute
     }
+    '/_team/$team/master-list/leads/$lead/': {
+      id: '/_team/$team/master-list/leads/$lead/'
+      path: '/$team/master-list/leads/$lead'
+      fullPath: '/$team/master-list/leads/$lead'
+      preLoaderRoute: typeof TeamTeamMasterListLeadsLeadIndexRouteImport
+      parentRoute: typeof TeamRoute
+    }
+    '/_team/$team/master-list/leads/$lead/timeline': {
+      id: '/_team/$team/master-list/leads/$lead/timeline'
+      path: '/$team/master-list/leads/$lead/timeline'
+      fullPath: '/$team/master-list/leads/$lead/timeline'
+      preLoaderRoute: typeof TeamTeamMasterListLeadsLeadTimelineRouteImport
+      parentRoute: typeof TeamRoute
+    }
   }
 }
 
@@ -196,12 +236,17 @@ interface TeamRouteChildren {
   TeamTeamTeamRoute: typeof TeamTeamTeamRoute
   TeamTeamIndexRoute: typeof TeamTeamIndexRoute
   TeamTeamMasterListIndexRoute: typeof TeamTeamMasterListIndexRoute
+  TeamTeamMasterListLeadsLeadTimelineRoute: typeof TeamTeamMasterListLeadsLeadTimelineRoute
+  TeamTeamMasterListLeadsLeadIndexRoute: typeof TeamTeamMasterListLeadsLeadIndexRoute
 }
 
 const TeamRouteChildren: TeamRouteChildren = {
   TeamTeamTeamRoute: TeamTeamTeamRoute,
   TeamTeamIndexRoute: TeamTeamIndexRoute,
   TeamTeamMasterListIndexRoute: TeamTeamMasterListIndexRoute,
+  TeamTeamMasterListLeadsLeadTimelineRoute:
+    TeamTeamMasterListLeadsLeadTimelineRoute,
+  TeamTeamMasterListLeadsLeadIndexRoute: TeamTeamMasterListLeadsLeadIndexRoute,
 }
 
 const TeamRouteWithChildren = TeamRoute._addFileChildren(TeamRouteChildren)
