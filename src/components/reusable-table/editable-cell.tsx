@@ -4,18 +4,20 @@ import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { createDropdownOption, getDropdownOptions } from "@/services/lead/lead-service";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
@@ -42,8 +44,9 @@ export function EditableCell({
     if (!newVal || newVal === value) return;
     setVal(newVal);
 
+
     if (location) {
-      console.log(newVal);
+
       leadCollection.update(leadId, (draft) => {
         draft.field_id = fieldKey;
         draft.value = JSON.stringify(newVal);
@@ -54,6 +57,49 @@ export function EditableCell({
         draft.value = newVal;
       });
     }
+  };
+
+  const queryClient = useQueryClient();
+  const [adding, setAdding] = useState(false);
+  const [newOption, setNewOption] = useState("");
+
+  const queryKey = ["dropdown-options", fieldKey];
+
+  const { data: options = [], isFetching,refetch } = useQuery({
+    queryKey,
+    queryFn: () => getDropdownOptions(fieldKey),
+    enabled: false,
+    staleTime: 1000 * 60 * 5, // cache for 5 minutes
+    gcTime: 1000 * 60 * 5,
+  });
+
+  const { mutate: createDropdownOptionMutation } = useMutation({
+    mutationFn: async (option: string) => await createDropdownOption(fieldKey, option),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      refetch()
+    },
+  });
+
+  const handleHover = async () => {
+    const existing = queryClient.getQueryData(queryKey);
+
+    if (!existing) {
+      await queryClient.prefetchQuery({
+        queryKey,
+        queryFn: () => getDropdownOptions(fieldKey),
+      });
+    }
+  };
+
+  const handleAddOption = () => {
+    if (!newOption.trim()) return;
+
+    createDropdownOptionMutation(newOption.trim());
+
+
+    setNewOption("");
+    setAdding(false);
   };
 
   const handleBlur = () => {
@@ -140,14 +186,55 @@ export function EditableCell({
   // ---- DROPDOWN ----
   if (type === "DROPDOWN") {
     return (
-      <Select defaultValue={val} onValueChange={(v) => handleUpdate(v)}>
-        <SelectTrigger className="w-[140px] text-sm">
-          <SelectValue placeholder="Select option" />
+        <Select defaultValue={val} onValueChange={(v) => handleUpdate(v)}>
+        <SelectTrigger
+          className="w-[140px] text-sm"
+          onMouseEnter={handleHover} // prefetches before opening
+        >
+          <SelectValue placeholder={val} />
         </SelectTrigger>
+
         <SelectContent>
-          <SelectItem value="Facebook">Facebook</SelectItem>
-          <SelectItem value="Website">Website</SelectItem>
-          <SelectItem value="Referral">Referral</SelectItem>
+          {isFetching ? (
+            <div className="text-center text-xs text-muted-foreground py-2">
+              Loading options...
+            </div>
+          ) : (
+            options.map((opt) => (
+              <SelectItem key={opt.id} value={opt.value}>
+                {opt.value}
+              </SelectItem>
+            ))
+          )}
+
+          <div className="border-t my-1" />
+
+          {adding ? (
+            <div className="flex items-center gap-2 px-2 py-1">
+              <Input
+                placeholder="New option"
+                value={newOption}
+                onChange={(e) => setNewOption(e.target.value)}
+                className="h-7 text-xs"
+              />
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 text-xs"
+                onClick={handleAddOption}
+              >
+                Add
+              </Button>
+            </div>
+          ) : (
+            <Button
+              variant="ghost"
+              className="w-full text-xs text-blue-600"
+              onClick={() => setAdding(true)}
+            >
+              + Add more option
+            </Button>
+          )}
         </SelectContent>
       </Select>
     );

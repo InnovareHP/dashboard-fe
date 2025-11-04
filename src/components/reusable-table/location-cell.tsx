@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
-  Autocomplete,
-  GoogleMap,
-  Marker,
-  useJsApiLoader,
+    Autocomplete,
+    GoogleMap,
+    Marker,
+    useJsApiLoader,
 } from "@react-google-maps/api";
 import { Loader2, MapPlus } from "lucide-react";
 import React, { useState } from "react";
@@ -29,7 +29,7 @@ const LocationCell: React.FC<LocationCellProps> = ({
 }) => {
   const [autocomplete, setAutocomplete] =
     useState<google.maps.places.Autocomplete | null>(null);
-  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [_, setMap] = useState<google.maps.Map | null>(null);
   const [address, setAddress] = useState(value.replace(/^"|"$/g, ""));
   const [markerPosition, setMarkerPosition] = useState(defaultCenter);
   const [isChanging, setIsChanging] = useState(false); // <-- NEW loading state

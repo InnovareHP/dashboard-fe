@@ -1,11 +1,11 @@
 import type { LeadHistoryItem, LeadRow } from "@/lib/types";
 import {
-  createLead,
-  createLeadTimeline,
-  deleteLead,
-  getLeads,
-  getLeadTimeline,
-  updateLead,
+    createLead,
+    createLeadTimeline,
+    deleteLead,
+    getLeads,
+    getLeadTimeline,
+    updateLead,
 } from "@/services/lead/lead-service";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/react-db";

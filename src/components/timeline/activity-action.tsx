@@ -1,13 +1,19 @@
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 
-const ActivityAction = () => {
+ type ActivityActionProps = {
+  handleEditActivity: () => void;
+  handleDeleteActivity: () => void;
+ };
+
+const ActivityAction = ({ handleEditActivity, handleDeleteActivity }: ActivityActionProps) => {
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -22,13 +28,10 @@ const ActivityAction = () => {
         align="end"
         className="bg-card border border-border text-foreground"
       >
-        <DropdownMenuItem className="hover:bg-muted">
-          Edit activity
-        </DropdownMenuItem>
-        <DropdownMenuItem className="hover:bg-muted">
+        <DropdownMenuItem className="hover:bg-muted" onClick={handleEditActivity}>
           Pin to top
         </DropdownMenuItem>
-        <DropdownMenuItem className="hover:bg-muted text-destructive">
+        <DropdownMenuItem className="hover:bg-muted text-destructive" onClick={handleDeleteActivity}>
           Delete
         </DropdownMenuItem>
       </DropdownMenuContent>

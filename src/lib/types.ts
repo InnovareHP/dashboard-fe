@@ -19,11 +19,20 @@ export type ColumnsType = {
   type: string;
 };
 
+export type LeadOptions = {
+    id: string;
+    value: string;
+}
+
 export type LeadHistoryItem = {
   id: string;
-  created_at: Date;
+  lead_id: string;
+  created_at: string;
   created_by: string;
   action: string;
-  old_value: string;
-  new_value: string;
+  old_value: string | null;
+  new_value: string | null;
+  field_name?: string;
+  field_id?: string;
+  message?: string;
 };

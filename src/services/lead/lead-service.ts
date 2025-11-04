@@ -1,5 +1,5 @@
 import { axiosClient } from "@/lib/axios-client";
-import type { LeadHistoryItem } from "@/lib/types";
+import type { LeadHistoryItem, LeadOptions } from "@/lib/types";
 
 export const getLeads = async () => {
   const response = await axiosClient.get("/api/leads");
@@ -17,6 +17,25 @@ export const getColumnOptions = async () => {
   if (response.status !== 200) {
     throw new Error("Failed to fetch leads meta");
   }
+
+  return response.data;
+};
+
+export const getDropdownOptions = async (fieldKey: string) => {
+  const response = await axiosClient.get(`/api/leads/field/${fieldKey}/options`);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to fetch dropdown options");
+  }
+
+  return response.data as LeadOptions[];
+
+};
+
+export const createDropdownOption = async (fieldKey: string, option: string) => {
+  const response = await axiosClient.post(`/api/leads/field/${fieldKey}/options`, {
+    option_name: option,
+  });
 
   return response.data;
 };
@@ -80,11 +99,27 @@ export const createLeadTimeline = async (
   data: LeadHistoryItem
 ) => {
   const response = await axiosClient.post(`/api/leads/timeline/${leadId}`, {
-    data,
+    ...data,
   });
 
+  return response.data;
+};
+
+export const editLeadTimeline = async (id: string) => {
+  const response = await axiosClient.patch(`/api/leads/timeline/${id}`);
+
   if (response.status !== 200) {
-    throw new Error("Failed to create lead timeline");
+    throw new Error("Failed to edit lead timeline");
+  }
+
+  return response.data;
+};
+
+export const deleteLeadTimeline = async (id: string) => {
+  const response = await axiosClient.delete(`/api/leads/timeline/${id}`);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to delete lead timeline");
   }
 
   return response.data;

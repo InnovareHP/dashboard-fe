@@ -1,61 +1,148 @@
 "use client";
 
-import { leadTimelineCollection } from "@/collection/leads/lead-collection";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import type { LeadHistoryItem } from "@/lib/types";
 import { formatDateTime } from "@/lib/utils";
-import { useQueryClient } from "@tanstack/react-query";
+import { createLeadTimeline, deleteLeadTimeline, editLeadTimeline, getLeadTimeline } from "@/services/lead/lead-service";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useParams } from "@tanstack/react-router";
 import type { Member } from "better-auth/plugins/organization";
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { toast } from "sonner";
 import ActivityAction from "./activity-action";
 
-export default function LeadHistoryTimeline({
-  history,
-}: {
-  history: LeadHistoryItem[];
-}) {
+export default function LeadHistoryTimeline() {
   const [open, setOpen] = useState(false);
   const [newActivity, setNewActivity] = useState("");
 
-  const qc = useQueryClient();
+  const { lead } = useParams({
+    from: "/_team/$team/master-list/leads/$lead/timeline",
+  });
 
+  const qc = useQueryClient();
   const user = qc.getQueryData(["user-member"]) as Member;
 
-  const groupedByMonth = history.reduce(
-    (acc, item) => {
-      const month = new Date(item.created_at).toLocaleString("default", {
-        month: "short",
-        year: "numeric",
-      });
-      (acc[month] ||= []).push(item);
-      return acc;
+  const { data: history = [] } = useQuery({
+    queryKey: ["lead-timeline", lead],
+    queryFn: async () => await getLeadTimeline(lead),
+  });
+
+  const addMutation = useMutation({
+    mutationFn: async (newItem: LeadHistoryItem) => {
+      await createLeadTimeline(lead, newItem);
     },
-    {} as Record<string, LeadHistoryItem[]>
-  );
+    onMutate: async (newItem) => {
+      await qc.cancelQueries({ queryKey: ["lead-timeline", lead] });
+
+      const prevData = qc.getQueryData<LeadHistoryItem[]>(["lead-timeline", lead]) || [];
+
+      qc.setQueryData(["lead-timeline", lead], [...prevData, newItem]);
+
+      return { prevData };
+    },
+    onError: (_err, _newItem, ctx) => {
+      qc.setQueryData(["lead-timeline", lead], ctx?.prevData);
+      toast.error("Failed to add activity");
+    },
+    onSuccess: () => {
+      toast.success("Activity added successfully");
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["lead-timeline", lead] });
+    },
+  });
+
+  const editMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await editLeadTimeline(id);
+    },
+    onMutate: async (id) => {
+      await qc.cancelQueries({ queryKey: ["lead-timeline", lead] });
+
+      const prevData = qc.getQueryData<LeadHistoryItem[]>(["lead-timeline", lead]) || [];
+
+      qc.setQueryData(
+        ["lead-timeline", lead],
+        prevData.map((item) =>
+          item.id === id ? { ...item } : item
+        )
+      );
+
+      return { prevData };
+    },
+    onError: (_err, _newItem, ctx) => {
+      qc.setQueryData(["lead-timeline", lead], ctx?.prevData);
+      toast.error("Failed to edit activity");
+    },
+    onSuccess: () => {
+      toast.success("Activity edited successfully");
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["lead-timeline", lead] });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await deleteLeadTimeline(id);
+    },
+    onMutate: async (id) => {
+      await qc.cancelQueries({ queryKey: ["lead-timeline", lead] });
+
+      const prevData = qc.getQueryData<LeadHistoryItem[]>(["lead-timeline", lead]) || [];
+
+      qc.setQueryData(
+        ["lead-timeline", lead],
+        prevData.filter((item) => item.id !== id)
+      );
+
+      return { prevData };
+    },
+    onError: (_err, _id, ctx) => {
+      qc.setQueryData(["lead-timeline", lead], ctx?.prevData);
+      toast.error("Failed to delete activity");
+    },
+    onSuccess: () => {
+      toast.success("Activity deleted successfully");
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["lead-timeline", lead] });
+    },
+  });
 
   const handleAddActivity = () => {
     if (!newActivity.trim()) return;
 
-    leadTimelineCollection.insert([
-      {
-        id: uuidv4(),
-        created_at: new Date(),
-        created_by: user?.id,
-        action: "create",
-        old_value: "",
-        new_value: newActivity,
-      },
-    ]);
+    const newItem: LeadHistoryItem = {
+      id: crypto.randomUUID(),
+      lead_id: lead,
+      created_at: new Date().toISOString(),
+      created_by: user?.id,
+      action: "create",
+      old_value: "",
+      new_value: newActivity,
+    };
+
+    addMutation.mutate(newItem);
+    setNewActivity("");
+    setOpen(false);
+  };
+
+  const handleEditActivity = (id: string) => {
+    editMutation.mutate(id);
+  };
+
+  const handleDeleteActivity = (id: string) => {
+    deleteMutation.mutate(id);
   };
 
   return (
@@ -69,12 +156,9 @@ export default function LeadHistoryTimeline({
             </Button>
           </DialogTrigger>
 
-          {/* Modal */}
           <DialogContent className="bg-card border border-border text-foreground max-w-md rounded-lg">
             <DialogHeader>
-              <DialogTitle className="text-lg font-semibold">
-                Add Activity
-              </DialogTitle>
+              <DialogTitle className="text-lg font-semibold">Add Activity</DialogTitle>
             </DialogHeader>
 
             <div className="space-y-4">
@@ -104,53 +188,49 @@ export default function LeadHistoryTimeline({
         </Dialog>
       </div>
 
-      {Object.entries(groupedByMonth).map(([month, items]) => (
-        <div key={month} className="space-y-4">
-          <div className="flex justify-center mt-4 mb-6">
-            <div className="text-xs bg-muted px-3 py-1 rounded-full text-muted-foreground font-medium">
-              {month}
+      {history.map((item: LeadHistoryItem, idx: number) => (
+        <div key={item.id} className="relative flex flex-col">
+          <div className="flex items-start gap-3">
+            <div className="flex flex-col items-center">
+              {idx !== history.length - 1 && (
+                <div className="w-px flex-1 bg-border" />
+              )}
             </div>
-          </div>
 
-          {items.map((item, idx) => (
-            <div key={item.id} className="relative flex flex-col">
-              <div className="flex items-start gap-3">
-                <div className="flex flex-col items-center">
-                  {idx !== items.length - 1 && (
-                    <div className="w-px flex-1 bg-border" />
+            <div className="bg-card border border-border rounded-lg p-4 flex-1 hover:bg-muted transition-colors">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="font-semibold text-sm">{item.created_by}</p>
+
+                  {item.action === "update" && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Updated from{" "}
+                      <span className="text-destructive">"{item.old_value}"</span>{" "}
+                      →{" "}
+                      <span className="text-green-500">"{item.new_value}"</span>
+                    </p>
+                  )}
+
+                  {item.action === "create" && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Created with value{" "}
+                      <span className="text-green-500">"{item.new_value}"</span>
+                    </p>
                   )}
                 </div>
 
-                <div className="bg-card border border-border rounded-lg p-4 flex-1 hover:bg-muted transition-colors">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="font-semibold text-sm">{item.created_by}</p>
-
-                      {item.action === "update" && (
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Updated {item.action} from{" "}
-                          <span className="text-destructive">
-                            "{item.old_value}"
-                          </span>{" "}
-                          →{" "}
-                          <span className="text-green-500">
-                            "{item.new_value}"
-                          </span>
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col items-end">
-                      <span className="text-xs text-muted-foreground">
-                        {formatDateTime(item.created_at.toISOString())}
-                      </span>
-                      <ActivityAction />
-                    </div>
-                  </div>
+                <div className="flex flex-col items-end">
+                  <span className="text-xs text-muted-foreground">
+                    {formatDateTime(item.created_at)}
+                  </span>
+                  <ActivityAction
+                    handleEditActivity={() => handleEditActivity(item.id)}
+                    handleDeleteActivity={() => handleDeleteActivity(item.id)}
+                  />
                 </div>
               </div>
             </div>
-          ))}
+          </div>
         </div>
       ))}
     </div>

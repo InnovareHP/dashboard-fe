@@ -27,7 +27,7 @@ export function generateLeadColumns(
     cell: ({ row }) => (
       <EditableCell
         leadId={row.original.id}
-        fieldKey={col.name}
+        fieldKey={col.id}
         value={row.original[col.name] ?? ""}
         type={col.type}
       />
@@ -48,23 +48,23 @@ export function generateLeadColumns(
     enableHiding: false,
   };
 
-  const leadNameColumn: ColumnDef<LeadRow> = {
-    header: "Lead Name",
-    accessorKey: "lead_name",
-    cell: ({ row }) => (
-      <EditableCell
-        leadId={row.original.id}
-        fieldKey="lead_name"
-        value={row.original.lead_name}
-        type="TEXT"
-      />
-    ),
-  };
+//   const leadNameColumn: ColumnDef<LeadRow> = {
+//     header: "Lead Name",
+//     accessorKey: "lead_name",
+//     cell: ({ row }) => (
+//       <EditableCell
+//         leadId={row.original.id}
+//         fieldKey="lead_name"
+//         value={row.original.lead_name}
+//         type="TEXT"
+//       />
+//     ),
+//   };
 
   const createNewColumn: ColumnDef<LeadRow> = {
     header: () => <CreateColumnModal />,
     accessorKey: "create_column",
   };
 
-  return [selectColumn, leadNameColumn, ...dynamicColumns, createNewColumn];
+  return [selectColumn, ...dynamicColumns, createNewColumn];
 }
