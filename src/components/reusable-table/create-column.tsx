@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { createColumn } from "@/services/lead/lead-service";
+import { createReferralColumn } from "@/services/referral/referral-service";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   AlignLeft,
@@ -28,7 +29,11 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 
-export function CreateColumnModal() {
+export function CreateColumnModal({
+  isReferral = false,
+}: {
+  isReferral?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [type, setType] = useState("TEXT");
@@ -44,9 +49,11 @@ export function CreateColumnModal() {
 
     setLoading(true);
     try {
-      await createColumn(type, name);
+      await (isReferral ? createReferralColumn : createColumn)(type, name);
 
-      queryClient.invalidateQueries({ queryKey: ["leads-meta"] });
+      queryClient.invalidateQueries({
+        queryKey: isReferral ? ["referrals-meta"] : ["leads-meta"],
+      });
 
       toast.success("Column created successfully!");
       setOpen(false);

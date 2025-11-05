@@ -1,13 +1,10 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import ReferralAnalyticsDashboard from "@/components/analytics/analytics-page";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_team/$team/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  return (
-    <div>
-      <Outlet />
-    </div>
-  );
+  return <ReferralAnalyticsDashboard />;
 }

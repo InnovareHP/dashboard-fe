@@ -13,6 +13,12 @@ export type LeadRow = {
   [key: string]: string | number;
 };
 
+export type ReferralRow = {
+  id: string;
+
+  [key: string]: string | number;
+};
+
 export type ColumnsType = {
   id: string;
   name: string;
@@ -20,9 +26,28 @@ export type ColumnsType = {
 };
 
 export type LeadOptions = {
-    id: string;
-    value: string;
-}
+  id: string;
+  value: string;
+  assigned_to?: string[];
+};
+
+export type ReferralOptions = {
+  id: string;
+  value: string;
+};
+
+export type ReferralHistoryItem = {
+  id: string;
+  lead_id: string;
+  created_at: string;
+  created_by: string;
+  action: string;
+  old_value: string | null;
+  new_value: string | null;
+  field_name?: string;
+  field_id?: string;
+  message?: string;
+};
 
 export type LeadHistoryItem = {
   id: string;
@@ -35,4 +60,82 @@ export type LeadHistoryItem = {
   field_name?: string;
   field_id?: string;
   message?: string;
+};
+
+export type CountyRow = {
+  id: string;
+  name: string;
+  assigned_to: string;
+};
+
+export type AnalyticsResponse = {
+  avgTime: AverageTime;
+  clinicians: ClinicianAnalytics[];
+  conversion: ConversionAnalytics;
+  counties: CountyAnalytics[];
+  discharge: DischargeAnalytics[];
+  facilities: FacilityAnalytics[];
+  outreach: OutreachAnalytics[];
+  payers: PayerAnalytics[];
+  sources: SourceAnalytics[];
+};
+
+export type AverageTime = {
+  averageDays: string; // e.g. "3.4"
+};
+
+export type ConversionAnalytics = {
+  totalReferrals: number;
+  admitted: number;
+  conversionRate: number; // percentage
+};
+
+export type FacilityAnalytics = {
+  value: string | null;
+  _count: {
+    value: number;
+  };
+};
+
+export type ClinicianAnalytics = {
+  value: string | null;
+  _count: {
+    value: number;
+  };
+};
+
+export type CountyAnalytics = {
+  value: string | null;
+  _count: {
+    value: number;
+  };
+};
+
+export type SourceAnalytics = {
+  value: string | null;
+  _count: {
+    value: number;
+  };
+};
+
+export type PayerAnalytics = {
+  value: string | null;
+  _count: {
+    value: number;
+  };
+};
+
+export type DischargeAnalytics = {
+  month: string; // e.g. "2025-11"
+  total: number;
+};
+
+export type OutreachAnalytics = {
+  facility: string | null;
+  recent_referrals: number;
+};
+
+export type OptionsResponse = {
+  id: string;
+  value: string;
 };

@@ -1,7 +1,6 @@
 import OnboardingPage from "@/components/onboarding/onboarding";
-import { authClient } from "@/lib/auth-client";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import type { User } from "better-auth";
+import type { Session, User } from "better-auth";
 
 export const Route = createFileRoute("/onboarding")({
   component: RouteComponent,
@@ -10,14 +9,16 @@ export const Route = createFileRoute("/onboarding")({
       user_is_onboarded: boolean;
     };
 
-    const { data } = await authClient.organization.getFullOrganization();
+    const session = context.context.session as unknown as Session & {
+      activeOrganizationId: string;
+    };
 
     if (!user) {
-      throw redirect({ to: "/" });
+      throw redirect({ to: "/login" });
     }
 
-    if (data?.slug && user?.user_is_onboarded) {
-      throw redirect({ to: `/${data.slug}` as any });
+    if (user?.user_is_onboarded) {
+      throw redirect({ to: `/${session.activeOrganizationId}` as any });
     }
   },
 });
@@ -25,4 +26,3 @@ export const Route = createFileRoute("/onboarding")({
 function RouteComponent() {
   return <OnboardingPage />;
 }
-  

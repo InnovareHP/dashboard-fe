@@ -10,6 +10,7 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { useQueries, type UseQueryResult } from "@tanstack/react-query";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import type { Session, User } from "better-auth";
 import { Loader2 } from "lucide-react";
 
 type Organization = {
@@ -20,49 +21,36 @@ type Organization = {
 
 type OrganizationsResponse = { organizations: Organization[] };
 
-type Member = {
-  id: string;
-  name: string;
-};
-
-type ActiveOrg = {
-  id: string;
-  name: string;
-  logo?: string;
-  slug: string;
-};
-
 export const Route = createFileRoute("/_team")({
-  beforeLoad: async ({ params }: { params: { team: string } }) => {
-    const { data, error } = await authClient.organization.getFullOrganization();
+  beforeLoad: async (context) => {
+    const params = context.params as { team: string };
+    const user = context.context.user as unknown as User & {
+      user_is_onboarded: boolean;
+    };
 
-    if (error) {
-      throw redirect({ to: "/" });
+    if (!user) {
+      throw redirect({ to: "/login" as any });
     }
 
-    const activeOrg = (data ?? null) as ActiveOrg;
+    const session = context.context.session as unknown as Session & {
+      activeOrganizationId: string;
+    };
 
-    if (!activeOrg) {
-      throw redirect({ to: "/" });
+    if (!session.activeOrganizationId) {
+      throw redirect({ to: "/_auth/login" as any });
     }
 
-    if (params.team !== activeOrg.slug) {
-      throw redirect({ to: `/${activeOrg.slug}` as any });
+    if (params.team !== session.activeOrganizationId) {
+      throw redirect({ to: `/${session.activeOrganizationId}` as any });
     }
 
-    return { activeOrg };
+    return { activeOrganizationId: session.activeOrganizationId };
   },
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const results = useQueries<
-    [
-      UseQueryResult<OrganizationsResponse>,
-      UseQueryResult<Member>,
-      UseQueryResult<ActiveOrg>,
-    ]
-  >({
+  const results = useQueries<[UseQueryResult<OrganizationsResponse>]>({
     queries: [
       {
         queryKey: ["organizations"],
@@ -72,30 +60,6 @@ function RouteComponent() {
             throw new Error("Failed to fetch organizations");
           }
           return data as unknown as OrganizationsResponse;
-        },
-        staleTime: 5 * 60 * 1000,
-      },
-      {
-        queryKey: ["user-member"],
-        queryFn: async (): Promise<Member> => {
-          const { data, error } =
-            await authClient.organization.getActiveMember();
-          if (error || !data) {
-            throw new Error("Failed to fetch active member");
-          }
-          return data as unknown as Member;
-        },
-        staleTime: 5 * 60 * 1000,
-      },
-      {
-        queryKey: ["active-org"],
-        queryFn: async (): Promise<ActiveOrg> => {
-          const { data, error } =
-            await authClient.organization.getFullOrganization();
-          if (error || !data) {
-            throw new Error("Failed to fetch active organization");
-          }
-          return data as ActiveOrg;
         },
         staleTime: 5 * 60 * 1000,
       },
@@ -123,7 +87,7 @@ function RouteComponent() {
             <DynamicBreadcrumb />
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0 border-2">
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0 overflow-auto">
           <Outlet />
         </div>
       </SidebarInset>

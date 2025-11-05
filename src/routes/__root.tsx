@@ -11,7 +11,7 @@ function App() {
   return (
     // Provide the client to your App
     <QueryClientProvider client={queryClient}>
-      <main className="overflow-x-hidden">
+      <main>
         <Outlet />
       </main>
       <Toaster />

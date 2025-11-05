@@ -34,6 +34,7 @@ type Props<T> = {
   setActivePage: Dispatch<SetStateAction<number>>;
   onAddNewLead: () => void;
   onDeleteLeads?: (ids: string[]) => void; // ✅ new prop for deletion
+  isReferral?: boolean;
 };
 
 const ReusableTable = <T extends { id: string }>({
@@ -42,6 +43,7 @@ const ReusableTable = <T extends { id: string }>({
   isFetchingList,
   onAddNewLead,
   onDeleteLeads,
+  isReferral = false,
 }: Props<T>) => {
   const selectedRows = table.getSelectedRowModel().rows;
   const hasSelected = selectedRows.length > 0;
@@ -50,7 +52,7 @@ const ReusableTable = <T extends { id: string }>({
   return (
     <Card>
       <CardContent>
-        <ScrollArea className="relative w-full">
+        <ScrollArea className="relative w-full ">
           {isFetchingList && (
             <Skeleton className="h-[500px] w-full rounded-md absolute top-0 left-0" />
           )}
@@ -137,7 +139,8 @@ const ReusableTable = <T extends { id: string }>({
               variant="ghost"
               className="flex gap-2"
             >
-              <Plus className="w-4 h-4" /> Add New Lead
+              <Plus className="w-4 h-4" />{" "}
+              {isReferral ? "Add New Referral" : "Add New Lead"}
             </Button>
           </div>
 

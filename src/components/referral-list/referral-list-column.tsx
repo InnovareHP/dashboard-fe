@@ -1,6 +1,3 @@
-// components/master-list/master-list-column.tsx
-"use client";
-
 import { EditableCell } from "@/components/reusable-table/editable-cell";
 import { type ColumnDef } from "@tanstack/react-table";
 import { CreateColumnModal } from "../reusable-table/create-column";
@@ -12,30 +9,33 @@ type ColumnType = {
   type: string;
 };
 
-type LeadRow = {
+type ReferralRow = {
   id: string;
   lead_name: string;
   [key: string]: any;
 };
 
-export function generateLeadColumns(
+export function generateReferralColumns(
   columnsFromApi: ColumnType[]
-): ColumnDef<LeadRow>[] {
-  const dynamicColumns: ColumnDef<LeadRow>[] = columnsFromApi.map((col) => ({
-    header: col.name,
-    accessorKey: col.name, // column name from API
-    cell: ({ row }) => (
-      <EditableCell
-        id={row.original.id}
-        fieldKey={col.id}
-        fieldName={col.name}
-        value={row.original[col.name] ?? ""}
-        type={col.type}
-      />
-    ),
-  }));
+): ColumnDef<ReferralRow>[] {
+  const dynamicColumns: ColumnDef<ReferralRow>[] = columnsFromApi.map(
+    (col) => ({
+      header: col.name,
+      accessorKey: col.name, // column name from API
+      cell: ({ row }) => (
+        <EditableCell
+          isReferral={true}
+          id={row.original.id}
+          fieldKey={col.id}
+          fieldName={col.name}
+          value={row.original[col.name] ?? ""}
+          type={col.type}
+        />
+      ),
+    })
+  );
 
-  const selectColumn: ColumnDef<LeadRow> = {
+  const selectColumn: ColumnDef<ReferralRow> = {
     id: "select",
     header: () => <div className="px-4"></div>,
     cell: ({ row }) => (
@@ -62,8 +62,8 @@ export function generateLeadColumns(
   //     ),
   //   };
 
-  const createNewColumn: ColumnDef<LeadRow> = {
-    header: () => <CreateColumnModal />,
+  const createNewColumn: ColumnDef<ReferralRow> = {
+    header: () => <CreateColumnModal isReferral={true} />,
     accessorKey: "create_column",
   };
 
