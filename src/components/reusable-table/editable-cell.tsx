@@ -169,7 +169,11 @@ export function EditableCell({
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {date ? format(date, "PPP") : <span>Pick a date</span>}
+            {date && !isNaN(date.getTime()) ? (
+              format(date, "PPP")
+            ) : (
+              <span>Pick a date</span>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
@@ -216,7 +220,7 @@ export function EditableCell({
     return (
       <Select defaultValue={val} onValueChange={(v) => handleUpdate(String(v))}>
         <SelectTrigger
-          className="w-[140px] text-sm"
+          className="w-auto text-sm"
           onMouseEnter={handleHover} // prefetch before opening
         >
           <SelectValue placeholder={val || "Select an option"} />

@@ -2,6 +2,7 @@ import { EditableCell } from "@/components/reusable-table/editable-cell";
 import { type ColumnDef } from "@tanstack/react-table";
 import { CreateColumnModal } from "../reusable-table/create-column";
 import { Checkbox } from "../ui/checkbox";
+import { ReferralCellView } from "./referral-cell-view";
 
 type ColumnType = {
   id: string;
@@ -62,10 +63,16 @@ export function generateReferralColumns(
   //     ),
   //   };
 
-  const createNewColumn: ColumnDef<ReferralRow> = {
-    header: () => <CreateColumnModal isReferral={true} />,
-    accessorKey: "create_column",
+  const viewReferralColumn: ColumnDef<ReferralRow> = {
+    header: () => <></>,
+    cell: ({ row }) => <ReferralCellView referralId={row.original.id} />,
+    accessorKey: " view_referral",
   };
 
-  return [selectColumn, ...dynamicColumns, createNewColumn];
+  const createNewColumn: ColumnDef<ReferralRow> = {
+    header: () => <CreateColumnModal isReferral={true} />,
+    accessorKey: " create_column",
+  };
+
+  return [selectColumn, viewReferralColumn, ...dynamicColumns, createNewColumn];
 }

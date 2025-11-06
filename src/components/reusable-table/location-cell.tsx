@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
-    Autocomplete,
-    GoogleMap,
-    Marker,
-    useJsApiLoader,
+  Autocomplete,
+  GoogleMap,
+  Marker,
+  useJsApiLoader,
 } from "@react-google-maps/api";
 import { Loader2, MapPlus } from "lucide-react";
 import React, { useState } from "react";
@@ -15,8 +15,10 @@ import { Skeleton } from "../ui/skeleton";
 
 type LocationCellProps = {
   value?: string;
-  onChange?: (value: string) => Promise<void> | void; // allow async
+  onChange?: (value: string) => Promise<void> | void;
 };
+
+const GOOGLE_MAP_LIBRARIES = ["places"] as const;
 
 const defaultCenter = {
   lat: 37.7749,
@@ -32,11 +34,12 @@ const LocationCell: React.FC<LocationCellProps> = ({
   const [_, setMap] = useState<google.maps.Map | null>(null);
   const [address, setAddress] = useState(value.replace(/^"|"$/g, ""));
   const [markerPosition, setMarkerPosition] = useState(defaultCenter);
-  const [isChanging, setIsChanging] = useState(false); // <-- NEW loading state
+  const [isChanging, setIsChanging] = useState(false);
 
+  // ✅ FIXED — libraries array is now stable
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY!,
-    libraries: ["places"],
+    libraries: GOOGLE_MAP_LIBRARIES,
   });
 
   const handlePlaceChanged = async () => {
@@ -60,8 +63,10 @@ const LocationCell: React.FC<LocationCellProps> = ({
 
   const handleDragMarker = (e: google.maps.MapMouseEvent) => {
     if (!e.latLng) return;
+
     const lat = e.latLng.lat();
     const lng = e.latLng.lng();
+
     setMarkerPosition({ lat, lng });
     setIsChanging(true);
 
@@ -89,7 +94,7 @@ const LocationCell: React.FC<LocationCellProps> = ({
             onLoad={(a) => setAutocomplete(a)}
             onPlaceChanged={handlePlaceChanged}
           >
-            <div className="relative w-[400px]">
+            <div className="relative w-auto">
               <Input
                 placeholder="Enter address..."
                 value={address}

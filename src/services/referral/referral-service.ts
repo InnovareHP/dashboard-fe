@@ -1,5 +1,11 @@
 import { axiosClient } from "@/lib/axios-client";
-import type { CountyRow, LeadOptions, ReferralHistoryItem } from "@/lib/types";
+import type {
+  CountyRow,
+  LeadOptions,
+  ReferralHistoryItem,
+  ReferralHistoryResponse,
+  ReferralResponse,
+} from "@/lib/types";
 
 export const getReferral = async () => {
   const response = await axiosClient.get("/api/referral");
@@ -9,6 +15,32 @@ export const getReferral = async () => {
   }
 
   return response.data;
+};
+
+export const getSpecificReferral = async (referralId: string) => {
+  const response = await axiosClient.get(`/api/referral/${referralId}`);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to fetch specific referral");
+  }
+
+  return response.data as ReferralResponse;
+};
+
+export const getReferralHistory = async (
+  referralId: string,
+  take: number,
+  skip: number
+) => {
+  const response = await axiosClient.get(
+    `/api/referral/timeline/${referralId}?take=${take}&skip=${skip}`
+  );
+
+  if (response.status !== 200) {
+    throw new Error("Failed to fetch referral history");
+  }
+
+  return response.data as ReferralHistoryResponse;
 };
 
 export const getReferralColumnOptions = async () => {

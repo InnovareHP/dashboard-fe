@@ -15,7 +15,6 @@ export type LeadRow = {
 
 export type ReferralRow = {
   id: string;
-
   [key: string]: string | number;
 };
 
@@ -23,6 +22,25 @@ export type ColumnsType = {
   id: string;
   name: string;
   type: string;
+};
+
+export type ReferralResponse = {
+  columns: ColumnsType[];
+  data: ReferralRow;
+};
+
+export type ReferralHistoryRow = {
+  id: string;
+  created_at: string;
+  created_by: string;
+  action: string;
+  old_value: string | null;
+  new_value: string | null;
+};
+
+export type ReferralHistoryResponse = {
+  data: ReferralHistoryRow[];
+  total: number;
 };
 
 export type LeadOptions = {

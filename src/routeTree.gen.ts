@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as TeamRouteImport } from './routes/_team'
 import { Route as AuthRouteImport } from './routes/_auth'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as TeamTeamIndexRouteImport } from './routes/_team/$team/index'
@@ -33,6 +34,11 @@ const TeamRoute = TeamRouteImport.update({
 } as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/_auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
@@ -86,6 +92,7 @@ const TeamTeamMasterListLeadsLeadTimelineRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '/onboarding': typeof OnboardingRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/$team/master-list/leads/$lead': typeof TeamTeamMasterListLeadsLeadIndexRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/onboarding': typeof OnboardingRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
@@ -111,6 +119,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
   '/_team': typeof TeamRouteWithChildren
   '/onboarding': typeof OnboardingRoute
@@ -127,6 +136,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/onboarding'
     | '/login'
     | '/register'
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
     | '/$team/master-list/leads/$lead'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/onboarding'
     | '/login'
     | '/register'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/$team/master-list/leads/$lead'
   id:
     | '__root__'
+    | '/'
     | '/_auth'
     | '/_team'
     | '/onboarding'
@@ -166,6 +178,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
   TeamRoute: typeof TeamRouteWithChildren
   OnboardingRoute: typeof OnboardingRoute
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/register': {
@@ -296,6 +316,7 @@ const TeamRouteChildren: TeamRouteChildren = {
 const TeamRouteWithChildren = TeamRoute._addFileChildren(TeamRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
   TeamRoute: TeamRouteWithChildren,
   OnboardingRoute: OnboardingRoute,
