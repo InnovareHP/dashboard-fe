@@ -15,9 +15,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "@tanstack/react-router";
-import type { Member } from "better-auth/plugins/organization";
+import { useRouteContext, useRouter } from "@tanstack/react-router";
 import {
   BadgeCheck,
   Bell,
@@ -29,16 +27,9 @@ import {
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const queryClient = useQueryClient();
   const router = useRouter();
 
-  const data = queryClient.getQueryData(["user-member"]) as Member & {
-    user: {
-      avatar: string;
-      name: string;
-      email: string;
-    };
-  };
+  const data = useRouteContext({ from: "__root__" });
 
   const handleLogout = () => {
     authClient.signOut();
@@ -56,12 +47,19 @@ export function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={data?.user.avatar} alt={data?.user.name} />
+                <AvatarImage
+                  src={data?.user?.image ?? undefined}
+                  alt={data?.user?.name ?? undefined}
+                />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{data?.user.name}</span>
-                <span className="truncate text-xs">{data?.user.email}</span>
+                <span className="truncate font-medium">
+                  {data?.user?.name ?? undefined}
+                </span>
+                <span className="truncate text-xs">
+                  {data?.user?.email ?? undefined}
+                </span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -75,14 +73,19 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={data?.user.avatar} alt={data?.user.name} />
+                  <AvatarImage
+                    src={data?.user?.image ?? undefined}
+                    alt={data?.user?.name ?? undefined}
+                  />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
-                    {data?.user.name}
+                    {data?.user?.name ?? undefined}
                   </span>
-                  <span className="truncate text-xs">{data?.user.email}</span>
+                  <span className="truncate text-xs">
+                    {data?.user?.email ?? undefined}
+                  </span>
                 </div>
               </div>
             </DropdownMenuLabel>

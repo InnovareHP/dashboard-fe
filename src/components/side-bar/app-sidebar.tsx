@@ -8,17 +8,14 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { useQueryClient } from "@tanstack/react-query";
-import type { Organization } from "better-auth/plugins/organization";
+import { useRouteContext } from "@tanstack/react-router";
 import { CircuitBoard, Settings2, SquareTerminal } from "lucide-react";
 import * as React from "react";
 
 // This is sample data.
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const qc = useQueryClient();
-  const activeMember = qc.getQueryData(["active-org"]) as Organization;
-
+  const { activeOrganizationId } = useRouteContext({ from: "/_team" })
   const data = {
     navMain: [
       {
@@ -29,7 +26,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           {
             title: "Analytics",
-            url: `/${activeMember?.slug}`,
+            url: `/${activeOrganizationId}`,
           },
         ],
       },
@@ -39,31 +36,39 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           {
             title: "Master List",
-            url: `/${activeMember?.slug}/master-list`,
+            url: `/${activeOrganizationId}/master-list`,
+          },
+          {
+            title: "Referral List",
+            url: `/${activeOrganizationId}/referral-list`,
           },
         ],
       },
 
       {
         title: "Settings",
-        url: `/${activeMember?.slug}/settings`,
+        url: `/${activeOrganizationId}/settings`,
         icon: Settings2,
         items: [
           {
             title: "General",
-            url: "#",
+            url: `/${activeOrganizationId}/settings/general`,
           },
           {
             title: "Team",
-            url: `/${activeMember?.slug}/team`,
+            url: `/${activeOrganizationId}/settings/team`,
           },
           {
             title: "Billing",
-            url: "#",
+            url: `/${activeOrganizationId}/settings/billing`,
           },
           {
             title: "Limits",
-            url: "#",
+            url: `/${activeOrganizationId}/settings/limits`,
+          },
+          {
+            title: "County Config",
+            url: `/${activeOrganizationId}/referral-list/county-config`,
           },
         ],
       },

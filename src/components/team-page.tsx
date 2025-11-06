@@ -7,18 +7,27 @@ import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertCircle, CheckCircle2, Crown, Loader2, Mail, UserPlus, Users, X } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Crown,
+  Loader2,
+  Mail,
+  UserPlus,
+  Users,
+  X,
+} from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod/v3";
 import { ConfirmationDialog } from "./confirmation-dialog";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "./ui/form";
 
 type TeamMember = {
@@ -39,18 +48,19 @@ type MessageState = {
   message: string;
 } | null;
 
-export function TeamPage({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function TeamPage({ className, ...props }: React.ComponentProps<"div">) {
   const queryClient = useQueryClient();
   const [showAddMember, setShowAddMember] = useState(false);
   const [message, setMessage] = useState<MessageState>(null);
   const [removeMemberId, setRemoveMemberId] = useState<string | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-  // Get current user's member info to check if they're the owner
-  const { data: currentMember, isLoading: isLoadingMember, isError: isErrorMember, error: memberError } = useQuery({
+  const {
+    data: currentMember,
+    isLoading: isLoadingMember,
+    isError: isErrorMember,
+    error: memberError,
+  } = useQuery({
     queryKey: ["user-member"],
     queryFn: async (): Promise<TeamMember> => {
       const { data, error } = await authClient.organization.getActiveMember();
@@ -70,28 +80,28 @@ export function TeamPage({
 
   const isOwner = currentMember?.role === "OWNER";
 
-  // Fetch team members
-  const { 
-    data: members, 
-    isLoading: isLoadingMembers, 
+  const {
+    data: members,
+    isLoading: isLoadingMembers,
     isError: isErrorMembers,
-    error: membersError 
+    error: membersError,
   } = useQuery({
     queryKey: ["team-members"],
     queryFn: async (): Promise<TeamMember[]> => {
       try {
-        // Try to get members - adjust method name based on your API
-        const { data, error } = await (authClient.organization as any).listMembers?.() || { data: null, error: null };
-        
+        const { data, error } = (await (
+          authClient.organization as any
+        ).listMembers?.()) || { data: null, error: null };
+
         if (error) {
           throw new Error(error.message || "Failed to fetch team members");
         }
-        
+
         if (!data) {
           // If API method doesn't exist, return empty array
           return [];
         }
-        
+
         // Validate response structure
         const membersList = Array.isArray(data) ? data : [];
         return membersList.map((member: any) => ({
@@ -129,29 +139,35 @@ export function TeamPage({
     mutationFn: async (email: string) => {
       try {
         // Try different possible API method names
-        const addMemberMethod = (authClient.organization as any).addMember || 
-                               (authClient.organization as any).inviteMember;
-        
+        const addMemberMethod =
+          (authClient.organization as any).addMember ||
+          (authClient.organization as any).inviteMember;
+
         if (!addMemberMethod) {
-          throw new Error("Add member functionality is not available. Please check your API configuration.");
+          throw new Error(
+            "Add member functionality is not available. Please check your API configuration."
+          );
         }
 
         const { data, error } = await addMemberMethod({ email });
-        
+
         if (error) {
-          const errorMessage = error.message || 
-                              error.data?.message || 
-                              "Failed to add member. Please try again.";
+          const errorMessage =
+            error.message ||
+            error.data?.message ||
+            "Failed to add member. Please try again.";
           throw new Error(errorMessage);
         }
-        
+
         return data;
       } catch (error: any) {
         // Provide more specific error messages
         if (error.message) {
           throw error;
         }
-        throw new Error("Failed to add member. Please check the email and try again.");
+        throw new Error(
+          "Failed to add member. Please check the email and try again."
+        );
       }
     },
     onSuccess: () => {
@@ -162,7 +178,8 @@ export function TeamPage({
       setTimeout(() => setMessage(null), 5000);
     },
     onError: (error: Error) => {
-      const errorMessage = error.message || "Failed to add member. Please try again.";
+      const errorMessage =
+        error.message || "Failed to add member. Please try again.";
       addMemberForm.setError("root", { message: errorMessage });
       setMessage({ type: "error", message: errorMessage });
       setTimeout(() => setMessage(null), 5000);
@@ -173,22 +190,26 @@ export function TeamPage({
     mutationFn: async (memberId: string) => {
       try {
         // Try different possible API method names
-        const removeMemberMethod = (authClient.organization as any).removeMember || 
-                                   (authClient.organization as any).deleteMember;
-        
+        const removeMemberMethod =
+          (authClient.organization as any).removeMember ||
+          (authClient.organization as any).deleteMember;
+
         if (!removeMemberMethod) {
-          throw new Error("Remove member functionality is not available. Please check your API configuration.");
+          throw new Error(
+            "Remove member functionality is not available. Please check your API configuration."
+          );
         }
 
         const { data, error } = await removeMemberMethod({ memberId });
-        
+
         if (error) {
-          const errorMessage = error.message || 
-                              error.data?.message || 
-                              "Failed to remove member. Please try again.";
+          const errorMessage =
+            error.message ||
+            error.data?.message ||
+            "Failed to remove member. Please try again.";
           throw new Error(errorMessage);
         }
-        
+
         return data;
       } catch (error: any) {
         if (error.message) {
@@ -203,7 +224,8 @@ export function TeamPage({
       setTimeout(() => setMessage(null), 5000);
     },
     onError: (error: Error) => {
-      const errorMessage = error.message || "Failed to remove member. Please try again.";
+      const errorMessage =
+        error.message || "Failed to remove member. Please try again.";
       setMessage({ type: "error", message: errorMessage });
       setTimeout(() => setMessage(null), 5000);
     },
@@ -228,20 +250,25 @@ export function TeamPage({
   };
 
   // Display members - prioritize API data, fallback to current member if API fails
-  const displayMembers = (members && members.length > 0) 
-    ? members 
-    : (currentMember && !isErrorMembers) 
-      ? [currentMember]
-      : [];
+  const displayMembers =
+    members && members.length > 0
+      ? members
+      : currentMember && !isErrorMembers
+        ? [currentMember]
+        : [];
 
   // Show error state if queries fail
   if (isErrorMember || isErrorMembers) {
-    const errorMessage = (memberError as Error)?.message || 
-                        (membersError as Error)?.message || 
-                        "Failed to load team information";
-    
+    const errorMessage =
+      (memberError as Error)?.message ||
+      (membersError as Error)?.message ||
+      "Failed to load team information";
+
     return (
-      <div className={cn("flex items-center justify-center p-4", className)} {...props}>
+      <div
+        className={cn("flex items-center justify-center p-4", className)}
+        {...props}
+      >
         <div className="w-full max-w-2xl">
           <Card className="overflow-hidden shadow-xl border-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm">
             <CardContent className="p-6">
@@ -255,8 +282,12 @@ export function TeamPage({
                 </p>
                 <Button
                   onClick={() => {
-                    queryClient.invalidateQueries({ queryKey: ["user-member"] });
-                    queryClient.invalidateQueries({ queryKey: ["team-members"] });
+                    queryClient.invalidateQueries({
+                      queryKey: ["user-member"],
+                    });
+                    queryClient.invalidateQueries({
+                      queryKey: ["team-members"],
+                    });
                   }}
                   className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
                 >
@@ -271,7 +302,10 @@ export function TeamPage({
   }
 
   return (
-    <div className={cn("flex items-center justify-center p-4", className)} {...props}>
+    <div
+      className={cn("flex items-center justify-center p-4", className)}
+      {...props}
+    >
       <div className="w-full max-w-2xl">
         <Card className="overflow-hidden shadow-xl border-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm">
           <CardContent className="p-6">
@@ -291,7 +325,9 @@ export function TeamPage({
                   ) : (
                     <AlertCircle className="w-5 h-5 flex-shrink-0" />
                   )}
-                  <p className="text-sm font-medium flex-1">{message.message}</p>
+                  <p className="text-sm font-medium flex-1">
+                    {message.message}
+                  </p>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -343,10 +379,12 @@ export function TeamPage({
                         {addMemberForm.formState.errors.root && (
                           <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200">
                             <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                            <p className="text-sm">{addMemberForm.formState.errors.root.message}</p>
+                            <p className="text-sm">
+                              {addMemberForm.formState.errors.root.message}
+                            </p>
                           </div>
                         )}
-                        
+
                         <FormField
                           control={addMemberForm.control}
                           name="email"
@@ -415,8 +453,10 @@ export function TeamPage({
                   </div>
                 ) : (
                   displayMembers.map((member) => {
-                    const memberName = member.user?.name || member.name || "Unknown";
-                    const memberEmail = member.user?.email || member.email || "";
+                    const memberName =
+                      member.user?.name || member.name || "Unknown";
+                    const memberEmail =
+                      member.user?.email || member.email || "";
                     const memberAvatar = member.user?.avatar || member.avatar;
                     const initials = memberName
                       .split(" ")
@@ -435,7 +475,10 @@ export function TeamPage({
                             <div className="flex items-center space-x-3">
                               <Avatar className="h-10 w-10">
                                 {memberAvatar && (
-                                  <AvatarImage src={memberAvatar} alt={memberName} />
+                                  <AvatarImage
+                                    src={memberAvatar}
+                                    alt={memberName}
+                                  />
                                 )}
                                 <AvatarFallback className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
                                   {initials}
@@ -472,7 +515,8 @@ export function TeamPage({
                                 disabled={removeMemberMutation.isPending}
                                 className="border-red-200 dark:border-red-800 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
                               >
-                                {removeMemberMutation.isPending && removeMemberId === member.id ? (
+                                {removeMemberMutation.isPending &&
+                                removeMemberId === member.id ? (
                                   <Loader2 className="w-4 h-4 mr-1 animate-spin" />
                                 ) : (
                                   <X className="w-4 h-4 mr-1" />

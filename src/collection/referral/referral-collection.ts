@@ -1,12 +1,12 @@
-import type { LeadHistoryItem, LeadRow } from "@/lib/types";
+import type { ReferralHistoryItem, ReferralRow } from "@/lib/types";
 import {
-    createLead,
-    createLeadTimeline,
-    deleteLead,
-    getLeads,
-    getLeadTimeline,
-    updateLead,
-} from "@/services/lead/lead-service";
+  createReferral,
+  createReferralTimeline,
+  deleteReferralColumn,
+  getReferral,
+  getReferralTimeline,
+  updateReferral,
+} from "@/services/referral/referral-service";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/react-db";
 import { QueryClient } from "@tanstack/react-query";
@@ -18,49 +18,50 @@ const queryClient = new QueryClient();
  * - Only stores `data` (rows).
  * - Fetch `columns` separately with React Query.
  */
-export const leadCollection = createCollection(
+export const referralCollection = createCollection(
   queryCollectionOptions({
-    queryKey: ["leads"],
+    queryKey: ["referrals"],
     queryFn: async () => {
-      const response = await getLeads();
+      const response = await getReferral();
 
       return response.data;
     },
-    getKey: (item: LeadRow) => item.id,
+    getKey: (item: ReferralRow) => item.id,
     queryClient,
     onUpdate: async ({ transaction }) => {
       const mutation = transaction.mutations[0];
-      await updateLead(
+      await updateReferral(
         mutation.modified.id as string,
         mutation.modified.field_id as string,
-        mutation.modified.value as string
+        mutation.modified.value as string,
+        mutation.modified.reason as string
       );
     },
     onInsert: async ({ transaction }) => {
       const mutation = transaction.mutations[0];
-      await createLead(mutation.modified);
+      await createReferral(mutation.modified);
     },
 
     onDelete: async ({ transaction }) => {
       const mutation = transaction.mutations;
-      await deleteLead(mutation.map((m) => m.modified.id as string));
+      await deleteReferralColumn(mutation.map((m) => m.modified.id as string));
     },
   })
 );
 
-export const leadTimelineCollection = createCollection(
+export const referralTimelineCollection = createCollection(
   queryCollectionOptions({
-    queryKey: ["lead-timeline"],
+    queryKey: ["referral-timeline"],
     queryFn: async ({ queryKey }: { queryKey: string[] }) => {
-      const leadId = queryKey[1];
-      const response = await getLeadTimeline(leadId);
+      const referralId = queryKey[1];
+      const response = await getReferralTimeline(referralId);
       return response.data;
     },
-    getKey: (item: LeadHistoryItem) => item.id,
+    getKey: (item: ReferralHistoryItem) => item.id,
     queryClient,
     onInsert: async ({ transaction }) => {
       const mutation = transaction.mutations[0];
-      await createLeadTimeline(
+      await createReferralTimeline(
         mutation.modified.id as string,
         mutation.modified
       );
