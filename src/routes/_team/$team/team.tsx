@@ -1,3 +1,4 @@
+import { TeamPage } from "@/components/team-page";
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_team/$team/team')({
@@ -5,5 +6,5 @@ export const Route = createFileRoute('/_team/$team/team')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/_team/$team/team"!</div>
+  return <TeamPage />
 }

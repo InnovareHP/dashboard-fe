@@ -55,7 +55,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
           {
             title: "Team",
-            url: "#",
+            url: `/${activeMember?.slug}/team`,
           },
           {
             title: "Billing",
