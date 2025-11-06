@@ -1,54 +1,61 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useRouter } from "@tanstack/react-router";
-import { Loader2, Lock, Mail } from "lucide-react";
+import { ArrowLeft, Loader2, Mail, Shield } from "lucide-react";
 import { useForm } from "react-hook-form";
 import z from "zod/v3";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from "./ui/form";
 
-export function LoginForm({
+export function OtpForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const navigate = useRouter();
   const formSchema = z.object({
-    email: z.string().email(),
-    password: z.string().min(8),
+    otp: z.string().min(6, "Please enter the 6-digit code").max(6, "Please enter the 6-digit code"),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      otp: "",
     },
   });
 
-  const handleLogin = async (values: z.infer<typeof formSchema>) => {
+  const handleVerifyOtp = async (values: z.infer<typeof formSchema>) => {
     try {
-      const { error } = await authClient.signIn.email({
-        email: values.email,
-        password: values.password,
-      });
-
-      if (error) {
-        console.error(error);
+      // Simulate OTP verification
+      console.log("Verifying OTP:", values.otp);
+      
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // For demo purposes, accept any 6-digit code
+      if (values.otp.length === 6) {
+        console.log("OTP verified successfully");
+        // In a real app, you would navigate to the next step
+        // navigate({ to: "/dashboard" });
       }
-
-      navigate.invalidate();
-    } catch (error) {}
+    } catch (error) {
+      console.error("OTP verification failed:", error);
+    }
   };
+
+  const handleResendOtp = () => {
+    console.log("Resending OTP...");
+    // In a real app, this would trigger a new OTP to be sent
+  };
+
   return (
     <div className={cn("flex items-center justify-center p-4", className)} {...props}>
       <div className="w-full max-w-md">
@@ -57,56 +64,40 @@ export function LoginForm({
             <Form {...form}>
               <form
                 className="space-y-5"
-                onSubmit={form.handleSubmit(handleLogin)}
+                onSubmit={form.handleSubmit(handleVerifyOtp)}
               >
                  <div className="space-y-2 text-center">
                    <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl mb-4">
-                     <Lock className="w-6 h-6 text-white" />
+                     <Shield className="w-6 h-6 text-white" />
                    </div>
                   <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-                    Welcome back
+                    Verify Your Account
                   </h1>
                   <p className="text-slate-600 dark:text-slate-400">
-                    Login to your Acme Inc account
+                    We've sent a 6-digit verification code to your email address
                   </p>
                 </div>
 
                 <div className="space-y-4">
                    <FormField
                      control={form.control}
-                     name="email"
+                     name="otp"
                      render={({ field }) => (
                        <FormItem>
-                         <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">Email</FormLabel>
+                         <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">Verification Code</FormLabel>
                          <FormControl>
                            <div className="relative">
                              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
                              <Input 
                                {...field} 
-                               placeholder="Enter your email" 
-                               className="h-10 pl-10 border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
-                             />
-                           </div>
-                         </FormControl>
-                         <FormMessage />
-                       </FormItem>
-                     )}
-                   />
-
-                   <FormField
-                     control={form.control}
-                     name="password"
-                     render={({ field }) => (
-                       <FormItem>
-                         <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">Password</FormLabel>
-                         <FormControl>
-                           <div className="relative">
-                             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
-                             <Input
-                               {...field}
-                               placeholder="Enter your password"
-                               type="password"
-                               className="h-10 pl-10 border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
+                               placeholder="Enter 6-digit code" 
+                               className="h-10 pl-10 border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200 text-center text-lg tracking-widest"
+                               maxLength={6}
+                               onChange={(e) => {
+                                 // Only allow numbers
+                                 const value = e.target.value.replace(/\D/g, '');
+                                 field.onChange(value);
+                               }}
                              />
                            </div>
                          </FormControl>
@@ -123,43 +114,31 @@ export function LoginForm({
                      {form.formState.isSubmitting ? (
                        <div className="flex items-center space-x-2">
                          <Loader2 className="w-4 h-4 animate-spin" />
-                         <span>Signing in...</span>
+                         <span>Verifying...</span>
                        </div>
                      ) : (
-                       "Login"
+                       "Verify Code"
                      )}
                   </Button>
 
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-slate-200 dark:border-slate-700"></div>
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                      <span className="bg-white dark:bg-slate-900 px-3 text-slate-500 dark:text-slate-400">
-                        Or continue with
-                      </span>
-                    </div>
+                  <div className="text-center">
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+                      Didn't receive the code?
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleResendOtp}
+                      className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200"
+                    >
+                      Resend Code
+                    </Button>
                   </div>
-
-                   <Button 
-                     variant="outline" 
-                     type="button" 
-                     className="w-full h-10 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200 cursor-pointer"
-                   >
-                     <Mail className="w-4 h-4 mr-2" />
-                     <span>Continue with Google</span>
-                   </Button>
 
                   <div className="text-center text-sm text-slate-600 dark:text-slate-400">
-                    Don&apos;t have an account?{" "}
-                    <Link to="/register" className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
-                      Sign up
-                    </Link>
-                  </div>
-
-                  <div className="text-center text-sm">
-                    <Link to="/reset-password" className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
-                      Forgot your password?
+                    <Link to="/" className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200 inline-flex items-center">
+                      <ArrowLeft className="w-4 h-4 mr-1" />
+                      Back to Sign In
                     </Link>
                   </div>
                 </div>

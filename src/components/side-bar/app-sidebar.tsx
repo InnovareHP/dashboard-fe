@@ -15,7 +15,7 @@ import * as React from "react";
 // This is sample data.
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { activeOrganizationId } = useRouteContext({ from: "/_team" }) 
+  const { activeOrganizationId } = useRouteContext({ from: "/_team" })
   const data = {
     navMain: [
       {

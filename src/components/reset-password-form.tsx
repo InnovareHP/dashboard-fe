@@ -5,50 +5,53 @@ import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useRouter } from "@tanstack/react-router";
-import { Loader2, Lock, Mail } from "lucide-react";
+import { Loader2, Mail, RotateCcw } from "lucide-react";
 import { useForm } from "react-hook-form";
 import z from "zod/v3";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from "./ui/form";
 
-export function LoginForm({
+export function ResetPasswordForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const navigate = useRouter();
   const formSchema = z.object({
-    email: z.string().email(),
-    password: z.string().min(8),
+    email: z.string().email("Please enter a valid email address"),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
-      password: "",
     },
   });
 
-  const handleLogin = async (values: z.infer<typeof formSchema>) => {
+  const handleResetPassword = async (values: z.infer<typeof formSchema>) => {
     try {
-      const { error } = await authClient.signIn.email({
+      const { error } = await authClient.forgetPassword({
         email: values.email,
-        password: values.password,
+        redirectTo: "/reset-password",
       });
 
       if (error) {
         console.error(error);
+        // You might want to show an error message to the user here
+      } else {
+        // Show success message or redirect to a confirmation page
+        console.log("Password reset email sent successfully");
       }
-
-      navigate.invalidate();
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   };
+
   return (
     <div className={cn("flex items-center justify-center p-4", className)} {...props}>
       <div className="w-full max-w-md">
@@ -57,17 +60,17 @@ export function LoginForm({
             <Form {...form}>
               <form
                 className="space-y-5"
-                onSubmit={form.handleSubmit(handleLogin)}
+                onSubmit={form.handleSubmit(handleResetPassword)}
               >
                  <div className="space-y-2 text-center">
                    <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl mb-4">
-                     <Lock className="w-6 h-6 text-white" />
+                     <RotateCcw className="w-6 h-6 text-white" />
                    </div>
                   <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-                    Welcome back
+                    Reset Password
                   </h1>
                   <p className="text-slate-600 dark:text-slate-400">
-                    Login to your Acme Inc account
+                    Enter your email address and we'll send you a link to reset your password
                   </p>
                 </div>
 
@@ -93,28 +96,6 @@ export function LoginForm({
                      )}
                    />
 
-                   <FormField
-                     control={form.control}
-                     name="password"
-                     render={({ field }) => (
-                       <FormItem>
-                         <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">Password</FormLabel>
-                         <FormControl>
-                           <div className="relative">
-                             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
-                             <Input
-                               {...field}
-                               placeholder="Enter your password"
-                               type="password"
-                               className="h-10 pl-10 border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
-                             />
-                           </div>
-                         </FormControl>
-                         <FormMessage />
-                       </FormItem>
-                     )}
-                   />
-
                   <Button
                     disabled={form.formState.isSubmitting}
                     type="submit"
@@ -123,43 +104,17 @@ export function LoginForm({
                      {form.formState.isSubmitting ? (
                        <div className="flex items-center space-x-2">
                          <Loader2 className="w-4 h-4 animate-spin" />
-                         <span>Signing in...</span>
+                         <span>Sending reset link...</span>
                        </div>
                      ) : (
-                       "Login"
+                       "Send Reset Link"
                      )}
                   </Button>
 
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-slate-200 dark:border-slate-700"></div>
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                      <span className="bg-white dark:bg-slate-900 px-3 text-slate-500 dark:text-slate-400">
-                        Or continue with
-                      </span>
-                    </div>
-                  </div>
-
-                   <Button 
-                     variant="outline" 
-                     type="button" 
-                     className="w-full h-10 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200 cursor-pointer"
-                   >
-                     <Mail className="w-4 h-4 mr-2" />
-                     <span>Continue with Google</span>
-                   </Button>
-
                   <div className="text-center text-sm text-slate-600 dark:text-slate-400">
-                    Don&apos;t have an account?{" "}
-                    <Link to="/register" className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
-                      Sign up
-                    </Link>
-                  </div>
-
-                  <div className="text-center text-sm">
-                    <Link to="/reset-password" className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
-                      Forgot your password?
+                    Remember your password?{" "}
+                    <Link to="/" className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
+                      Sign in
                     </Link>
                   </div>
                 </div>

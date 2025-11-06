@@ -13,7 +13,9 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as TeamRouteImport } from './routes/_team'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
+import { Route as AuthOtpRouteImport } from './routes/_auth/otp'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as TeamTeamIndexRouteImport } from './routes/_team/$team/index'
 import { Route as TeamTeamTeamRouteImport } from './routes/_team/$team/team'
@@ -41,9 +43,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthOtpRoute = AuthOtpRouteImport.update({
+  id: '/otp',
+  path: '/otp',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
@@ -95,7 +107,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/onboarding': typeof OnboardingRoute
   '/login': typeof AuthLoginRoute
+  '/otp': typeof AuthOtpRoute
   '/register': typeof AuthRegisterRoute
+  '/reset-password': typeof AuthResetPasswordRoute
   '/$team/team': typeof TeamTeamTeamRoute
   '/$team': typeof TeamTeamIndexRoute
   '/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
@@ -108,7 +122,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/onboarding': typeof OnboardingRoute
   '/login': typeof AuthLoginRoute
+  '/otp': typeof AuthOtpRoute
   '/register': typeof AuthRegisterRoute
+  '/reset-password': typeof AuthResetPasswordRoute
   '/$team/team': typeof TeamTeamTeamRoute
   '/$team': typeof TeamTeamIndexRoute
   '/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
@@ -124,7 +140,9 @@ export interface FileRoutesById {
   '/_team': typeof TeamRouteWithChildren
   '/onboarding': typeof OnboardingRoute
   '/_auth/login': typeof AuthLoginRoute
+  '/_auth/otp': typeof AuthOtpRoute
   '/_auth/register': typeof AuthRegisterRoute
+  '/_auth/reset-password': typeof AuthResetPasswordRoute
   '/_team/$team/team': typeof TeamTeamTeamRoute
   '/_team/$team/': typeof TeamTeamIndexRoute
   '/_team/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
@@ -139,7 +157,9 @@ export interface FileRouteTypes {
     | '/'
     | '/onboarding'
     | '/login'
+    | '/otp'
     | '/register'
+    | '/reset-password'
     | '/$team/team'
     | '/$team'
     | '/$team/referral-list/county-config'
@@ -152,7 +172,9 @@ export interface FileRouteTypes {
     | '/'
     | '/onboarding'
     | '/login'
+    | '/otp'
     | '/register'
+    | '/reset-password'
     | '/$team/team'
     | '/$team'
     | '/$team/referral-list/county-config'
@@ -167,7 +189,9 @@ export interface FileRouteTypes {
     | '/_team'
     | '/onboarding'
     | '/_auth/login'
+    | '/_auth/otp'
     | '/_auth/register'
+    | '/_auth/reset-password'
     | '/_team/$team/team'
     | '/_team/$team/'
     | '/_team/$team/referral-list/county-config'
@@ -214,11 +238,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_auth/reset-password': {
+      id: '/_auth/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_auth/register': {
       id: '/_auth/register'
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof AuthRegisterRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/otp': {
+      id: '/_auth/otp'
+      path: '/otp'
+      fullPath: '/otp'
+      preLoaderRoute: typeof AuthOtpRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_auth/login': {
@@ -282,12 +320,16 @@ declare module '@tanstack/react-router' {
 
 interface AuthRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
+  AuthOtpRoute: typeof AuthOtpRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
+  AuthOtpRoute: AuthOtpRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
