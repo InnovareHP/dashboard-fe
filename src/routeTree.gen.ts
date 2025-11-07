@@ -18,6 +18,7 @@ import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthOtpRouteImport } from './routes/_auth/otp'
 import { Route as TeamTeamIndexRouteImport } from './routes/_team/$team/index'
 import { Route as TeamTeamTeamRouteImport } from './routes/_team/$team/team'
+import { Route as TeamTeamSettingsRouteImport } from './routes/_team/$team/settings'
 import { Route as TeamTeamMasterListIndexRouteImport } from './routes/_team/$team/master-list/index'
 
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -63,6 +64,11 @@ const TeamTeamTeamRoute = TeamTeamTeamRouteImport.update({
   path: '/$team/team',
   getParentRoute: () => TeamRoute,
 } as any)
+const TeamTeamSettingsRoute = TeamTeamSettingsRouteImport.update({
+  id: '/$team/settings',
+  path: '/$team/settings',
+  getParentRoute: () => TeamRoute,
+} as any)
 const TeamTeamMasterListIndexRoute = TeamTeamMasterListIndexRouteImport.update({
   id: '/$team/master-list/',
   path: '/$team/master-list/',
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/': typeof AuthIndexRoute
+  '/$team/settings': typeof TeamTeamSettingsRoute
   '/$team/team': typeof TeamTeamTeamRoute
   '/$team': typeof TeamTeamIndexRoute
   '/$team/master-list': typeof TeamTeamMasterListIndexRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/': typeof AuthIndexRoute
+  '/$team/settings': typeof TeamTeamSettingsRoute
   '/$team/team': typeof TeamTeamTeamRoute
   '/$team': typeof TeamTeamIndexRoute
   '/$team/master-list': typeof TeamTeamMasterListIndexRoute
@@ -98,6 +106,7 @@ export interface FileRoutesById {
   '/_auth/register': typeof AuthRegisterRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
   '/_auth/': typeof AuthIndexRoute
+  '/_team/$team/settings': typeof TeamTeamSettingsRoute
   '/_team/$team/team': typeof TeamTeamTeamRoute
   '/_team/$team/': typeof TeamTeamIndexRoute
   '/_team/$team/master-list/': typeof TeamTeamMasterListIndexRoute
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/'
+    | '/$team/settings'
     | '/$team/team'
     | '/$team'
     | '/$team/master-list'
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/'
+    | '/$team/settings'
     | '/$team/team'
     | '/$team'
     | '/$team/master-list'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/_auth/register'
     | '/_auth/reset-password'
     | '/_auth/'
+    | '/_team/$team/settings'
     | '/_team/$team/team'
     | '/_team/$team/'
     | '/_team/$team/master-list/'
@@ -208,6 +220,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamTeamTeamRouteImport
       parentRoute: typeof TeamRoute
     }
+    '/_team/$team/settings': {
+      id: '/_team/$team/settings'
+      path: '/$team/settings'
+      fullPath: '/$team/settings'
+      preLoaderRoute: typeof TeamTeamSettingsRouteImport
+      parentRoute: typeof TeamRoute
+    }
     '/_team/$team/master-list/': {
       id: '/_team/$team/master-list/'
       path: '/$team/master-list'
@@ -235,12 +254,14 @@ const AuthRouteChildren: AuthRouteChildren = {
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface TeamRouteChildren {
+  TeamTeamSettingsRoute: typeof TeamTeamSettingsRoute
   TeamTeamTeamRoute: typeof TeamTeamTeamRoute
   TeamTeamIndexRoute: typeof TeamTeamIndexRoute
   TeamTeamMasterListIndexRoute: typeof TeamTeamMasterListIndexRoute
 }
 
 const TeamRouteChildren: TeamRouteChildren = {
+  TeamTeamSettingsRoute: TeamTeamSettingsRoute,
   TeamTeamTeamRoute: TeamTeamTeamRoute,
   TeamTeamIndexRoute: TeamTeamIndexRoute,
   TeamTeamMasterListIndexRoute: TeamTeamMasterListIndexRoute,
