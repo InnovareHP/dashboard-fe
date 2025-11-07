@@ -12,14 +12,19 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as TeamRouteImport } from './routes/_team'
 import { Route as AuthRouteImport } from './routes/_auth'
-import { Route as AuthIndexRouteImport } from './routes/_auth/index'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthOtpRouteImport } from './routes/_auth/otp'
+import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as TeamTeamIndexRouteImport } from './routes/_team/$team/index'
 import { Route as TeamTeamTeamRouteImport } from './routes/_team/$team/team'
 import { Route as TeamTeamSettingsRouteImport } from './routes/_team/$team/settings'
+import { Route as TeamTeamReferralListIndexRouteImport } from './routes/_team/$team/referral-list/index'
 import { Route as TeamTeamMasterListIndexRouteImport } from './routes/_team/$team/master-list/index'
+import { Route as TeamTeamReferralListCountyConfigRouteImport } from './routes/_team/$team/referral-list/county-config'
+import { Route as TeamTeamMasterListLeadsLeadIndexRouteImport } from './routes/_team/$team/master-list/leads/$lead/index'
+import { Route as TeamTeamMasterListLeadsLeadTimelineRouteImport } from './routes/_team/$team/master-list/leads/$lead/timeline'
 
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
@@ -34,10 +39,10 @@ const AuthRoute = AuthRouteImport.update({
   id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthIndexRoute = AuthIndexRouteImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AuthRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -52,6 +57,11 @@ const AuthRegisterRoute = AuthRegisterRouteImport.update({
 const AuthOtpRoute = AuthOtpRouteImport.update({
   id: '/otp',
   path: '/otp',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => AuthRoute,
 } as any)
 const TeamTeamIndexRoute = TeamTeamIndexRouteImport.update({
@@ -69,87 +79,142 @@ const TeamTeamSettingsRoute = TeamTeamSettingsRouteImport.update({
   path: '/$team/settings',
   getParentRoute: () => TeamRoute,
 } as any)
+const TeamTeamReferralListIndexRoute =
+  TeamTeamReferralListIndexRouteImport.update({
+    id: '/$team/referral-list/',
+    path: '/$team/referral-list/',
+    getParentRoute: () => TeamRoute,
+  } as any)
 const TeamTeamMasterListIndexRoute = TeamTeamMasterListIndexRouteImport.update({
   id: '/$team/master-list/',
   path: '/$team/master-list/',
   getParentRoute: () => TeamRoute,
 } as any)
+const TeamTeamReferralListCountyConfigRoute =
+  TeamTeamReferralListCountyConfigRouteImport.update({
+    id: '/$team/referral-list/county-config',
+    path: '/$team/referral-list/county-config',
+    getParentRoute: () => TeamRoute,
+  } as any)
+const TeamTeamMasterListLeadsLeadIndexRoute =
+  TeamTeamMasterListLeadsLeadIndexRouteImport.update({
+    id: '/$team/master-list/leads/$lead/',
+    path: '/$team/master-list/leads/$lead/',
+    getParentRoute: () => TeamRoute,
+  } as any)
+const TeamTeamMasterListLeadsLeadTimelineRoute =
+  TeamTeamMasterListLeadsLeadTimelineRouteImport.update({
+    id: '/$team/master-list/leads/$lead/timeline',
+    path: '/$team/master-list/leads/$lead/timeline',
+    getParentRoute: () => TeamRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '/onboarding': typeof OnboardingRoute
+  '/login': typeof AuthLoginRoute
   '/otp': typeof AuthOtpRoute
   '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
-  '/': typeof AuthIndexRoute
   '/$team/settings': typeof TeamTeamSettingsRoute
   '/$team/team': typeof TeamTeamTeamRoute
   '/$team': typeof TeamTeamIndexRoute
+  '/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
   '/$team/master-list': typeof TeamTeamMasterListIndexRoute
+  '/$team/referral-list': typeof TeamTeamReferralListIndexRoute
+  '/$team/master-list/leads/$lead/timeline': typeof TeamTeamMasterListLeadsLeadTimelineRoute
+  '/$team/master-list/leads/$lead': typeof TeamTeamMasterListLeadsLeadIndexRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/onboarding': typeof OnboardingRoute
+  '/login': typeof AuthLoginRoute
   '/otp': typeof AuthOtpRoute
   '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
-  '/': typeof AuthIndexRoute
   '/$team/settings': typeof TeamTeamSettingsRoute
   '/$team/team': typeof TeamTeamTeamRoute
   '/$team': typeof TeamTeamIndexRoute
+  '/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
   '/$team/master-list': typeof TeamTeamMasterListIndexRoute
+  '/$team/referral-list': typeof TeamTeamReferralListIndexRoute
+  '/$team/master-list/leads/$lead/timeline': typeof TeamTeamMasterListLeadsLeadTimelineRoute
+  '/$team/master-list/leads/$lead': typeof TeamTeamMasterListLeadsLeadIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
   '/_team': typeof TeamRouteWithChildren
   '/onboarding': typeof OnboardingRoute
+  '/_auth/login': typeof AuthLoginRoute
   '/_auth/otp': typeof AuthOtpRoute
   '/_auth/register': typeof AuthRegisterRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
-  '/_auth/': typeof AuthIndexRoute
   '/_team/$team/settings': typeof TeamTeamSettingsRoute
   '/_team/$team/team': typeof TeamTeamTeamRoute
   '/_team/$team/': typeof TeamTeamIndexRoute
+  '/_team/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
   '/_team/$team/master-list/': typeof TeamTeamMasterListIndexRoute
+  '/_team/$team/referral-list/': typeof TeamTeamReferralListIndexRoute
+  '/_team/$team/master-list/leads/$lead/timeline': typeof TeamTeamMasterListLeadsLeadTimelineRoute
+  '/_team/$team/master-list/leads/$lead/': typeof TeamTeamMasterListLeadsLeadIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/onboarding'
+    | '/login'
     | '/otp'
     | '/register'
     | '/reset-password'
-    | '/'
     | '/$team/settings'
     | '/$team/team'
     | '/$team'
+    | '/$team/referral-list/county-config'
     | '/$team/master-list'
+    | '/$team/referral-list'
+    | '/$team/master-list/leads/$lead/timeline'
+    | '/$team/master-list/leads/$lead'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/onboarding'
+    | '/login'
     | '/otp'
     | '/register'
     | '/reset-password'
-    | '/'
     | '/$team/settings'
     | '/$team/team'
     | '/$team'
+    | '/$team/referral-list/county-config'
     | '/$team/master-list'
+    | '/$team/referral-list'
+    | '/$team/master-list/leads/$lead/timeline'
+    | '/$team/master-list/leads/$lead'
   id:
     | '__root__'
+    | '/'
     | '/_auth'
     | '/_team'
     | '/onboarding'
+    | '/_auth/login'
     | '/_auth/otp'
     | '/_auth/register'
     | '/_auth/reset-password'
-    | '/_auth/'
     | '/_team/$team/settings'
     | '/_team/$team/team'
     | '/_team/$team/'
+    | '/_team/$team/referral-list/county-config'
     | '/_team/$team/master-list/'
+    | '/_team/$team/referral-list/'
+    | '/_team/$team/master-list/leads/$lead/timeline'
+    | '/_team/$team/master-list/leads/$lead/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
   TeamRoute: typeof TeamRouteWithChildren
   OnboardingRoute: typeof OnboardingRoute
@@ -178,12 +243,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_auth/': {
-      id: '/_auth/'
+    '/': {
+      id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof AuthIndexRouteImport
-      parentRoute: typeof AuthRoute
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_auth/reset-password': {
       id: '/_auth/reset-password'
@@ -204,6 +269,13 @@ declare module '@tanstack/react-router' {
       path: '/otp'
       fullPath: '/otp'
       preLoaderRoute: typeof AuthOtpRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/login': {
+      id: '/_auth/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_team/$team/': {
@@ -227,6 +299,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamTeamSettingsRouteImport
       parentRoute: typeof TeamRoute
     }
+    '/_team/$team/referral-list/': {
+      id: '/_team/$team/referral-list/'
+      path: '/$team/referral-list'
+      fullPath: '/$team/referral-list'
+      preLoaderRoute: typeof TeamTeamReferralListIndexRouteImport
+      parentRoute: typeof TeamRoute
+    }
     '/_team/$team/master-list/': {
       id: '/_team/$team/master-list/'
       path: '/$team/master-list'
@@ -234,21 +313,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamTeamMasterListIndexRouteImport
       parentRoute: typeof TeamRoute
     }
+    '/_team/$team/referral-list/county-config': {
+      id: '/_team/$team/referral-list/county-config'
+      path: '/$team/referral-list/county-config'
+      fullPath: '/$team/referral-list/county-config'
+      preLoaderRoute: typeof TeamTeamReferralListCountyConfigRouteImport
+      parentRoute: typeof TeamRoute
+    }
+    '/_team/$team/master-list/leads/$lead/': {
+      id: '/_team/$team/master-list/leads/$lead/'
+      path: '/$team/master-list/leads/$lead'
+      fullPath: '/$team/master-list/leads/$lead'
+      preLoaderRoute: typeof TeamTeamMasterListLeadsLeadIndexRouteImport
+      parentRoute: typeof TeamRoute
+    }
+    '/_team/$team/master-list/leads/$lead/timeline': {
+      id: '/_team/$team/master-list/leads/$lead/timeline'
+      path: '/$team/master-list/leads/$lead/timeline'
+      fullPath: '/$team/master-list/leads/$lead/timeline'
+      preLoaderRoute: typeof TeamTeamMasterListLeadsLeadTimelineRouteImport
+      parentRoute: typeof TeamRoute
+    }
   }
 }
 
 interface AuthRouteChildren {
+  AuthLoginRoute: typeof AuthLoginRoute
   AuthOtpRoute: typeof AuthOtpRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
-  AuthIndexRoute: typeof AuthIndexRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
+  AuthLoginRoute: AuthLoginRoute,
   AuthOtpRoute: AuthOtpRoute,
   AuthRegisterRoute: AuthRegisterRoute,
   AuthResetPasswordRoute: AuthResetPasswordRoute,
-  AuthIndexRoute: AuthIndexRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
@@ -257,19 +357,29 @@ interface TeamRouteChildren {
   TeamTeamSettingsRoute: typeof TeamTeamSettingsRoute
   TeamTeamTeamRoute: typeof TeamTeamTeamRoute
   TeamTeamIndexRoute: typeof TeamTeamIndexRoute
+  TeamTeamReferralListCountyConfigRoute: typeof TeamTeamReferralListCountyConfigRoute
   TeamTeamMasterListIndexRoute: typeof TeamTeamMasterListIndexRoute
+  TeamTeamReferralListIndexRoute: typeof TeamTeamReferralListIndexRoute
+  TeamTeamMasterListLeadsLeadTimelineRoute: typeof TeamTeamMasterListLeadsLeadTimelineRoute
+  TeamTeamMasterListLeadsLeadIndexRoute: typeof TeamTeamMasterListLeadsLeadIndexRoute
 }
 
 const TeamRouteChildren: TeamRouteChildren = {
   TeamTeamSettingsRoute: TeamTeamSettingsRoute,
   TeamTeamTeamRoute: TeamTeamTeamRoute,
   TeamTeamIndexRoute: TeamTeamIndexRoute,
+  TeamTeamReferralListCountyConfigRoute: TeamTeamReferralListCountyConfigRoute,
   TeamTeamMasterListIndexRoute: TeamTeamMasterListIndexRoute,
+  TeamTeamReferralListIndexRoute: TeamTeamReferralListIndexRoute,
+  TeamTeamMasterListLeadsLeadTimelineRoute:
+    TeamTeamMasterListLeadsLeadTimelineRoute,
+  TeamTeamMasterListLeadsLeadIndexRoute: TeamTeamMasterListLeadsLeadIndexRoute,
 }
 
 const TeamRouteWithChildren = TeamRoute._addFileChildren(TeamRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
   TeamRoute: TeamRouteWithChildren,
   OnboardingRoute: OnboardingRoute,

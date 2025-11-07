@@ -1,5 +1,3 @@
-import { ChevronRight, type LucideIcon } from "lucide-react";
-
 import {
   Collapsible,
   CollapsibleContent,
@@ -15,7 +13,8 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
+import { ChevronRight, type LucideIcon } from "lucide-react";
 
 export function NavMain({
   items,
@@ -31,6 +30,7 @@ export function NavMain({
     }[];
   }[];
 }) {
+  const location = useLocation();
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>

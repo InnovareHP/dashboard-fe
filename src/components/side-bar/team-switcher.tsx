@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouteContext } from "@tanstack/react-router";
 
 type Organization = {
   id?: string;
@@ -32,7 +33,7 @@ export function TeamSwitcher() {
   const queryClient = useQueryClient();
   const orgData = queryClient.getQueryData(["organizations"]) as Organization[];
 
-  const activeOrg = queryClient.getQueryData(["active-org"]) as Organization;
+  const { activeOrganizationId } = useRouteContext({ from: "/_team" });
 
   const fetchOrganizations = React.useCallback(
     () => authClient.organization.list(),
@@ -49,7 +50,13 @@ export function TeamSwitcher() {
 
   const teams: Organization[] = orgData ?? [];
 
-  const [activeTeam, setActiveTeam] = React.useState<Organization | null>(null);
+  const currentTeam = orgData?.find(
+    (org) => org.id === activeOrganizationId
+  ) as Organization;
+
+  const [activeTeam, setActiveTeam] = React.useState<Organization | null>(
+    currentTeam
+  );
 
   const ActiveLogo = activeTeam?.logo ?? User;
 
@@ -76,10 +83,10 @@ export function TeamSwitcher() {
 
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
-                    {activeOrg?.name ?? "User"}
+                    {currentTeam?.name ?? "User"}
                   </span>
                   <span className="truncate text-xs">
-                    {activeOrg?.name ?? "Select a team"}
+                    {currentTeam?.name ?? "Select a team"}
                   </span>
                 </div>
 

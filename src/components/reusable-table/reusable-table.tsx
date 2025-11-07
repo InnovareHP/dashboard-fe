@@ -1,9 +1,20 @@
+"use client";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   type ColumnDef,
   flexRender,
   type Table as ReactTable,
 } from "@tanstack/react-table";
+import { MoreHorizontalIcon, Plus, Trash2Icon } from "lucide-react";
 import type { Dispatch, SetStateAction } from "react";
+import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { Skeleton } from "../ui/skeleton";
@@ -19,32 +30,53 @@ import {
 type Props<T> = {
   table: ReactTable<T>;
   columns: ColumnDef<T>[];
-  //   activePage: number;
-  //   totalCount: number;
   isFetchingList: boolean;
   setActivePage: Dispatch<SetStateAction<number>>;
-  skip?: number;
+  onAddNewLead: () => void;
+  onDeleteLeads?: (ids: string[]) => void; // ✅ new prop for deletion
+  isReferral?: boolean;
 };
 
-const ReusableTable = <T extends object>({
+const ReusableTable = <T extends { id: string }>({
   table,
   columns,
-  //   activePage,
-  //   totalCount,
   isFetchingList,
-  //   skip = 10,
+  onAddNewLead,
+  onDeleteLeads,
+  isReferral = false,
 }: Props<T>) => {
-  //   const skipValue = typeof skip === "number" ? skip : 10;
-  //   const pageCount = Math.ceil(totalCount / skipValue);
+  const selectedRows = table.getSelectedRowModel().rows;
+  const hasSelected = selectedRows.length > 0;
+  const selectedIds = selectedRows.map((r) => r.original.id);
 
   return (
     <Card>
       <CardContent>
-        <ScrollArea className="relative w-full overflow-x-auto">
+        <ScrollArea className="relative w-full ">
           {isFetchingList && (
             <Skeleton className="h-[500px] w-full rounded-md absolute top-0 left-0" />
           )}
 
+          {hasSelected && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon" aria-label="More Options">
+                  <MoreHorizontalIcon />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={() => onDeleteLeads?.(selectedIds)}
+                  >
+                    <Trash2Icon />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -67,8 +99,8 @@ const ReusableTable = <T extends object>({
             </TableHeader>
 
             <TableBody>
-              {table.getExpandedRowModel().rows.length ? (
-                table.getExpandedRowModel().rows.map((row, index) => (
+              {table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map((row, index) => (
                   <TableRow
                     className={
                       "table-text " +
@@ -95,91 +127,27 @@ const ReusableTable = <T extends object>({
                 </TableRow>
               )}
             </TableBody>
-
-            {/* <tfoot>
-              <TableRow>
-                <TableCell colSpan={columns.length}>
-                  <div>
-                    <span className="text-sm text-primary font-medium">
-                      Results {Math.min(activePage * 10, totalCount)} /{" "}
-                      {totalCount}
-                    </span>
-                  </div>
-                </TableCell>
-              </TableRow>
-            </tfoot> */}
           </Table>
 
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
 
-        {/* <div className="flex items-center justify-center gap-x-4 py-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={activePage === 1}
-            onClick={() => setActivePage((prev) => Math.max(prev - 1, 1))}
-          >
-            Previous
-          </Button>
-
-          <div className="flex space-x-2">
-            {(() => {
-              const maxVisiblePages = 2;
-              const pages = Array.from({ length: pageCount }, (_, i) => i + 1);
-              let displayedPages = [];
-
-              if (pageCount <= maxVisiblePages) {
-                displayedPages = pages;
-              } else {
-                if (activePage <= 2) {
-                  displayedPages = [1, 2, 3, "...", pageCount];
-                } else if (activePage >= pageCount - 1) {
-                  displayedPages = [
-                    1,
-                    "...",
-                    pageCount - 2,
-                    pageCount - 1,
-                    pageCount,
-                  ];
-                } else {
-                  displayedPages = [
-                    activePage - 1,
-                    activePage,
-                    activePage + 1,
-                    "...",
-                    pageCount,
-                  ];
-                }
-              }
-
-              return displayedPages.map((page, index) =>
-                typeof page === "number" ? (
-                  <Button
-                    key={page}
-                    onClick={() => setActivePage(page)}
-                    size="sm"
-                  >
-                    {page}
-                  </Button>
-                ) : (
-                  <span key={`ellipsis-${index}`}>{page}</span>
-                )
-              );
-            })()}
+        <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={onAddNewLead}
+              variant="ghost"
+              className="flex gap-2"
+            >
+              <Plus className="w-4 h-4" />{" "}
+              {isReferral ? "Add New Referral" : "Add New Lead"}
+            </Button>
           </div>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={activePage === pageCount}
-            onClick={() =>
-              setActivePage((prev) => Math.min(prev + 1, pageCount))
-            }
-          >
-            Next
-          </Button>
-        </div> */}
+          <span className="text-sm text-muted-foreground">
+            {table.getRowModel().rows.length} total lead(s)
+          </span>
+        </div>
       </CardContent>
     </Card>
   );
