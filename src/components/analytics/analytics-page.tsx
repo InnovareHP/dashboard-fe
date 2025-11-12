@@ -2,39 +2,60 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { AnalyticsResponse } from "@/lib/types";
 import { getAnalytics } from "@/services/analytics/analytics-service";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Bar,
-  BarChart,
-  Cell,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { useEffect, useState } from "react";
+
+// Recharts component types
+type RechartsComponents = {
+  Bar: React.ComponentType<any>;
+  BarChart: React.ComponentType<any>;
+  Cell: React.ComponentType<any>;
+  Pie: React.ComponentType<any>;
+  PieChart: React.ComponentType<any>;
+  ResponsiveContainer: React.ComponentType<any>;
+  Tooltip: React.ComponentType<any>;
+  XAxis: React.ComponentType<any>;
+  YAxis: React.ComponentType<any>;
+};
+
+// Placeholder component when recharts is not available
+const ChartPlaceholder = ({ message }: { message: string }) => (
+  <div className="flex items-center justify-center h-[250px] text-sm text-muted-foreground border border-dashed rounded">
+    {message}
+  </div>
+);
 
 export default function ReferralAnalyticsDashboard() {
-  //   const queryClient = useQueryClient();
-  //   const countiesQueryKey = ["counties"];
+  const [recharts, setRecharts] = useState<RechartsComponents | null>(null);
 
-  //   const [filter, setFilter] = useState({ county: "All", range: null });
+  useEffect(() => {
+    // Dynamically import recharts
+    const loadRecharts = async () => {
+      try {
+        // Construct module name dynamically to avoid Vite pre-bundling
+        const moduleName = "re" + "charts";
+        // @vite-ignore - recharts may not be installed
+        const rechartsModule = await import(/* @vite-ignore */ moduleName);
+        if (rechartsModule) {
+          setRecharts({
+            Bar: rechartsModule.Bar,
+            BarChart: rechartsModule.BarChart,
+            Cell: rechartsModule.Cell,
+            Pie: rechartsModule.Pie,
+            PieChart: rechartsModule.PieChart,
+            ResponsiveContainer: rechartsModule.ResponsiveContainer,
+            Tooltip: rechartsModule.Tooltip,
+            XAxis: rechartsModule.XAxis,
+            YAxis: rechartsModule.YAxis,
+          });
+        }
+      } catch (error) {
+        console.warn("recharts package not found. Charts will be disabled.");
+        setRecharts(null);
+      }
+    };
 
-  //   const { data: counties } = useQuery<OptionsResponse[]>({
-  //     queryKey: countiesQueryKey,
-  //     queryFn: () => getOptionsCounties(),
-  //   });
-
-  //   const handleHover = async () => {
-  //     const existing =
-  //       queryClient.getQueryData<OptionsResponse[]>(countiesQueryKey);
-  //     if (!existing) {
-  //       await queryClient.prefetchQuery({
-  //         queryKey: countiesQueryKey,
-  //         queryFn: () => getOptionsCounties(),
-  //       });
-  //     }
-  //   };
+    loadRecharts();
+  }, []);
 
   const { data: analytics } = useQuery({
     queryKey: ["analytics"],
@@ -57,6 +78,19 @@ export default function ReferralAnalyticsDashboard() {
     })) ?? [];
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+
+  // Extract recharts components for easier use
+  const {
+    ResponsiveContainer,
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    Tooltip,
+    PieChart,
+    Pie,
+    Cell,
+  } = recharts || {};
 
   return (
     <div className="p-6 space-y-6">
@@ -102,14 +136,18 @@ export default function ReferralAnalyticsDashboard() {
             <CardTitle>Top 10 Referring Facilities</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={barData.slice(0, 10)}>
-                <XAxis dataKey="name" hide />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="count" fill="#4f46e5" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {recharts && ResponsiveContainer && BarChart ? (
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={barData.slice(0, 10)}>
+                  {XAxis && <XAxis dataKey="name" hide />}
+                  {YAxis && <YAxis />}
+                  {Tooltip && <Tooltip />}
+                  {Bar && <Bar dataKey="count" fill="#4f46e5" radius={[4, 4, 0, 0]} />}
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <ChartPlaceholder message="Install recharts to view charts" />
+            )}
           </CardContent>
         </Card>
 
@@ -119,21 +157,25 @@ export default function ReferralAnalyticsDashboard() {
             <CardTitle>Top 10 Referring Clinicians</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart
-                data={
-                  analytics?.clinicians?.slice(0, 10).map((c) => ({
-                    name: c.value ?? "Unknown",
-                    count: c._count.value,
-                  })) ?? []
-                }
-              >
-                <XAxis dataKey="name" hide />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="count" fill="#06b6d4" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {recharts && ResponsiveContainer && BarChart ? (
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart
+                  data={
+                    analytics?.clinicians?.slice(0, 10).map((c) => ({
+                      name: c.value ?? "Unknown",
+                      count: c._count.value,
+                    })) ?? []
+                  }
+                >
+                  {XAxis && <XAxis dataKey="name" hide />}
+                  {YAxis && <YAxis />}
+                  {Tooltip && <Tooltip />}
+                  {Bar && <Bar dataKey="count" fill="#06b6d4" radius={[4, 4, 0, 0]} />}
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <ChartPlaceholder message="Install recharts to view charts" />
+            )}
           </CardContent>
         </Card>
 
@@ -143,21 +185,25 @@ export default function ReferralAnalyticsDashboard() {
             <CardTitle>Top 10 Counties Generating Referrals</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart
-                data={
-                  analytics?.counties?.slice(0, 10).map((c) => ({
-                    name: c.value ?? "Unknown",
-                    count: c._count.value,
-                  })) ?? []
-                }
-              >
-                <XAxis dataKey="name" hide />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="count" fill="#16a34a" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {recharts && ResponsiveContainer && BarChart ? (
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart
+                  data={
+                    analytics?.counties?.slice(0, 10).map((c) => ({
+                      name: c.value ?? "Unknown",
+                      count: c._count.value,
+                    })) ?? []
+                  }
+                >
+                  {XAxis && <XAxis dataKey="name" hide />}
+                  {YAxis && <YAxis />}
+                  {Tooltip && <Tooltip />}
+                  {Bar && <Bar dataKey="count" fill="#16a34a" radius={[4, 4, 0, 0]} />}
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <ChartPlaceholder message="Install recharts to view charts" />
+            )}
           </CardContent>
         </Card>
 
@@ -167,16 +213,22 @@ export default function ReferralAnalyticsDashboard() {
             <CardTitle>Referral Source Type Breakdown</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie data={pieData} dataKey="value" outerRadius={80} label>
-                  {pieData.map((_, index) => (
-                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            {recharts && ResponsiveContainer && PieChart ? (
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  {Pie && (
+                    <Pie data={pieData} dataKey="value" outerRadius={80} label>
+                      {pieData.map((_, index) => (
+                        Cell ? <Cell key={index} fill={COLORS[index % COLORS.length]} /> : null
+                      ))}
+                    </Pie>
+                  )}
+                  {Tooltip && <Tooltip />}
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <ChartPlaceholder message="Install recharts to view charts" />
+            )}
           </CardContent>
         </Card>
 
@@ -213,16 +265,22 @@ export default function ReferralAnalyticsDashboard() {
             <CardTitle>Payer Source Mix</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie data={pieData} dataKey="value" outerRadius={80} label>
-                  {pieData.map((_, index) => (
-                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            {recharts && ResponsiveContainer && PieChart ? (
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  {Pie && (
+                    <Pie data={pieData} dataKey="value" outerRadius={80} label>
+                      {pieData.map((_, index) => (
+                        Cell ? <Cell key={index} fill={COLORS[index % COLORS.length]} /> : null
+                      ))}
+                    </Pie>
+                  )}
+                  {Tooltip && <Tooltip />}
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <ChartPlaceholder message="Install recharts to view charts" />
+            )}
           </CardContent>
         </Card>
 
