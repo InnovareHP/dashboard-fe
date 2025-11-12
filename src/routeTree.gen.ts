@@ -23,6 +23,7 @@ import { Route as TeamTeamSettingsRouteImport } from './routes/_team/$team/setti
 import { Route as TeamTeamPlansRouteImport } from './routes/_team/$team/plans'
 import { Route as TeamTeamReferralListIndexRouteImport } from './routes/_team/$team/referral-list/index'
 import { Route as TeamTeamMasterListIndexRouteImport } from './routes/_team/$team/master-list/index'
+import { Route as TeamTeamSettingsBillingRouteImport } from './routes/_team/$team/settings/billing'
 import { Route as TeamTeamReferralListCountyConfigRouteImport } from './routes/_team/$team/referral-list/county-config'
 import { Route as TeamTeamMasterListLeadsLeadIndexRouteImport } from './routes/_team/$team/master-list/leads/$lead/index'
 import { Route as TeamTeamMasterListLeadsLeadTimelineRouteImport } from './routes/_team/$team/master-list/leads/$lead/timeline'
@@ -96,6 +97,11 @@ const TeamTeamMasterListIndexRoute = TeamTeamMasterListIndexRouteImport.update({
   path: '/$team/master-list/',
   getParentRoute: () => TeamRoute,
 } as any)
+const TeamTeamSettingsBillingRoute = TeamTeamSettingsBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => TeamTeamSettingsRoute,
+} as any)
 const TeamTeamReferralListCountyConfigRoute =
   TeamTeamReferralListCountyConfigRouteImport.update({
     id: '/$team/referral-list/county-config',
@@ -123,10 +129,11 @@ export interface FileRoutesByFullPath {
   '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/$team/plans': typeof TeamTeamPlansRoute
-  '/$team/settings': typeof TeamTeamSettingsRoute
+  '/$team/settings': typeof TeamTeamSettingsRouteWithChildren
   '/$team/team': typeof TeamTeamTeamRoute
   '/$team': typeof TeamTeamIndexRoute
   '/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
+  '/$team/settings/billing': typeof TeamTeamSettingsBillingRoute
   '/$team/master-list': typeof TeamTeamMasterListIndexRoute
   '/$team/referral-list': typeof TeamTeamReferralListIndexRoute
   '/$team/master-list/leads/$lead/timeline': typeof TeamTeamMasterListLeadsLeadTimelineRoute
@@ -140,10 +147,11 @@ export interface FileRoutesByTo {
   '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/$team/plans': typeof TeamTeamPlansRoute
-  '/$team/settings': typeof TeamTeamSettingsRoute
+  '/$team/settings': typeof TeamTeamSettingsRouteWithChildren
   '/$team/team': typeof TeamTeamTeamRoute
   '/$team': typeof TeamTeamIndexRoute
   '/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
+  '/$team/settings/billing': typeof TeamTeamSettingsBillingRoute
   '/$team/master-list': typeof TeamTeamMasterListIndexRoute
   '/$team/referral-list': typeof TeamTeamReferralListIndexRoute
   '/$team/master-list/leads/$lead/timeline': typeof TeamTeamMasterListLeadsLeadTimelineRoute
@@ -160,10 +168,11 @@ export interface FileRoutesById {
   '/_auth/register': typeof AuthRegisterRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
   '/_team/$team/plans': typeof TeamTeamPlansRoute
-  '/_team/$team/settings': typeof TeamTeamSettingsRoute
+  '/_team/$team/settings': typeof TeamTeamSettingsRouteWithChildren
   '/_team/$team/team': typeof TeamTeamTeamRoute
   '/_team/$team/': typeof TeamTeamIndexRoute
   '/_team/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
+  '/_team/$team/settings/billing': typeof TeamTeamSettingsBillingRoute
   '/_team/$team/master-list/': typeof TeamTeamMasterListIndexRoute
   '/_team/$team/referral-list/': typeof TeamTeamReferralListIndexRoute
   '/_team/$team/master-list/leads/$lead/timeline': typeof TeamTeamMasterListLeadsLeadTimelineRoute
@@ -183,6 +192,7 @@ export interface FileRouteTypes {
     | '/$team/team'
     | '/$team'
     | '/$team/referral-list/county-config'
+    | '/$team/settings/billing'
     | '/$team/master-list'
     | '/$team/referral-list'
     | '/$team/master-list/leads/$lead/timeline'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/$team/team'
     | '/$team'
     | '/$team/referral-list/county-config'
+    | '/$team/settings/billing'
     | '/$team/master-list'
     | '/$team/referral-list'
     | '/$team/master-list/leads/$lead/timeline'
@@ -219,6 +230,7 @@ export interface FileRouteTypes {
     | '/_team/$team/team'
     | '/_team/$team/'
     | '/_team/$team/referral-list/county-config'
+    | '/_team/$team/settings/billing'
     | '/_team/$team/master-list/'
     | '/_team/$team/referral-list/'
     | '/_team/$team/master-list/leads/$lead/timeline'
@@ -332,6 +344,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamTeamMasterListIndexRouteImport
       parentRoute: typeof TeamRoute
     }
+    '/_team/$team/settings/billing': {
+      id: '/_team/$team/settings/billing'
+      path: '/billing'
+      fullPath: '/$team/settings/billing'
+      preLoaderRoute: typeof TeamTeamSettingsBillingRouteImport
+      parentRoute: typeof TeamTeamSettingsRoute
+    }
     '/_team/$team/referral-list/county-config': {
       id: '/_team/$team/referral-list/county-config'
       path: '/$team/referral-list/county-config'
@@ -372,9 +391,20 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface TeamTeamSettingsRouteChildren {
+  TeamTeamSettingsBillingRoute: typeof TeamTeamSettingsBillingRoute
+}
+
+const TeamTeamSettingsRouteChildren: TeamTeamSettingsRouteChildren = {
+  TeamTeamSettingsBillingRoute: TeamTeamSettingsBillingRoute,
+}
+
+const TeamTeamSettingsRouteWithChildren =
+  TeamTeamSettingsRoute._addFileChildren(TeamTeamSettingsRouteChildren)
+
 interface TeamRouteChildren {
   TeamTeamPlansRoute: typeof TeamTeamPlansRoute
-  TeamTeamSettingsRoute: typeof TeamTeamSettingsRoute
+  TeamTeamSettingsRoute: typeof TeamTeamSettingsRouteWithChildren
   TeamTeamTeamRoute: typeof TeamTeamTeamRoute
   TeamTeamIndexRoute: typeof TeamTeamIndexRoute
   TeamTeamReferralListCountyConfigRoute: typeof TeamTeamReferralListCountyConfigRoute
@@ -386,7 +416,7 @@ interface TeamRouteChildren {
 
 const TeamRouteChildren: TeamRouteChildren = {
   TeamTeamPlansRoute: TeamTeamPlansRoute,
-  TeamTeamSettingsRoute: TeamTeamSettingsRoute,
+  TeamTeamSettingsRoute: TeamTeamSettingsRouteWithChildren,
   TeamTeamTeamRoute: TeamTeamTeamRoute,
   TeamTeamIndexRoute: TeamTeamIndexRoute,
   TeamTeamReferralListCountyConfigRoute: TeamTeamReferralListCountyConfigRoute,
