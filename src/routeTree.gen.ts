@@ -20,6 +20,7 @@ import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as TeamTeamIndexRouteImport } from './routes/_team/$team/index'
 import { Route as TeamTeamTeamRouteImport } from './routes/_team/$team/team'
 import { Route as TeamTeamSettingsRouteImport } from './routes/_team/$team/settings'
+import { Route as TeamTeamPlansRouteImport } from './routes/_team/$team/plans'
 import { Route as TeamTeamReferralListIndexRouteImport } from './routes/_team/$team/referral-list/index'
 import { Route as TeamTeamMasterListIndexRouteImport } from './routes/_team/$team/master-list/index'
 import { Route as TeamTeamReferralListCountyConfigRouteImport } from './routes/_team/$team/referral-list/county-config'
@@ -79,6 +80,11 @@ const TeamTeamSettingsRoute = TeamTeamSettingsRouteImport.update({
   path: '/$team/settings',
   getParentRoute: () => TeamRoute,
 } as any)
+const TeamTeamPlansRoute = TeamTeamPlansRouteImport.update({
+  id: '/$team/plans',
+  path: '/$team/plans',
+  getParentRoute: () => TeamRoute,
+} as any)
 const TeamTeamReferralListIndexRoute =
   TeamTeamReferralListIndexRouteImport.update({
     id: '/$team/referral-list/',
@@ -116,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/otp': typeof AuthOtpRoute
   '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
+  '/$team/plans': typeof TeamTeamPlansRoute
   '/$team/settings': typeof TeamTeamSettingsRoute
   '/$team/team': typeof TeamTeamTeamRoute
   '/$team': typeof TeamTeamIndexRoute
@@ -132,6 +139,7 @@ export interface FileRoutesByTo {
   '/otp': typeof AuthOtpRoute
   '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
+  '/$team/plans': typeof TeamTeamPlansRoute
   '/$team/settings': typeof TeamTeamSettingsRoute
   '/$team/team': typeof TeamTeamTeamRoute
   '/$team': typeof TeamTeamIndexRoute
@@ -151,6 +159,7 @@ export interface FileRoutesById {
   '/_auth/otp': typeof AuthOtpRoute
   '/_auth/register': typeof AuthRegisterRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
+  '/_team/$team/plans': typeof TeamTeamPlansRoute
   '/_team/$team/settings': typeof TeamTeamSettingsRoute
   '/_team/$team/team': typeof TeamTeamTeamRoute
   '/_team/$team/': typeof TeamTeamIndexRoute
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/otp'
     | '/register'
     | '/reset-password'
+    | '/$team/plans'
     | '/$team/settings'
     | '/$team/team'
     | '/$team'
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
     | '/otp'
     | '/register'
     | '/reset-password'
+    | '/$team/plans'
     | '/$team/settings'
     | '/$team/team'
     | '/$team'
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '/_auth/otp'
     | '/_auth/register'
     | '/_auth/reset-password'
+    | '/_team/$team/plans'
     | '/_team/$team/settings'
     | '/_team/$team/team'
     | '/_team/$team/'
@@ -299,6 +311,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamTeamSettingsRouteImport
       parentRoute: typeof TeamRoute
     }
+    '/_team/$team/plans': {
+      id: '/_team/$team/plans'
+      path: '/$team/plans'
+      fullPath: '/$team/plans'
+      preLoaderRoute: typeof TeamTeamPlansRouteImport
+      parentRoute: typeof TeamRoute
+    }
     '/_team/$team/referral-list/': {
       id: '/_team/$team/referral-list/'
       path: '/$team/referral-list'
@@ -354,6 +373,7 @@ const AuthRouteChildren: AuthRouteChildren = {
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface TeamRouteChildren {
+  TeamTeamPlansRoute: typeof TeamTeamPlansRoute
   TeamTeamSettingsRoute: typeof TeamTeamSettingsRoute
   TeamTeamTeamRoute: typeof TeamTeamTeamRoute
   TeamTeamIndexRoute: typeof TeamTeamIndexRoute
@@ -365,6 +385,7 @@ interface TeamRouteChildren {
 }
 
 const TeamRouteChildren: TeamRouteChildren = {
+  TeamTeamPlansRoute: TeamTeamPlansRoute,
   TeamTeamSettingsRoute: TeamTeamSettingsRoute,
   TeamTeamTeamRoute: TeamTeamTeamRoute,
   TeamTeamIndexRoute: TeamTeamIndexRoute,
