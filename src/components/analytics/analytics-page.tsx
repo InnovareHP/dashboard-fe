@@ -70,33 +70,9 @@ export default function ReferralAnalyticsDashboard() {
         </p>
       </div>
 
-      <div className="flex flex-wrap items-center gap-4">
-        {/* <Select
-          onValueChange={(val) => setFilter((f) => ({ ...f, county: val }))}
-        >
-          <SelectTrigger onMouseEnter={handleHover} className="w-[180px]">
-            <SelectValue placeholder="Filter by County" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="All">All Counties</SelectItem>
-            {counties?.map((c) => (
-              <SelectItem key={c.value} value={c.value ?? "Unknown"}>
-                {c.value ?? "Unknown"}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select> */}
+      <div className="flex flex-wrap items-center gap-4"></div>
 
-        {/* <DateRangePicker
-          onUpdate={(values: { range: DateRange; rangeCompare?: DateRange }) =>
-            setFilter((f) => ({ ...f, range: values.range ?? null }))
-          }
-        /> */}
-      </div>
-
-      {/* Metric Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {/* 1. Top 10 Referring Facilities */}
         <Card>
           <CardHeader>
             <CardTitle>Top 10 Referring Facilities</CardTitle>
@@ -113,7 +89,6 @@ export default function ReferralAnalyticsDashboard() {
           </CardContent>
         </Card>
 
-        {/* 2. Top 10 Referring Clinicians */}
         <Card>
           <CardHeader>
             <CardTitle>Top 10 Referring Clinicians</CardTitle>

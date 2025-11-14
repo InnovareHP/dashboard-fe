@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -57,7 +56,11 @@ export function ConfirmationDialog({
               </div>
             )}
             <div className="flex-1">
-              <CardTitle className={cn(variant === "destructive" && "text-red-600 dark:text-red-400")}>
+              <CardTitle
+                className={cn(
+                  variant === "destructive" && "text-red-600 dark:text-red-400"
+                )}
+              >
                 {title}
               </CardTitle>
             </div>
@@ -91,4 +94,3 @@ export function ConfirmationDialog({
     </div>
   );
 }
-

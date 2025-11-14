@@ -13,12 +13,14 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as TeamRouteImport } from './routes/_team'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthOtpRouteImport } from './routes/_auth/otp'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as TeamTeamIndexRouteImport } from './routes/_team/$team/index'
+import { Route as AuthResetPasswordIndexRouteImport } from './routes/_auth/reset-password/index'
 import { Route as TeamTeamTeamRouteImport } from './routes/_team/$team/team'
+import { Route as AuthResetPasswordVerifyRouteImport } from './routes/_auth/reset-password/verify'
+import { Route as AuthEmailVerificationRouteImport } from './routes/_auth/email.verification'
 import { Route as TeamTeamReferralListIndexRouteImport } from './routes/_team/$team/referral-list/index'
 import { Route as TeamTeamMasterListIndexRouteImport } from './routes/_team/$team/master-list/index'
 import { Route as TeamTeamReferralListCountyConfigRouteImport } from './routes/_team/$team/referral-list/county-config'
@@ -43,11 +45,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => AuthRoute,
-} as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -68,10 +65,25 @@ const TeamTeamIndexRoute = TeamTeamIndexRouteImport.update({
   path: '/$team/',
   getParentRoute: () => TeamRoute,
 } as any)
+const AuthResetPasswordIndexRoute = AuthResetPasswordIndexRouteImport.update({
+  id: '/reset-password/',
+  path: '/reset-password/',
+  getParentRoute: () => AuthRoute,
+} as any)
 const TeamTeamTeamRoute = TeamTeamTeamRouteImport.update({
   id: '/$team/team',
   path: '/$team/team',
   getParentRoute: () => TeamRoute,
+} as any)
+const AuthResetPasswordVerifyRoute = AuthResetPasswordVerifyRouteImport.update({
+  id: '/reset-password/verify',
+  path: '/reset-password/verify',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthEmailVerificationRoute = AuthEmailVerificationRouteImport.update({
+  id: '/email/verification',
+  path: '/email/verification',
+  getParentRoute: () => AuthRoute,
 } as any)
 const TeamTeamReferralListIndexRoute =
   TeamTeamReferralListIndexRouteImport.update({
@@ -109,8 +121,10 @@ export interface FileRoutesByFullPath {
   '/login': typeof AuthLoginRoute
   '/otp': typeof AuthOtpRoute
   '/register': typeof AuthRegisterRoute
-  '/reset-password': typeof AuthResetPasswordRoute
+  '/email/verification': typeof AuthEmailVerificationRoute
+  '/reset-password/verify': typeof AuthResetPasswordVerifyRoute
   '/$team/team': typeof TeamTeamTeamRoute
+  '/reset-password': typeof AuthResetPasswordIndexRoute
   '/$team': typeof TeamTeamIndexRoute
   '/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
   '/$team/master-list': typeof TeamTeamMasterListIndexRoute
@@ -124,8 +138,10 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/otp': typeof AuthOtpRoute
   '/register': typeof AuthRegisterRoute
-  '/reset-password': typeof AuthResetPasswordRoute
+  '/email/verification': typeof AuthEmailVerificationRoute
+  '/reset-password/verify': typeof AuthResetPasswordVerifyRoute
   '/$team/team': typeof TeamTeamTeamRoute
+  '/reset-password': typeof AuthResetPasswordIndexRoute
   '/$team': typeof TeamTeamIndexRoute
   '/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
   '/$team/master-list': typeof TeamTeamMasterListIndexRoute
@@ -142,8 +158,10 @@ export interface FileRoutesById {
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/otp': typeof AuthOtpRoute
   '/_auth/register': typeof AuthRegisterRoute
-  '/_auth/reset-password': typeof AuthResetPasswordRoute
+  '/_auth/email/verification': typeof AuthEmailVerificationRoute
+  '/_auth/reset-password/verify': typeof AuthResetPasswordVerifyRoute
   '/_team/$team/team': typeof TeamTeamTeamRoute
+  '/_auth/reset-password/': typeof AuthResetPasswordIndexRoute
   '/_team/$team/': typeof TeamTeamIndexRoute
   '/_team/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
   '/_team/$team/master-list/': typeof TeamTeamMasterListIndexRoute
@@ -159,8 +177,10 @@ export interface FileRouteTypes {
     | '/login'
     | '/otp'
     | '/register'
-    | '/reset-password'
+    | '/email/verification'
+    | '/reset-password/verify'
     | '/$team/team'
+    | '/reset-password'
     | '/$team'
     | '/$team/referral-list/county-config'
     | '/$team/master-list'
@@ -174,8 +194,10 @@ export interface FileRouteTypes {
     | '/login'
     | '/otp'
     | '/register'
-    | '/reset-password'
+    | '/email/verification'
+    | '/reset-password/verify'
     | '/$team/team'
+    | '/reset-password'
     | '/$team'
     | '/$team/referral-list/county-config'
     | '/$team/master-list'
@@ -191,8 +213,10 @@ export interface FileRouteTypes {
     | '/_auth/login'
     | '/_auth/otp'
     | '/_auth/register'
-    | '/_auth/reset-password'
+    | '/_auth/email/verification'
+    | '/_auth/reset-password/verify'
     | '/_team/$team/team'
+    | '/_auth/reset-password/'
     | '/_team/$team/'
     | '/_team/$team/referral-list/county-config'
     | '/_team/$team/master-list/'
@@ -238,13 +262,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_auth/reset-password': {
-      id: '/_auth/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof AuthResetPasswordRouteImport
-      parentRoute: typeof AuthRoute
-    }
     '/_auth/register': {
       id: '/_auth/register'
       path: '/register'
@@ -273,12 +290,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamTeamIndexRouteImport
       parentRoute: typeof TeamRoute
     }
+    '/_auth/reset-password/': {
+      id: '/_auth/reset-password/'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordIndexRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_team/$team/team': {
       id: '/_team/$team/team'
       path: '/$team/team'
       fullPath: '/$team/team'
       preLoaderRoute: typeof TeamTeamTeamRouteImport
       parentRoute: typeof TeamRoute
+    }
+    '/_auth/reset-password/verify': {
+      id: '/_auth/reset-password/verify'
+      path: '/reset-password/verify'
+      fullPath: '/reset-password/verify'
+      preLoaderRoute: typeof AuthResetPasswordVerifyRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/email/verification': {
+      id: '/_auth/email/verification'
+      path: '/email/verification'
+      fullPath: '/email/verification'
+      preLoaderRoute: typeof AuthEmailVerificationRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/_team/$team/referral-list/': {
       id: '/_team/$team/referral-list/'
@@ -322,14 +360,18 @@ interface AuthRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthOtpRoute: typeof AuthOtpRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
-  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
+  AuthEmailVerificationRoute: typeof AuthEmailVerificationRoute
+  AuthResetPasswordVerifyRoute: typeof AuthResetPasswordVerifyRoute
+  AuthResetPasswordIndexRoute: typeof AuthResetPasswordIndexRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthOtpRoute: AuthOtpRoute,
   AuthRegisterRoute: AuthRegisterRoute,
-  AuthResetPasswordRoute: AuthResetPasswordRoute,
+  AuthEmailVerificationRoute: AuthEmailVerificationRoute,
+  AuthResetPasswordVerifyRoute: AuthResetPasswordVerifyRoute,
+  AuthResetPasswordIndexRoute: AuthResetPasswordIndexRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)

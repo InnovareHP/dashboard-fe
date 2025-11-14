@@ -1,6 +1,3 @@
-// components/master-list/master-list-column.tsx
-"use client";
-
 import { EditableCell } from "@/components/reusable-table/editable-cell";
 import { type ColumnDef } from "@tanstack/react-table";
 import { CreateColumnModal } from "../reusable-table/create-column";

@@ -4,8 +4,9 @@ import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "@tanstack/react-router";
-import { Loader2, Mail, RotateCcw } from "lucide-react";
+import { useRouter, useSearch } from "@tanstack/react-router";
+import { Loader2, Lock, RotateCcw } from "lucide-react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod/v3";
@@ -18,26 +19,47 @@ import {
   FormMessage,
 } from "./ui/form";
 
-export function ResetPasswordForm({
+const formSchema = z
+  .object({
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export function ResetPasswordVerifyForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const formSchema = z.object({
-    email: z.string().email("Please enter a valid email address"),
-  });
+  const navigate = useRouter();
+  const { token } = useSearch({ from: "/_auth/reset-password/verify" }) as {
+    token: string;
+  };
+
+  useEffect(() => {
+    if (!token) {
+      toast.error("Invalid token");
+      navigate.invalidate();
+    }
+  }, [token]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      password: "",
+      confirmPassword: "",
     },
   });
 
   const handleResetPassword = async (values: z.infer<typeof formSchema>) => {
     try {
-      const { error } = await authClient.forgetPassword({
-        email: values.email,
-        redirectTo: `${import.meta.env.VITE_APP_URL}/reset-password/verify`,
+      const { error } = await authClient.resetPassword({
+        newPassword: values.password,
+        token, // required
       });
 
       if (error) {
@@ -45,8 +67,10 @@ export function ResetPasswordForm({
       }
 
       toast.success("Password reset email sent successfully");
+
+      navigate.navigate({ to: "/login" });
     } catch (error) {
-      toast.error("Failed to send password reset email");
+      toast.error("Failed to reset password");
     }
   };
 
@@ -79,18 +103,43 @@ export function ResetPasswordForm({
                 <div className="space-y-4">
                   <FormField
                     control={form.control}
-                    name="email"
+                    name="password"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                          Email
+                          Password
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
                             <Input
                               {...field}
-                              placeholder="Enter your email"
+                              placeholder="Enter your password"
+                              type="password"
+                              className="h-10 pl-10 border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                          Confirm Password
+                        </FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <Input
+                              {...field}
+                              placeholder="Confirm your password"
+                              type="password"
                               className="h-10 pl-10 border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
                             />
                           </div>
@@ -108,45 +157,17 @@ export function ResetPasswordForm({
                     {form.formState.isSubmitting ? (
                       <div className="flex items-center space-x-2">
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Sending reset link...</span>
+                        <span>Resetting password...</span>
                       </div>
                     ) : (
-                      "Send Reset Link"
+                      "Reset Password"
                     )}
                   </Button>
-
-                  <div className="text-center text-sm text-slate-600 dark:text-slate-400">
-                    Remember your password?{" "}
-                    <Link
-                      to="/"
-                      className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200"
-                    >
-                      Sign in
-                    </Link>
-                  </div>
                 </div>
               </form>
             </Form>
           </CardContent>
         </Card>
-
-        <div className="mt-4 text-center text-xs text-slate-500 dark:text-slate-400">
-          By clicking continue, you agree to our{" "}
-          <a
-            href="#"
-            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline underline-offset-4 transition-colors duration-200"
-          >
-            Terms of Service
-          </a>{" "}
-          and{" "}
-          <a
-            href="#"
-            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline underline-offset-4 transition-colors duration-200"
-          >
-            Privacy Policy
-          </a>
-          .
-        </div>
       </div>
     </div>
   );

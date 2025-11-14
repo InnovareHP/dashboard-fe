@@ -1,17 +1,20 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import type { LeadHistoryItem } from "@/lib/types";
 import { formatDateTime } from "@/lib/utils";
-import { createLeadTimeline, deleteLeadTimeline, editLeadTimeline, getLeadTimeline } from "@/services/lead/lead-service";
+import {
+  createLeadTimeline,
+  deleteLeadTimeline,
+  editLeadTimeline,
+  getLeadTimeline,
+} from "@/services/lead/lead-service";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import type { Member } from "better-auth/plugins/organization";
@@ -43,7 +46,8 @@ export default function LeadHistoryTimeline() {
     onMutate: async (newItem) => {
       await qc.cancelQueries({ queryKey: ["lead-timeline", lead] });
 
-      const prevData = qc.getQueryData<LeadHistoryItem[]>(["lead-timeline", lead]) || [];
+      const prevData =
+        qc.getQueryData<LeadHistoryItem[]>(["lead-timeline", lead]) || [];
 
       qc.setQueryData(["lead-timeline", lead], [...prevData, newItem]);
 
@@ -68,13 +72,12 @@ export default function LeadHistoryTimeline() {
     onMutate: async (id) => {
       await qc.cancelQueries({ queryKey: ["lead-timeline", lead] });
 
-      const prevData = qc.getQueryData<LeadHistoryItem[]>(["lead-timeline", lead]) || [];
+      const prevData =
+        qc.getQueryData<LeadHistoryItem[]>(["lead-timeline", lead]) || [];
 
       qc.setQueryData(
         ["lead-timeline", lead],
-        prevData.map((item) =>
-          item.id === id ? { ...item } : item
-        )
+        prevData.map((item) => (item.id === id ? { ...item } : item))
       );
 
       return { prevData };
@@ -98,7 +101,8 @@ export default function LeadHistoryTimeline() {
     onMutate: async (id) => {
       await qc.cancelQueries({ queryKey: ["lead-timeline", lead] });
 
-      const prevData = qc.getQueryData<LeadHistoryItem[]>(["lead-timeline", lead]) || [];
+      const prevData =
+        qc.getQueryData<LeadHistoryItem[]>(["lead-timeline", lead]) || [];
 
       qc.setQueryData(
         ["lead-timeline", lead],
@@ -158,7 +162,9 @@ export default function LeadHistoryTimeline() {
 
           <DialogContent className="bg-card border border-border text-foreground max-w-md rounded-lg">
             <DialogHeader>
-              <DialogTitle className="text-lg font-semibold">Add Activity</DialogTitle>
+              <DialogTitle className="text-lg font-semibold">
+                Add Activity
+              </DialogTitle>
             </DialogHeader>
 
             <div className="space-y-4">
@@ -205,7 +211,9 @@ export default function LeadHistoryTimeline() {
                   {item.action === "update" && (
                     <p className="text-sm text-muted-foreground mt-1">
                       Updated from{" "}
-                      <span className="text-destructive">"{item.old_value}"</span>{" "}
+                      <span className="text-destructive">
+                        "{item.old_value}"
+                      </span>{" "}
                       →{" "}
                       <span className="text-green-500">"{item.new_value}"</span>
                     </p>

@@ -37,7 +37,7 @@ export const Route = createFileRoute("/_team")({
     };
 
     if (!session.activeOrganizationId) {
-      throw redirect({ to: "/_auth/login" as any });
+      throw redirect({ to: "/login" as any });
     }
 
     if (params.team !== session.activeOrganizationId) {

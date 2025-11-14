@@ -1,7 +1,6 @@
 import { authClient, useSession } from "@/lib/auth-client";
 import { pageVariants } from "@/lib/framer";
 import { toSlug } from "@/lib/utils";
-import { onboardUser } from "@/services/user/user-service";
 import { useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -197,52 +196,35 @@ const OnBoardingPage = () => {
   const onSubmit = async (data: FormValues) => {
     try {
       const slug = toSlug(data.organizationName);
-      if (!slug) {
-        form.setError("organizationName", {
-          message: "Enter a valid organization name",
-        });
-        return;
-      }
 
-      const slugCheck = await authClient.organization.checkSlug({ slug });
-      const slugErr = slugCheck.error;
+      const { data: slugData } = await authClient.organization.checkSlug({
+        slug,
+      });
 
-      if (slugErr) throw slugErr;
-
-      const available = slugCheck.data?.status;
-
-      if (!available) {
+      if (!slugData?.status) {
         form.setError("organizationName", {
           message: "Organization name already exists",
         });
         return;
       }
 
-      const createRes = await authClient.organization.create({
+      const { data: createRes } = await authClient.organization.create({
         name: data.organizationName.trim(),
         slug,
-        keepCurrentActiveOrganization: true,
+        keepCurrentActiveOrganization: false,
       });
 
-      await onboardUser(data);
-
-      const createErr = createRes.error;
-      if (createErr) throw createErr;
-
-      const org = createRes.data?.slug;
-
-      if (!org) {
-        throw new Error("Organization was not returned by the server.");
-      }
-
       refetch();
-      navigate({ to: `/${org}` });
+
+      await authClient.organization.setActive({
+        organizationId: createRes?.id,
+      });
+
+      navigate({ to: `/${createRes?.id}` });
     } catch (err: any) {
-      const message =
-        err?.message ??
-        err?.data?.message ??
-        "Something went wrong while creating the organization.";
-      form.setError("root", { message });
+      form.setError("root", {
+        message: err?.message ?? "Something went wrong during onboarding.",
+      });
     }
   };
 

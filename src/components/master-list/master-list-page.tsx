@@ -1,5 +1,3 @@
-"use client";
-
 import { leadCollection } from "@/collection/leads/lead-collection";
 import { generateLeadColumns } from "@/components/master-list/master-list-column";
 import ReusableTable from "@/components/reusable-table/reusable-table";
