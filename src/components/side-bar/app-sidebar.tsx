@@ -9,7 +9,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { useRouteContext } from "@tanstack/react-router";
-import { CircuitBoard, Settings2, SquareTerminal } from "lucide-react";
+import { CircuitBoard, CreditCard, Settings2, SquareTerminal } from "lucide-react";
 import * as React from "react";
 
 // This is sample data.
@@ -56,7 +56,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
           {
             title: "Team",
-            url: `/${activeOrganizationId}/settings/team`,
+            url: `/${activeOrganizationId}/team`,
+          },
+          {
+            title: "Plans",
+            url: `/${activeOrganizationId}/plans`,
           },
           {
             title: "Billing",
