@@ -21,4 +21,26 @@ export default defineConfig({
       // '@components': path.resolve(__dirname, './src/components'),
     },
   },
+  build: {
+    rollupOptions: {
+      external: (id) => {
+        // Externalize sonner so build doesn't fail if it's not installed
+        // It will be loaded at runtime via dynamic import
+        if (id === 'sonner' || id.includes('sonner')) {
+          return true;
+        }
+        return false;
+      },
+      onwarn(warning, warn) {
+        // Suppress warnings about sonner not being resolved
+        if (warning.code === 'UNRESOLVED_IMPORT' && warning.id?.includes('sonner')) {
+          return;
+        }
+        warn(warning);
+      },
+    },
+  },
+  optimizeDeps: {
+    exclude: ['sonner'], // Don't pre-bundle sonner
+  },
 });
