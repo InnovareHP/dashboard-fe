@@ -44,7 +44,31 @@ export const Route = createFileRoute("/_team")({
       throw redirect({ to: `/${session.activeOrganizationId}` as any });
     }
 
-    return { activeOrganizationId: session.activeOrganizationId };
+    const [subscriptions, memberData] = await Promise.all([
+      authClient.subscription.list({
+        query: {
+          referenceId: session.activeOrganizationId,
+        },
+      }),
+      authClient.organization.getActiveMemberRole(),
+    ]);
+
+    const activeSubscription = subscriptions?.data?.find(
+      (sub) => sub.status === "active" || sub.status === "trialing"
+    );
+
+    if (!activeSubscription) {
+      throw redirect({
+        to: `/${session.activeOrganizationId}/settings/billing` as any,
+      });
+    }
+
+    return {
+      activeOrganizationId: session.activeOrganizationId,
+      activeSubscription,
+      user,
+      memberData: memberData.data,
+    };
   },
   component: RouteComponent,
 });

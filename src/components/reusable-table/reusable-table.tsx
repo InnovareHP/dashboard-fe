@@ -96,7 +96,7 @@ const ReusableTable = <T extends { id: string }>({
               ))}
             </TableHeader>
 
-            <TableBody>
+            <TableBody className="border-b ">
               {table.getRowModel().rows.length ? (
                 table.getRowModel().rows.map((row, index) => (
                   <TableRow
@@ -143,7 +143,7 @@ const ReusableTable = <T extends { id: string }>({
           </div>
 
           <span className="text-sm text-muted-foreground">
-            {table.getRowModel().rows.length} total lead(s)
+            {table.getRowModel().rows.length} total entries
           </span>
         </div>
       </CardContent>

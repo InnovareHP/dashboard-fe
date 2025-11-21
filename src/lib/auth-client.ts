@@ -8,6 +8,7 @@ export const authClient = createAuthClient({
     organizationClient(),
     stripeClient({
       subscription: true,
+      
     }),
   ],
   additionalFields: {

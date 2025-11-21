@@ -92,7 +92,7 @@ const LocationCell: React.FC<LocationCellProps> = ({
             onLoad={(a) => setAutocomplete(a)}
             onPlaceChanged={handlePlaceChanged}
           >
-            <div className="relative w-auto">
+            <div className="relative w-96">
               <Input
                 placeholder="Enter address..."
                 value={address}
@@ -101,7 +101,7 @@ const LocationCell: React.FC<LocationCellProps> = ({
                   setAddress(cleanValue);
                 }}
                 disabled={isChanging}
-                className="pr-8"
+                className="pr-8 w-full"
               />
 
               {isChanging && (

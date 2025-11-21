@@ -157,3 +157,18 @@ export type OptionsResponse = {
   id: string;
   value: string;
 };
+
+export type Subscription = {
+  cancelAtPeriodEnd: boolean;
+  id: string;
+  limits: { seats: number };
+  periodEnd: string;
+  periodStart: string;
+  plan: string;
+  priceId: string;
+  referenceId: string;
+  seats: number;
+  status: string;
+  stripeCustomerId: string;
+  stripeSubscriptionId: string;
+};
