@@ -1,8 +1,10 @@
 import { axiosClient } from "@/lib/axios-client";
 import type { LeadHistoryItem, LeadOptions } from "@/lib/types";
 
-export const getLeads = async () => {
-  const response = await axiosClient.get("/api/leads");
+export const getLeads = async (filters: any) => {
+  const response = await axiosClient.get("/api/leads", {
+    params: { ...filters, filter: JSON.stringify(filters.filter) },
+  });
 
   if (response.status !== 200) {
     throw new Error("Failed to fetch leads");
@@ -22,20 +24,37 @@ export const getColumnOptions = async () => {
 };
 
 export const getDropdownOptions = async (fieldKey: string) => {
-  const response = await axiosClient.get(`/api/leads/field/${fieldKey}/options`);
+  const response = await axiosClient.get(
+    `/api/leads/field/${fieldKey}/options`
+  );
 
   if (response.status !== 200) {
     throw new Error("Failed to fetch dropdown options");
   }
 
   return response.data as LeadOptions[];
-
 };
 
-export const createDropdownOption = async (fieldKey: string, option: string) => {
-  const response = await axiosClient.post(`/api/leads/field/${fieldKey}/options`, {
-    option_name: option,
-  });
+export const createDropdownOption = async (
+  fieldKey: string,
+  option: string
+) => {
+  const response = await axiosClient.post(
+    `/api/leads/field/${fieldKey}/options`,
+    {
+      option_name: option,
+    }
+  );
+
+  return response.data;
+};
+
+export const getSpecificLead = async (leadId: string) => {
+  const response = await axiosClient.get(`/api/leads/${leadId}`);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to fetch specific lead");
+  }
 
   return response.data;
 };
@@ -81,11 +100,21 @@ export const deleteLead = async (columnIds: string[]) => {
     },
   });
 
+  if (response.status !== 200) {
+    throw new Error("Failed to delete leads");
+  }
+
   return response.data;
 };
 
-export const getLeadTimeline = async (leadId: string) => {
-  const response = await axiosClient.get(`/api/leads/timeline/${leadId}`);
+export const getLeadTimeline = async (
+  leadId: string,
+  limit: number,
+  page: number
+) => {
+  const response = await axiosClient.get(
+    `/api/leads/timeline/${leadId}?take=${limit}&page=${page}`
+  );
 
   if (response.status !== 200) {
     throw new Error("Failed to fetch lead timeline");

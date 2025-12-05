@@ -19,6 +19,7 @@ export function generateLeadColumns(
   columnsFromApi: ColumnType[]
 ): ColumnDef<LeadRow>[] {
   const dynamicColumns: ColumnDef<LeadRow>[] = columnsFromApi.map((col) => ({
+    id: col.id,
     header: col.name,
     accessorKey: col.name, // column name from API
     cell: ({ row }) => (
@@ -51,7 +52,8 @@ export function generateLeadColumns(
   //     accessorKey: "lead_name",
   //     cell: ({ row }) => (
   //       <EditableCell
-  //         leadId={row.original.id}
+  //         id={row.original.id}
+  //         fieldName="Lead Name"
   //         fieldKey="lead_name"
   //         value={row.original.lead_name}
   //         type="TEXT"
@@ -61,6 +63,7 @@ export function generateLeadColumns(
 
   const createNewColumn: ColumnDef<LeadRow> = {
     header: () => <CreateColumnModal />,
+    id: "create_column",
     accessorKey: "create_column",
   };
 

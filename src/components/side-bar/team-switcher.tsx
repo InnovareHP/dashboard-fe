@@ -1,6 +1,3 @@
-import { ChevronsUpDown, User } from "lucide-react";
-import * as React from "react";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,37 +13,19 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
+import type { Organization } from "@/lib/types";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRouteContext } from "@tanstack/react-router";
-
-type Organization = {
-  id?: string;
-  name: string;
-  logo?: string | null;
-  slug: string;
-  createdAt: Date;
-  metadata?: any;
-};
+import { useRouteContext, useRouter } from "@tanstack/react-router";
+import { ChevronsUpDown, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export function TeamSwitcher() {
   const { isMobile } = useSidebar();
   const queryClient = useQueryClient();
   const orgData = queryClient.getQueryData(["organizations"]) as Organization[];
-
+  const router = useRouter();
   const { activeOrganizationId } = useRouteContext({ from: "/_team" });
-
-  const fetchOrganizations = React.useCallback(
-    () => authClient.organization.list(),
-    []
-  );
-
-  const prefetchOrganizations = React.useCallback(() => {
-    queryClient.prefetchQuery({
-      queryKey: ["organizations"],
-      queryFn: fetchOrganizations,
-      staleTime: 5 * 60 * 1000,
-    });
-  }, [queryClient, fetchOrganizations]);
 
   const teams: Organization[] = orgData ?? [];
 
@@ -54,26 +33,41 @@ export function TeamSwitcher() {
     (org) => org.id === activeOrganizationId
   ) as Organization;
 
-  const [activeTeam, setActiveTeam] = React.useState<Organization | null>(
-    currentTeam
-  );
+  const [activeTeam, setActiveTeam] = useState<Organization>(currentTeam);
+
+  useEffect(() => {
+    setActiveTeam(currentTeam);
+  }, [activeOrganizationId]);
+
+  const HandleSelectActiveTeam = (team: Organization) => {
+    try {
+      authClient.organization.setActive({
+        organizationId: team.id,
+      });
+      setActiveTeam(team);
+
+      router.navigate({
+        to: "/$team",
+        params: { team: team.id ?? "" },
+        resetScroll: true,
+      });
+
+      router.invalidate({});
+      queryClient.invalidateQueries({ queryKey: ["organizations"] });
+    } catch (error) {
+      toast.error("Failed to switch team");
+    }
+  };
 
   const ActiveLogo = activeTeam?.logo ?? User;
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu
-          onOpenChange={(next) => {
-            if (next) prefetchOrganizations();
-          }}
-        >
+        <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              onMouseEnter={prefetchOrganizations}
-              onFocus={prefetchOrganizations}
-              onTouchStart={prefetchOrganizations}
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <>
@@ -83,10 +77,10 @@ export function TeamSwitcher() {
 
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
-                    {currentTeam?.name ?? "User"}
+                    {activeTeam?.name ?? ""}
                   </span>
                   <span className="truncate text-xs">
-                    {currentTeam?.name ?? "Select a team"}
+                    {activeTeam?.name ?? "Select a team"}
                   </span>
                 </div>
 
@@ -110,9 +104,7 @@ export function TeamSwitcher() {
               return (
                 <DropdownMenuItem
                   key={team.id ?? team.name}
-                  onMouseEnter={prefetchOrganizations}
-                  onFocus={prefetchOrganizations}
-                  onClick={() => setActiveTeam(team)}
+                  onClick={() => HandleSelectActiveTeam(team)}
                   className="gap-2 p-2"
                 >
                   <div className="flex size-6 items-center justify-center rounded-md border">

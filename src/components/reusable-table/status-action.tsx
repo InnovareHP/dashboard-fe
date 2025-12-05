@@ -19,9 +19,11 @@ import { useState } from "react";
 export function StatusSelect({
   val,
   handleUpdate,
+  isReferral,
 }: {
   val?: string;
   handleUpdate: (v: string, reason?: string) => void;
+  isReferral?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(val || "New Lead");
@@ -51,14 +53,24 @@ export function StatusSelect({
           <SelectValue placeholder="Select status" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="New Lead">New Lead</SelectItem>
-          <SelectItem value="Contacted">Contacted</SelectItem>
-          <SelectItem value="Closed">Closed</SelectItem>
+          {isReferral ? (
+            <>
+              <SelectItem value="Admitted">Admitted</SelectItem>
+              <SelectItem value="Pending">Pending</SelectItem>
+              <SelectItem value="Rejected">Rejected</SelectItem>
+            </>
+          ) : (
+            <>
+              <SelectItem value="New Lead">New Lead</SelectItem>
+              <SelectItem value="Contacted">Contacted</SelectItem>
+              <SelectItem value="Closed">Closed</SelectItem>
+            </>
+          )}
         </SelectContent>
       </Select>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Reason for {selectedStatus}</DialogTitle>
           </DialogHeader>

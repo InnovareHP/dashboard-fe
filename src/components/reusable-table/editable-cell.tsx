@@ -1,5 +1,3 @@
-import { leadCollection } from "@/collection/leads/lead-collection";
-import { referralCollection } from "@/collection/referral/referral-collection";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -16,14 +14,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { LeadRow } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
   createDropdownOption,
   getDropdownOptions,
+  updateLead,
 } from "@/services/lead/lead-service";
 import {
   createReferralDropdownOption,
   getReferralDropdownOptions,
+  updateReferral,
 } from "@/services/referral/referral-service";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -31,6 +32,7 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { MasterListView } from "../master-list/master-list-view";
 import LocationCell from "./location-cell";
 import { StatusSelect } from "./status-action";
 
@@ -53,8 +55,55 @@ export function EditableCell({
 }: EditableCellProps) {
   const [editing, setEditing] = useState(false);
   const [val, setVal] = useState(value);
+  const isreferralKey = isReferral ? "referrals" : "leads";
 
-  const handleUpdate = (
+  const updateLeadMutation = useMutation({
+    mutationFn: async ({
+      id,
+      field,
+      value,
+      reason,
+    }: {
+      id: string;
+      field: string;
+      value: string;
+      reason?: string;
+    }) =>
+      isReferral
+        ? await updateReferral(id, field, value, reason)
+        : await updateLead(id, field, value),
+    onMutate: async ({ id, field, value }) => {
+      await queryClient.cancelQueries({ queryKey: [isreferralKey] });
+      const previousData = queryClient.getQueryData([isreferralKey]);
+      queryClient.setQueryData([isreferralKey], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          pages: old.pages.map((page: any) => ({
+            ...page,
+            data: page.data.map((r: LeadRow) =>
+              r.id === id
+                ? {
+                    ...r,
+                    [field]: value,
+                  }
+                : r
+            ),
+          })),
+        };
+      });
+      return { previousData };
+    },
+    onError: (_err, _vars, context: any) => {
+      queryClient.setQueryData([isreferralKey], context.previousData);
+      toast.error("Failed to update lead.");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: [isreferralKey] });
+    },
+  });
+
+  const handleUpdate = async (
     newVal: string,
     location?: boolean,
     reason?: string
@@ -64,21 +113,16 @@ export function EditableCell({
 
     try {
       if (isReferral) {
-        referralCollection.update(id, (draft) => {
-          draft.field_id = fieldKey;
-          draft.value = newVal;
-          draft.reason = reason || "";
+        updateLeadMutation.mutate({
+          id,
+          field: fieldKey,
+          value: newVal,
+          reason,
         });
       } else if (location) {
-        leadCollection.update(id, (draft) => {
-          draft.field_id = fieldKey;
-          draft.value = JSON.stringify(newVal);
-        });
+        updateLeadMutation.mutate({ id, field: fieldKey, value: newVal });
       } else {
-        leadCollection.update(id, (draft) => {
-          draft.field_id = fieldKey;
-          draft.value = newVal;
-        });
+        updateLeadMutation.mutate({ id, field: fieldKey, value: newVal });
       }
       toast.success("Value updated successfully");
     } catch (error) {
@@ -147,6 +191,7 @@ export function EditableCell({
     return (
       <StatusSelect
         val={val}
+        isReferral={isReferral}
         handleUpdate={(v, reason) => handleUpdate(v, undefined, reason)}
       />
     );
@@ -194,13 +239,7 @@ export function EditableCell({
 
   // ---- TIME ----
   if (type === "TIMELINE") {
-    return (
-      <Link to={`${isReferral ? "referral" : "leads"}/${id}/timeline` as any}>
-        <Button variant="secondary" className="h-8 text-sm">
-          View Timeline
-        </Button>
-      </Link>
-    );
+    return <MasterListView leadId={id} />;
   }
 
   // ---- CHECKBOX ----

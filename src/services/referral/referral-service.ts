@@ -7,8 +7,12 @@ import type {
   ReferralResponse,
 } from "@/lib/types";
 
-export const getReferral = async () => {
-  const response = await axiosClient.get("/api/referral");
+export const getReferral = async (filterMeta: any) => {
+  const response = await axiosClient.get("/api/referral", {
+    params: {
+      ...filterMeta,
+    },
+  });
 
   if (response.status !== 200) {
     throw new Error("Failed to fetch referrals");
@@ -200,6 +204,16 @@ export const deleteCounty = async (id: string) => {
   if (response.status !== 200) {
     throw new Error("Failed to delete county");
   }
+
+  return response.data;
+};
+
+export const deleteReferral = async (columnIds: string[]) => {
+  const response = await axiosClient.delete("/api/referral", {
+    data: {
+      column_ids: columnIds,
+    },
+  });
 
   return response.data;
 };

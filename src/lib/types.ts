@@ -96,6 +96,7 @@ export type AnalyticsResponse = {
   outreach: OutreachAnalytics[];
   payers: PayerAnalytics[];
   sources: SourceAnalytics[];
+  analytics: string;
 };
 
 export type AverageTime = {
@@ -171,4 +172,13 @@ export type Subscription = {
   status: string;
   stripeCustomerId: string;
   stripeSubscriptionId: string;
+};
+
+export type Organization = {
+  id?: string;
+  name: string;
+  logo?: string | null;
+  slug: string;
+  createdAt: Date;
+  metadata?: any;
 };

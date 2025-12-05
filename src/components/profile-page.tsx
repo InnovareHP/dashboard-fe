@@ -1,34 +1,100 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { authClient, useSession } from "@/lib/auth-client";
+import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
 import {
   AlertCircle,
-  Loader2,
-  Mail,
-  User,
   Calendar,
-  Shield,
+  Loader2,
   LogOut,
-  Edit,
+  Mail,
+  Shield,
+  Upload,
 } from "lucide-react";
-import { toast } from "@/lib/toast";
+import { useRef, useState } from "react";
 
-export function ProfilePage({ className, ...props }: React.ComponentProps<"div">) {
+export function ProfilePage({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
   const navigate = useNavigate();
   const { data: sessionData, isPending: isSessionPending } = useSession();
-
-  // Extract user and session from sessionData
   const user = sessionData?.user;
-  const session = sessionData?.session;
 
-  const isLoadingUser = isSessionPending;
-  const isErrorUser = !isSessionPending && !user;
-  const userError = isErrorUser ? new Error("No user session found") : null;
+  const [isUploading, setIsUploading] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleProfileImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploading(true);
+
+      const form = new FormData();
+      form.append("file", file);
+
+      // upload route — replace with your route
+      const res = await fetch("/api/upload-profile", {
+        method: "POST",
+        body: form,
+      });
+
+      const data = await res.json();
+      if (!data.url) throw new Error("Upload failed");
+
+      // Update user in Better Auth
+      await authClient.updateUser({
+        image: data.url,
+      });
+
+      toast.success("Profile picture updated!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to upload profile picture.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    const currentPassword = prompt("Enter current password:");
+    const newPassword = prompt("Enter new password:");
+
+    if (!currentPassword || !newPassword) return;
+
+    try {
+      setIsChangingPassword(true);
+      await authClient.changePassword({
+        currentPassword,
+        newPassword,
+      });
+      toast.success("Password changed successfully!");
+    } catch (error: any) {
+      toast.error(error.message ?? "Failed to change password");
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
 
   const handleSignOut = async () => {
     try {
@@ -37,45 +103,27 @@ export function ProfilePage({ className, ...props }: React.ComponentProps<"div">
       navigate({ to: "/login" });
     } catch (error) {
       toast.error("Failed to sign out");
-      console.error("Sign out error:", error);
     }
   };
 
-  // Show error state if user query fails
-  if (isErrorUser) {
-    const errorMessage =
-      (userError as Error)?.message || "Failed to load profile information";
-
+  // Error state
+  if (!user && !isSessionPending) {
     return (
-      <div
-        className={cn("flex items-center justify-center p-4", className)}
-        {...props}
-      >
-        <div className="w-full max-w-6xl">
-          <Card>
-            <CardContent className="p-12">
-              <div className="text-center">
-                <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
-                <h2 className="text-xl font-semibold mb-2">
-                  Error Loading Profile
-                </h2>
-                <p className="text-muted-foreground mb-4">{errorMessage}</p>
-                <Button
-                  onClick={() => window.location.reload()}
-                  variant="default"
-                  className="cursor-pointer"
-                >
-                  Retry
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      <div className="flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg">
+          <CardContent className="p-12 text-center">
+            <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
+            <h2 className="text-xl font-semibold mb-2">
+              Error Loading Profile
+            </h2>
+            <p className="text-muted-foreground mb-4">
+              Could not load user profile.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
-
-  const isLoading = isSessionPending || isLoadingUser;
 
   return (
     <div
@@ -85,80 +133,83 @@ export function ProfilePage({ className, ...props }: React.ComponentProps<"div">
       {/* Header */}
       <div className="text-center space-y-2 mb-12">
         <h1 className="text-4xl font-bold tracking-tight">Profile Settings</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Manage your account information and preferences
+        <p className="text-lg text-muted-foreground">
+          Manage your account, profile image, and security
         </p>
       </div>
 
-      {isLoading ? (
+      {isSessionPending ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Profile Information Card */}
+          {/* Profile Card */}
           <Card className="lg:col-span-2">
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Profile Information</CardTitle>
-                  <CardDescription>
-                    Your personal account details
-                  </CardDescription>
-                </div>
-                <Button variant="outline" size="sm" className="cursor-pointer">
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit
-                </Button>
-              </div>
+              <CardTitle>Profile Information</CardTitle>
+              <CardDescription>Your account details</CardDescription>
             </CardHeader>
+
             <CardContent className="space-y-6">
+              {/* AVATAR + UPLOAD SECTION */}
               <div className="flex items-center gap-6">
-                <Avatar className="h-24 w-24">
-                  <AvatarImage
-                    src={user?.image ?? undefined}
-                    alt={user?.name ?? "User"}
-                  />
-                  <AvatarFallback className="text-2xl">
-                    {user?.name
-                      ?.split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
+                <div
+                  className="relative cursor-pointer group"
+                  onClick={handleAvatarClick}
+                >
+                  <Avatar className="h-28 w-28 border shadow-sm transition hover:ring-2 hover:ring-primary/50">
+                    {user?.image ? (
+                      <AvatarImage src={user.image} alt={user.name ?? "User"} />
+                    ) : (
+                      <AvatarFallback className="bg-muted flex items-center justify-center">
+                        <Upload className="w-8 h-8 text-muted-foreground" />
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center rounded-full">
+                    <Upload className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+
+                {/* Hidden file input */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleProfileImageUpload}
+                />
+
                 <div className="space-y-1">
                   <h3 className="text-2xl font-semibold">
                     {user?.name || "No name set"}
                   </h3>
                   <p className="text-muted-foreground flex items-center gap-2">
                     <Mail className="w-4 h-4" />
-                    {user?.email || "No email"}
+                    {user?.email}
                   </p>
+
+                  {isUploading && (
+                    <p className="text-sm text-muted-foreground">
+                      Uploading image…
+                    </p>
+                  )}
                 </div>
               </div>
 
               <Separator />
 
+              {/* USER DETAILS */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <User className="w-4 h-4" />
-                    <span>Full Name</span>
-                  </div>
-                  <p className="font-medium">
-                    {user?.name || "Not set"}
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Mail className="w-4 h-4" />
-                    <span>Email Address</span>
+                    <span>Email</span>
                   </div>
-                  <p className="font-medium">
-                    {user?.email || "Not set"}
-                  </p>
+                  <p className="font-medium">{user?.email}</p>
                 </div>
 
                 {user?.emailVerified && (
@@ -167,7 +218,7 @@ export function ProfilePage({ className, ...props }: React.ComponentProps<"div">
                       <Shield className="w-4 h-4" />
                       <span>Email Status</span>
                     </div>
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                    <Badge className="bg-green-100 text-green-700 border-green-200 w-fit">
                       Verified
                     </Badge>
                   </div>
@@ -192,43 +243,33 @@ export function ProfilePage({ className, ...props }: React.ComponentProps<"div">
             </CardContent>
           </Card>
 
-          {/* Account Actions Card */}
+          {/* Account Actions */}
           <Card>
             <CardHeader>
               <CardTitle>Account Actions</CardTitle>
               <CardDescription>
-                Manage your account settings
+                Security and account management tools
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <Button
-                variant="outline"
-                className="w-full justify-start cursor-pointer"
-                onClick={() => {
-                  // Navigate to change password or edit profile
-                  toast.info("Edit profile feature coming soon");
-                }}
-              >
-                <Edit className="w-4 h-4 mr-2" />
-                Edit Profile
-              </Button>
 
+            <CardContent className="space-y-4">
+              {/* CHANGE PASSWORD */}
               <Button
                 variant="outline"
-                className="w-full justify-start cursor-pointer"
-                onClick={() => {
-                  toast.info("Change password feature coming soon");
-                }}
+                className="w-full justify-start"
+                onClick={handlePasswordChange}
+                disabled={isChangingPassword}
               >
                 <Shield className="w-4 h-4 mr-2" />
-                Change Password
+                {isChangingPassword ? "Changing..." : "Change Password"}
               </Button>
 
               <Separator />
 
+              {/* SIGN OUT */}
               <Button
                 variant="destructive"
-                className="w-full justify-start cursor-pointer"
+                className="w-full justify-start"
                 onClick={handleSignOut}
               >
                 <LogOut className="w-4 h-4 mr-2" />
@@ -236,45 +277,8 @@ export function ProfilePage({ className, ...props }: React.ComponentProps<"div">
               </Button>
             </CardContent>
           </Card>
-
-          {/* Session Information Card */}
-          {session && (
-            <Card className="lg:col-span-3">
-              <CardHeader>
-                <CardTitle>Session Information</CardTitle>
-                <CardDescription>
-                  Current session details
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <div className="text-sm text-muted-foreground">Session ID</div>
-                    <p className="font-mono text-xs break-all">
-                      {session.id || "N/A"}
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="text-sm text-muted-foreground">Expires At</div>
-                    <p className="font-medium">
-                      {session.expiresAt
-                        ? new Date(session.expiresAt).toLocaleString()
-                        : "Never"}
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="text-sm text-muted-foreground">User ID</div>
-                    <p className="font-mono text-xs break-all">
-                      {user?.id || "N/A"}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
       )}
     </div>
   );
 }
-

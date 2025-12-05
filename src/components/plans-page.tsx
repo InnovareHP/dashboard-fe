@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "@tanstack/react-router";
+import { useLocation, useRouteContext } from "@tanstack/react-router";
 import { CheckCircle2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
@@ -41,10 +41,14 @@ const PLANS: Plan[] = [
 
 export function PlansPage({
   className,
+  context: propContext,
   ...props
-}: React.ComponentProps<"div">) {
-  const { data: activeOrg } = authClient.useActiveOrganization();
-  const activeOrganizationId = activeOrg?.id;
+}: {
+  context?: "/_team" | "/billing";
+} & React.ComponentProps<"div">) {
+  const { activeOrganizationId } = useRouteContext({
+    from: propContext ?? "/_team",
+  });
 
   const location = useLocation();
 
@@ -74,7 +78,7 @@ export function PlansPage({
         plan: "Dashboard",
         referenceId: activeOrganizationId,
         seats: 10,
-        successUrl: `${import.meta.env.VITE_APP_URL}${location.href}/success`,
+        successUrl: `${import.meta.env.VITE_APP_URL}/${activeOrganizationId}/success`,
         cancelUrl: `${import.meta.env.VITE_APP_URL}${location.href}`,
       });
     } catch (error: any) {

@@ -44,6 +44,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
+import { formatCapitalize } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Invitation } from "better-auth/plugins";
@@ -82,6 +83,11 @@ const TeamPage = () => {
     search: "",
   });
 
+  const [isOpenEditRoleDialog, setIsOpenEditRoleDialog] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<{
+    role: string;
+    id: string;
+  }>();
   const debouncedSearch = useMemo(
     () =>
       debounce((val: string) => {
@@ -210,6 +216,26 @@ const TeamPage = () => {
     }
   };
 
+  const handleEditRole = async (memberId: string, role: string) => {
+    await authClient.organization.updateMemberRole(
+      {
+        memberId: memberId,
+        role: role,
+      },
+      {
+        onError: () => {
+          toast.error("Failed to edit role");
+        },
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: ["member", memberTableField],
+          });
+          toast.success("Role updated successfully");
+        },
+      }
+    );
+  };
+
   const teamStats = useMemo(() => {
     return {
       totalMembers: employees?.data?.total,
@@ -310,19 +336,6 @@ const TeamPage = () => {
         <Card className="shadow-lg border-0">
           <CardContent className="p-6">
             <div className="flex flex-wrap sm:flex-nowrap justify-center items-center space-x-6">
-              <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
-                <img
-                  src={organizationData?.logo ?? ""}
-                  alt={organizationData?.name ?? ""}
-                  className="w-full h-full object-cover"
-                />
-                <div
-                  className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold"
-                  style={{ display: "none" }}
-                >
-                  {organizationData?.name?.charAt(0)}
-                </div>
-              </div>
               <div className="flex-1">
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
                   {organizationData?.name}
@@ -424,7 +437,11 @@ const TeamPage = () => {
               </CardHeader>
               <CardContent>
                 <ReusableTable
-                  data={Array.isArray(employees?.data) ? employees.data : []}
+                  data={
+                    Array.isArray(employees?.data?.members)
+                      ? employees.data.members
+                      : []
+                  }
                   columns={[
                     {
                       key: "user_name",
@@ -432,31 +449,31 @@ const TeamPage = () => {
                       render: (row) => (
                         <div className="flex items-center space-x-2">
                           <Avatar>
-                            <AvatarImage src={row?.user_image} />
+                            <AvatarImage src={row?.user.image ?? undefined} />
                             <AvatarFallback>
-                              {row?.user_name?.charAt(0)}
+                              {row?.user.name?.charAt(0)}
                             </AvatarFallback>
                           </Avatar>
-                          <span>{row?.user_name}</span>
+                          <span>{row?.user.name}</span>
                         </div>
                       ),
                     },
                     {
                       key: "user_email",
                       header: "Email",
-                      render: (row) => row?.user_email,
+                      render: (row) => row?.user.email,
                     },
                     {
                       key: "member_position",
                       header: "Role",
-                      render: (row) => row?.member_position,
+                      render: (row) => formatCapitalize(row?.role),
                     },
                     {
                       key: "member_created_at",
                       header: "Joined Date",
                       render: (row) =>
                         formatDate(
-                          new Date(row?.member_created_at ?? ""),
+                          new Date(row?.createdAt ?? ""),
                           "MM/dd/yyyy"
                         ),
                     },
@@ -464,20 +481,70 @@ const TeamPage = () => {
                       key: "action",
                       header: "Action",
                       render: (row) => (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => handleRemoveFromTeam(row?.user_id)}
-                            >
-                              Remove From Team
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon">
+                                <MoreHorizontal className="w-4 h-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+
+                            <DropdownMenuContent align="end">
+                              {/* Remove */}
+                              <DropdownMenuItem
+                                onClick={() => handleRemoveFromTeam(row.userId)}
+                              >
+                                Remove From Team
+                              </DropdownMenuItem>
+
+                              {/* Edit Role Trigger */}
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setSelectedRow(row as any); // <-- store row in state
+                                  setIsOpenEditRoleDialog(true);
+                                }}
+                              >
+                                Edit Role
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+
+                          {/* Dialog OUTSIDE the menu */}
+                          <Dialog
+                            open={isOpenEditRoleDialog}
+                            onOpenChange={setIsOpenEditRoleDialog}
+                          >
+                            <DialogContent className="sm:max-w-md">
+                              <DialogHeader>
+                                <DialogTitle>Edit Role</DialogTitle>
+                              </DialogHeader>
+
+                              <Select
+                                value={selectedRow?.role as string}
+                                onValueChange={(value) => {
+                                  handleEditRole(
+                                    selectedRow?.id as string,
+                                    value
+                                  );
+                                  setIsOpenEditRoleDialog(false);
+                                }}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select Role" />
+                                </SelectTrigger>
+
+                                <SelectContent>
+                                  <SelectItem value="member">
+                                    {formatCapitalize("member")}
+                                  </SelectItem>
+                                  <SelectItem value="owner">
+                                    {formatCapitalize("owner")}
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </DialogContent>
+                          </Dialog>
+                        </>
                       ),
                     },
                   ]}

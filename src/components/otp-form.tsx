@@ -40,10 +40,7 @@ export function OtpForm({ className, ...props }: React.ComponentProps<"div">) {
     } catch (error) {}
   };
 
-  const handleResendOtp = () => {
-    console.log("Resending OTP...");
-    // In a real app, this would trigger a new OTP to be sent
-  };
+  const handleResendOtp = () => {};
 
   return (
     <div
@@ -59,10 +56,10 @@ export function OtpForm({ className, ...props }: React.ComponentProps<"div">) {
                 onSubmit={form.handleSubmit(handleVerifyOtp)}
               >
                 <div className="space-y-2 text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl mb-4">
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to- from-blue-600 to-blue-700 rounded-xl mb-4">
                     <Shield className="w-6 h-6 text-white" />
                   </div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+                  <h1 className="text-2xl font-bold bg-gradient-to- from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
                     Verify Your Account
                   </h1>
                   <p className="text-slate-600 dark:text-slate-400">

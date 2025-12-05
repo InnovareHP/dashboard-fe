@@ -19,7 +19,6 @@ import {
   CheckSquare,
   ChevronDown,
   Hash,
-  ListChecks,
   Mail,
   Phone,
   Plus,
@@ -50,7 +49,7 @@ export function CreateColumnModal({
       await (isReferral ? createReferralColumn : createColumn)(type, name);
 
       queryClient.invalidateQueries({
-        queryKey: isReferral ? ["referrals-meta"] : ["leads-meta"],
+        queryKey: isReferral ? ["referrals"] : ["leads"],
       });
 
       toast.success("Column created successfully!");
@@ -68,11 +67,7 @@ export function CreateColumnModal({
   const fieldTypes = [
     { label: "Text", value: "TEXT", icon: <AlignLeft className="w-4 h-4" /> },
     { label: "Number", value: "NUMBER", icon: <Hash className="w-4 h-4" /> },
-    {
-      label: "Status",
-      value: "STATUS",
-      icon: <ListChecks className="w-4 h-4" />,
-    },
+
     { label: "Email", value: "EMAIL", icon: <Mail className="w-4 h-4" /> },
     { label: "Phone", value: "PHONE", icon: <Phone className="w-4 h-4" /> },
     { label: "Date", value: "DATE", icon: <Calendar className="w-4 h-4" /> },

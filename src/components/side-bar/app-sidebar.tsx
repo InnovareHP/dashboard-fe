@@ -15,7 +15,9 @@ import * as React from "react";
 // This is sample data.
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { activeOrganizationId } = useRouteContext({ from: "/_team" });
+  const { activeOrganizationId, memberData } = useRouteContext({
+    from: "/_team",
+  });
   const data = {
     navMain: [
       {
@@ -54,14 +56,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: "Team",
             url: `/${activeOrganizationId}/team`,
           },
-          {
-            title: "Plans",
-            url: `/${activeOrganizationId}/plans`,
-          },
-          {
-            title: "Billing",
-            url: `/${activeOrganizationId}/settings/billing`,
-          },
+          ...(memberData?.role === "owner"
+            ? [
+                {
+                  title: "Plans",
+                  url: `/${activeOrganizationId}/plans`,
+                },
+                {
+                  title: "Billing",
+                  url: `/${activeOrganizationId}/settings/billing`,
+                },
+              ]
+            : []),
 
           {
             title: "County Config",

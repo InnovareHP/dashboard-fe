@@ -1,4 +1,5 @@
 // routes/_team/$team/index.tsx
+import Loader from "@/components/loader";
 import { AppSidebar } from "@/components/side-bar/app-sidebar";
 import { DynamicBreadcrumb } from "@/components/ui/bread-crumbs";
 import { Separator } from "@/components/ui/separator";
@@ -11,7 +12,6 @@ import { authClient } from "@/lib/auth-client";
 import { useQueries, type UseQueryResult } from "@tanstack/react-query";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import type { Session, User } from "better-auth";
-import { Loader2 } from "lucide-react";
 
 type Organization = {
   id: string;
@@ -50,7 +50,7 @@ export const Route = createFileRoute("/_team")({
           referenceId: session.activeOrganizationId,
         },
       }),
-      authClient.organization.getActiveMemberRole(),
+      authClient.organization.getActiveMember(),
     ]);
 
     const activeSubscription = subscriptions?.data?.find(
@@ -59,7 +59,7 @@ export const Route = createFileRoute("/_team")({
 
     if (!activeSubscription) {
       throw redirect({
-        to: `/${session.activeOrganizationId}/settings/billing` as any,
+        to: `/billing` as any,
       });
     }
 
@@ -92,13 +92,7 @@ function RouteComponent() {
 
   return (
     <SidebarProvider>
-      {results.some((result) => result.isLoading) && (
-        <div className="fixed inset-0 z-50 bg-background/40 backdrop-blur-sm flex items-center justify-center">
-          <div className="flex items-center space-x-4">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          </div>
-        </div>
-      )}
+      <Loader isLoading={results.some((result) => result.isLoading)} />
       <AppSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
