@@ -12,10 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FILETYPE } from "@/lib/enum";
 import { formatDateTime } from "@/lib/utils";
-import {
-  getReferralHistory,
-  getSpecificReferral,
-} from "@/services/referral/referral-service";
+import { getLeadTimeline, getSpecificLead } from "@/services/lead/lead-service";
 import {
   useInfiniteQuery,
   useQuery,
@@ -37,22 +34,27 @@ function serializeValue(value: unknown): string {
   }
 }
 
-export function ReferralCellView({ referralId }: { referralId: string }) {
+export function MasterListView({ leadId }: { leadId: string }) {
   const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("details");
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["referral", referralId],
+    queryKey: ["lead", leadId],
     enabled: open,
-    queryFn: () => getSpecificReferral(referralId),
+    queryFn: () => getSpecificLead(leadId),
   });
 
-  const { data: historyData, isLoading: historyLoading } = useInfiniteQuery({
-    queryKey: ["referral-history", referralId],
+  const {
+    data: historyData,
+    isLoading: historyLoading,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["lead-history", leadId],
     enabled: open && activeTab === "history",
     queryFn: ({ pageParam = 1 }) =>
-      getReferralHistory(referralId, 15, pageParam as number),
+      getLeadTimeline(leadId, 15, pageParam as number),
     getNextPageParam: (lastPage, pages) =>
       lastPage.total > 0 ? pages.length + 1 : undefined,
     initialPageParam: 1,
@@ -75,8 +77,8 @@ export function ReferralCellView({ referralId }: { referralId: string }) {
     if (next) {
       setActiveTab("details");
       queryClient.prefetchQuery({
-        queryKey: ["referral", referralId],
-        queryFn: () => getSpecificReferral(referralId),
+        queryKey: ["lead", leadId],
+        queryFn: () => getSpecificLead(leadId),
       });
     }
   };
@@ -89,7 +91,7 @@ export function ReferralCellView({ referralId }: { referralId: string }) {
           className="flex items-center gap-2 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition-all"
         >
           <FileText className="h-4 w-4" />
-          View Referral
+          View Lead
         </Button>
       </DialogTrigger>
 
@@ -172,7 +174,7 @@ export function ReferralCellView({ referralId }: { referralId: string }) {
                         </div>
 
                         <EditableCell
-                          id={referralId}
+                          id={leadId}
                           fieldKey={fieldId}
                           fieldName={key}
                           value={value}
@@ -250,7 +252,10 @@ export function ReferralCellView({ referralId }: { referralId: string }) {
                                 </div>
 
                                 {item.old_value && item.new_value && (
-                                  <div className="mt-3 pt-3 border-t">
+                                  <div className="mt-3 pt-3 border-t flex flex-col gap-2">
+                                    <p className="text-sm font-bold">
+                                      {item.column} Column
+                                    </p>
                                     <p className="text-sm text-gray-700 bg-gray-50 rounded-lg p-2.5">
                                       {item.old_value} → {item.new_value}
                                     </p>
@@ -264,6 +269,13 @@ export function ReferralCellView({ referralId }: { referralId: string }) {
                   </div>
                 )}
               </ScrollArea>
+              {hasNextPage && (
+                <div className="flex justify-center items-center py-4">
+                  <Button variant="outline" onClick={() => fetchNextPage()}>
+                    Load More
+                  </Button>
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         )}

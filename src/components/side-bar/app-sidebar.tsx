@@ -9,13 +9,15 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { useRouteContext } from "@tanstack/react-router";
-import { CircuitBoard, CreditCard, Settings2, SquareTerminal } from "lucide-react";
+import { CircuitBoard, Settings2, SquareTerminal } from "lucide-react";
 import * as React from "react";
 
 // This is sample data.
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { activeOrganizationId } = useRouteContext({ from: "/_team" })
+  const { activeOrganizationId, memberData } = useRouteContext({
+    from: "/_team",
+  });
   const data = {
     navMain: [
       {
@@ -51,25 +53,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: Settings2,
         items: [
           {
-            title: "General",
-            url: `/${activeOrganizationId}/settings/general`,
-          },
-          {
             title: "Team",
             url: `/${activeOrganizationId}/team`,
           },
-          {
-            title: "Plans",
-            url: `/${activeOrganizationId}/plans`,
-          },
-          {
-            title: "Billing",
-            url: `/${activeOrganizationId}/settings/billing`,
-          },
-          {
-            title: "Limits",
-            url: `/${activeOrganizationId}/settings/limits`,
-          },
+          ...(memberData?.role === "owner"
+            ? [
+                {
+                  title: "Plans",
+                  url: `/${activeOrganizationId}/plans`,
+                },
+                {
+                  title: "Billing",
+                  url: `/${activeOrganizationId}/settings/billing`,
+                },
+              ]
+            : []),
+
           {
             title: "County Config",
             url: `/${activeOrganizationId}/referral-list/county-config`,

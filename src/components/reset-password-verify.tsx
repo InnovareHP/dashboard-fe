@@ -4,9 +4,9 @@ import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, useRouter } from "@tanstack/react-router";
-import type { ErrorContext } from "better-auth/react";
-import { Loader2, Lock, Mail } from "lucide-react";
+import { useRouter, useSearch } from "@tanstack/react-router";
+import { Loader2, Lock, RotateCcw } from "lucide-react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod/v3";
@@ -19,44 +19,58 @@ import {
   FormMessage,
 } from "./ui/form";
 
-export function LoginForm({
+const formSchema = z
+  .object({
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export function ResetPasswordVerifyForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const navigate = useRouter();
-  const formSchema = z.object({
-    email: z.string().email(),
-    password: z.string().min(8),
-  });
+  const { token } = useSearch({ from: "/_auth/reset-password/verify" }) as {
+    token: string;
+  };
+
+  useEffect(() => {
+    if (!token) {
+      toast.error("Invalid token");
+      navigate.invalidate();
+    }
+  }, [token]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
-  const handleLogin = async (values: z.infer<typeof formSchema>) => {
+  const handleResetPassword = async (values: z.infer<typeof formSchema>) => {
     try {
-      await authClient.signIn.email(
-        {
-          email: values.email,
-          password: values.password,
-        },
-        {
-          onError: (ctx: ErrorContext): void => {
-            if (ctx.error.status === 403) {
-              toast.error("Please verify your email address");
-            }
-            toast.error(ctx.error.message);
-          },
-        }
-      );
+      const { error } = await authClient.resetPassword({
+        newPassword: values.password,
+        token, // required
+      });
 
-      navigate.invalidate();
+      if (error) {
+        return toast.error(error.message);
+      }
+
+      toast.success("Password reset email sent successfully");
+
+      navigate.navigate({ to: "/login" });
     } catch (error) {
-      return toast.error("Failed to login");
+      toast.error("Failed to reset password");
     }
   };
 
@@ -71,44 +85,22 @@ export function LoginForm({
             <Form {...form}>
               <form
                 className="space-y-5"
-                onSubmit={form.handleSubmit(handleLogin)}
+                onSubmit={form.handleSubmit(handleResetPassword)}
               >
                 <div className="space-y-2 text-center">
                   <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl mb-4">
-                    <Lock className="w-6 h-6 text-white" />
+                    <RotateCcw className="w-6 h-6 text-white" />
                   </div>
                   <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-                    Welcome back
+                    Reset Password
                   </h1>
                   <p className="text-slate-600 dark:text-slate-400">
-                    Login to your Acme Inc account
+                    Enter your email address and we'll send you a link to reset
+                    your password
                   </p>
                 </div>
 
                 <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                          Email
-                        </FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
-                            <Input
-                              {...field}
-                              placeholder="Enter your email"
-                              className="h-10 pl-10 border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
                   <FormField
                     control={form.control}
                     name="password"
@@ -133,6 +125,30 @@ export function LoginForm({
                     )}
                   />
 
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                          Confirm Password
+                        </FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <Input
+                              {...field}
+                              placeholder="Confirm your password"
+                              type="password"
+                              className="h-10 pl-10 border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <Button
                     disabled={form.formState.isSubmitting}
                     type="submit"
@@ -141,74 +157,17 @@ export function LoginForm({
                     {form.formState.isSubmitting ? (
                       <div className="flex items-center space-x-2">
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Signing in...</span>
+                        <span>Resetting password...</span>
                       </div>
                     ) : (
-                      "Login"
+                      "Reset Password"
                     )}
                   </Button>
-
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-slate-200 dark:border-slate-700"></div>
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                      <span className="bg-white dark:bg-slate-900 px-3 text-slate-500 dark:text-slate-400">
-                        Or continue with
-                      </span>
-                    </div>
-                  </div>
-
-                  <Button
-                    variant="outline"
-                    type="button"
-                    className="w-full h-10 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200 cursor-pointer"
-                  >
-                    <Mail className="w-4 h-4 mr-2" />
-                    <span>Continue with Google</span>
-                  </Button>
-
-                  <div className="text-center text-sm text-slate-600 dark:text-slate-400">
-                    Don&apos;t have an account?{" "}
-                    <Link
-                      to="/register"
-                      className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200"
-                    >
-                      Sign up
-                    </Link>
-                  </div>
-
-                  <div className="text-center text-sm">
-                    <Link
-                      to="/reset-password"
-                      className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200"
-                    >
-                      Forgot your password?
-                    </Link>
-                  </div>
                 </div>
               </form>
             </Form>
           </CardContent>
         </Card>
-
-        <div className="mt-4 text-center text-xs text-slate-500 dark:text-slate-400">
-          By clicking continue, you agree to our{" "}
-          <a
-            href="#"
-            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline underline-offset-4 transition-colors duration-200"
-          >
-            Terms of Service
-          </a>{" "}
-          and{" "}
-          <a
-            href="#"
-            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline underline-offset-4 transition-colors duration-200"
-          >
-            Privacy Policy
-          </a>
-          .
-        </div>
       </div>
     </div>
   );

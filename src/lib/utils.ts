@@ -21,3 +21,7 @@ export function formatDateTime(dateString: string) {
     day: "numeric",
   });
 }
+
+export function formatCapitalize(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}

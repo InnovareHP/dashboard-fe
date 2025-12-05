@@ -9,19 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as BillingRouteImport } from './routes/billing'
 import { Route as TeamRouteImport } from './routes/_team'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
+import { Route as InvitationActionRouteImport } from './routes/invitation.$action'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthOtpRouteImport } from './routes/_auth/otp'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as TeamTeamIndexRouteImport } from './routes/_team/$team/index'
+import { Route as AuthResetPasswordIndexRouteImport } from './routes/_auth/reset-password/index'
 import { Route as TeamTeamTeamRouteImport } from './routes/_team/$team/team'
+import { Route as TeamTeamSuccessRouteImport } from './routes/_team/$team/success'
 import { Route as TeamTeamSettingsRouteImport } from './routes/_team/$team/settings'
+import { Route as TeamTeamProfileRouteImport } from './routes/_team/$team/profile'
 import { Route as TeamTeamPlansRouteImport } from './routes/_team/$team/plans'
+import { Route as AuthResetPasswordVerifyRouteImport } from './routes/_auth/reset-password/verify'
+import { Route as AuthEmailVerificationRouteImport } from './routes/_auth/email.verification'
 import { Route as TeamTeamReferralListIndexRouteImport } from './routes/_team/$team/referral-list/index'
 import { Route as TeamTeamMasterListIndexRouteImport } from './routes/_team/$team/master-list/index'
 import { Route as TeamTeamSettingsBillingRouteImport } from './routes/_team/$team/settings/billing'
@@ -29,14 +34,14 @@ import { Route as TeamTeamReferralListCountyConfigRouteImport } from './routes/_
 import { Route as TeamTeamMasterListLeadsLeadIndexRouteImport } from './routes/_team/$team/master-list/leads/$lead/index'
 import { Route as TeamTeamMasterListLeadsLeadTimelineRouteImport } from './routes/_team/$team/master-list/leads/$lead/timeline'
 
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BillingRoute = BillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TeamRoute = TeamRouteImport.update({
@@ -52,10 +57,10 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => AuthRoute,
+const InvitationActionRoute = InvitationActionRouteImport.update({
+  id: '/invitation/$action',
+  path: '/invitation/$action',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/register',
@@ -77,9 +82,19 @@ const TeamTeamIndexRoute = TeamTeamIndexRouteImport.update({
   path: '/$team/',
   getParentRoute: () => TeamRoute,
 } as any)
+const AuthResetPasswordIndexRoute = AuthResetPasswordIndexRouteImport.update({
+  id: '/reset-password/',
+  path: '/reset-password/',
+  getParentRoute: () => AuthRoute,
+} as any)
 const TeamTeamTeamRoute = TeamTeamTeamRouteImport.update({
   id: '/$team/team',
   path: '/$team/team',
+  getParentRoute: () => TeamRoute,
+} as any)
+const TeamTeamSuccessRoute = TeamTeamSuccessRouteImport.update({
+  id: '/$team/success',
+  path: '/$team/success',
   getParentRoute: () => TeamRoute,
 } as any)
 const TeamTeamSettingsRoute = TeamTeamSettingsRouteImport.update({
@@ -87,10 +102,25 @@ const TeamTeamSettingsRoute = TeamTeamSettingsRouteImport.update({
   path: '/$team/settings',
   getParentRoute: () => TeamRoute,
 } as any)
+const TeamTeamProfileRoute = TeamTeamProfileRouteImport.update({
+  id: '/$team/profile',
+  path: '/$team/profile',
+  getParentRoute: () => TeamRoute,
+} as any)
 const TeamTeamPlansRoute = TeamTeamPlansRouteImport.update({
   id: '/$team/plans',
   path: '/$team/plans',
   getParentRoute: () => TeamRoute,
+} as any)
+const AuthResetPasswordVerifyRoute = AuthResetPasswordVerifyRouteImport.update({
+  id: '/reset-password/verify',
+  path: '/reset-password/verify',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthEmailVerificationRoute = AuthEmailVerificationRouteImport.update({
+  id: '/email/verification',
+  path: '/email/verification',
+  getParentRoute: () => AuthRoute,
 } as any)
 const TeamTeamReferralListIndexRoute =
   TeamTeamReferralListIndexRouteImport.update({
@@ -129,15 +159,20 @@ const TeamTeamMasterListLeadsLeadTimelineRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/billing': typeof BillingRoute
   '/onboarding': typeof OnboardingRoute
-  '/profile': typeof ProfileRoute
   '/login': typeof AuthLoginRoute
   '/otp': typeof AuthOtpRoute
   '/register': typeof AuthRegisterRoute
-  '/reset-password': typeof AuthResetPasswordRoute
+  '/invitation/$action': typeof InvitationActionRoute
+  '/email/verification': typeof AuthEmailVerificationRoute
+  '/reset-password/verify': typeof AuthResetPasswordVerifyRoute
   '/$team/plans': typeof TeamTeamPlansRoute
+  '/$team/profile': typeof TeamTeamProfileRoute
   '/$team/settings': typeof TeamTeamSettingsRouteWithChildren
+  '/$team/success': typeof TeamTeamSuccessRoute
   '/$team/team': typeof TeamTeamTeamRoute
+  '/reset-password': typeof AuthResetPasswordIndexRoute
   '/$team': typeof TeamTeamIndexRoute
   '/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
   '/$team/settings/billing': typeof TeamTeamSettingsBillingRoute
@@ -148,15 +183,20 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/billing': typeof BillingRoute
   '/onboarding': typeof OnboardingRoute
-  '/profile': typeof ProfileRoute
   '/login': typeof AuthLoginRoute
   '/otp': typeof AuthOtpRoute
   '/register': typeof AuthRegisterRoute
-  '/reset-password': typeof AuthResetPasswordRoute
+  '/invitation/$action': typeof InvitationActionRoute
+  '/email/verification': typeof AuthEmailVerificationRoute
+  '/reset-password/verify': typeof AuthResetPasswordVerifyRoute
   '/$team/plans': typeof TeamTeamPlansRoute
+  '/$team/profile': typeof TeamTeamProfileRoute
   '/$team/settings': typeof TeamTeamSettingsRouteWithChildren
+  '/$team/success': typeof TeamTeamSuccessRoute
   '/$team/team': typeof TeamTeamTeamRoute
+  '/reset-password': typeof AuthResetPasswordIndexRoute
   '/$team': typeof TeamTeamIndexRoute
   '/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
   '/$team/settings/billing': typeof TeamTeamSettingsBillingRoute
@@ -170,15 +210,20 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
   '/_team': typeof TeamRouteWithChildren
+  '/billing': typeof BillingRoute
   '/onboarding': typeof OnboardingRoute
-  '/profile': typeof ProfileRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/otp': typeof AuthOtpRoute
   '/_auth/register': typeof AuthRegisterRoute
-  '/_auth/reset-password': typeof AuthResetPasswordRoute
+  '/invitation/$action': typeof InvitationActionRoute
+  '/_auth/email/verification': typeof AuthEmailVerificationRoute
+  '/_auth/reset-password/verify': typeof AuthResetPasswordVerifyRoute
   '/_team/$team/plans': typeof TeamTeamPlansRoute
+  '/_team/$team/profile': typeof TeamTeamProfileRoute
   '/_team/$team/settings': typeof TeamTeamSettingsRouteWithChildren
+  '/_team/$team/success': typeof TeamTeamSuccessRoute
   '/_team/$team/team': typeof TeamTeamTeamRoute
+  '/_auth/reset-password/': typeof AuthResetPasswordIndexRoute
   '/_team/$team/': typeof TeamTeamIndexRoute
   '/_team/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
   '/_team/$team/settings/billing': typeof TeamTeamSettingsBillingRoute
@@ -191,15 +236,20 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/billing'
     | '/onboarding'
-    | '/profile'
     | '/login'
     | '/otp'
     | '/register'
-    | '/reset-password'
+    | '/invitation/$action'
+    | '/email/verification'
+    | '/reset-password/verify'
     | '/$team/plans'
+    | '/$team/profile'
     | '/$team/settings'
+    | '/$team/success'
     | '/$team/team'
+    | '/reset-password'
     | '/$team'
     | '/$team/referral-list/county-config'
     | '/$team/settings/billing'
@@ -210,15 +260,20 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/billing'
     | '/onboarding'
-    | '/profile'
     | '/login'
     | '/otp'
     | '/register'
-    | '/reset-password'
+    | '/invitation/$action'
+    | '/email/verification'
+    | '/reset-password/verify'
     | '/$team/plans'
+    | '/$team/profile'
     | '/$team/settings'
+    | '/$team/success'
     | '/$team/team'
+    | '/reset-password'
     | '/$team'
     | '/$team/referral-list/county-config'
     | '/$team/settings/billing'
@@ -231,15 +286,20 @@ export interface FileRouteTypes {
     | '/'
     | '/_auth'
     | '/_team'
+    | '/billing'
     | '/onboarding'
-    | '/profile'
     | '/_auth/login'
     | '/_auth/otp'
     | '/_auth/register'
-    | '/_auth/reset-password'
+    | '/invitation/$action'
+    | '/_auth/email/verification'
+    | '/_auth/reset-password/verify'
     | '/_team/$team/plans'
+    | '/_team/$team/profile'
     | '/_team/$team/settings'
+    | '/_team/$team/success'
     | '/_team/$team/team'
+    | '/_auth/reset-password/'
     | '/_team/$team/'
     | '/_team/$team/referral-list/county-config'
     | '/_team/$team/settings/billing'
@@ -253,24 +313,25 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
   TeamRoute: typeof TeamRouteWithChildren
+  BillingRoute: typeof BillingRoute
   OnboardingRoute: typeof OnboardingRoute
-  ProfileRoute: typeof ProfileRoute
+  InvitationActionRoute: typeof InvitationActionRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/billing': {
+      id: '/billing'
+      path: '/billing'
+      fullPath: '/billing'
+      preLoaderRoute: typeof BillingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_team': {
@@ -294,12 +355,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_auth/reset-password': {
-      id: '/_auth/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof AuthResetPasswordRouteImport
-      parentRoute: typeof AuthRoute
+    '/invitation/$action': {
+      id: '/invitation/$action'
+      path: '/invitation/$action'
+      fullPath: '/invitation/$action'
+      preLoaderRoute: typeof InvitationActionRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_auth/register': {
       id: '/_auth/register'
@@ -329,11 +390,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamTeamIndexRouteImport
       parentRoute: typeof TeamRoute
     }
+    '/_auth/reset-password/': {
+      id: '/_auth/reset-password/'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordIndexRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_team/$team/team': {
       id: '/_team/$team/team'
       path: '/$team/team'
       fullPath: '/$team/team'
       preLoaderRoute: typeof TeamTeamTeamRouteImport
+      parentRoute: typeof TeamRoute
+    }
+    '/_team/$team/success': {
+      id: '/_team/$team/success'
+      path: '/$team/success'
+      fullPath: '/$team/success'
+      preLoaderRoute: typeof TeamTeamSuccessRouteImport
       parentRoute: typeof TeamRoute
     }
     '/_team/$team/settings': {
@@ -343,12 +418,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamTeamSettingsRouteImport
       parentRoute: typeof TeamRoute
     }
+    '/_team/$team/profile': {
+      id: '/_team/$team/profile'
+      path: '/$team/profile'
+      fullPath: '/$team/profile'
+      preLoaderRoute: typeof TeamTeamProfileRouteImport
+      parentRoute: typeof TeamRoute
+    }
     '/_team/$team/plans': {
       id: '/_team/$team/plans'
       path: '/$team/plans'
       fullPath: '/$team/plans'
       preLoaderRoute: typeof TeamTeamPlansRouteImport
       parentRoute: typeof TeamRoute
+    }
+    '/_auth/reset-password/verify': {
+      id: '/_auth/reset-password/verify'
+      path: '/reset-password/verify'
+      fullPath: '/reset-password/verify'
+      preLoaderRoute: typeof AuthResetPasswordVerifyRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/email/verification': {
+      id: '/_auth/email/verification'
+      path: '/email/verification'
+      fullPath: '/email/verification'
+      preLoaderRoute: typeof AuthEmailVerificationRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/_team/$team/referral-list/': {
       id: '/_team/$team/referral-list/'
@@ -399,14 +495,18 @@ interface AuthRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthOtpRoute: typeof AuthOtpRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
-  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
+  AuthEmailVerificationRoute: typeof AuthEmailVerificationRoute
+  AuthResetPasswordVerifyRoute: typeof AuthResetPasswordVerifyRoute
+  AuthResetPasswordIndexRoute: typeof AuthResetPasswordIndexRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthOtpRoute: AuthOtpRoute,
   AuthRegisterRoute: AuthRegisterRoute,
-  AuthResetPasswordRoute: AuthResetPasswordRoute,
+  AuthEmailVerificationRoute: AuthEmailVerificationRoute,
+  AuthResetPasswordVerifyRoute: AuthResetPasswordVerifyRoute,
+  AuthResetPasswordIndexRoute: AuthResetPasswordIndexRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
@@ -424,7 +524,9 @@ const TeamTeamSettingsRouteWithChildren =
 
 interface TeamRouteChildren {
   TeamTeamPlansRoute: typeof TeamTeamPlansRoute
+  TeamTeamProfileRoute: typeof TeamTeamProfileRoute
   TeamTeamSettingsRoute: typeof TeamTeamSettingsRouteWithChildren
+  TeamTeamSuccessRoute: typeof TeamTeamSuccessRoute
   TeamTeamTeamRoute: typeof TeamTeamTeamRoute
   TeamTeamIndexRoute: typeof TeamTeamIndexRoute
   TeamTeamReferralListCountyConfigRoute: typeof TeamTeamReferralListCountyConfigRoute
@@ -436,7 +538,9 @@ interface TeamRouteChildren {
 
 const TeamRouteChildren: TeamRouteChildren = {
   TeamTeamPlansRoute: TeamTeamPlansRoute,
+  TeamTeamProfileRoute: TeamTeamProfileRoute,
   TeamTeamSettingsRoute: TeamTeamSettingsRouteWithChildren,
+  TeamTeamSuccessRoute: TeamTeamSuccessRoute,
   TeamTeamTeamRoute: TeamTeamTeamRoute,
   TeamTeamIndexRoute: TeamTeamIndexRoute,
   TeamTeamReferralListCountyConfigRoute: TeamTeamReferralListCountyConfigRoute,
@@ -453,8 +557,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
   TeamRoute: TeamRouteWithChildren,
+  BillingRoute: BillingRoute,
   OnboardingRoute: OnboardingRoute,
-  ProfileRoute: ProfileRoute,
+  InvitationActionRoute: InvitationActionRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -39,7 +37,7 @@ const LocationCell: React.FC<LocationCellProps> = ({
   // ✅ FIXED — libraries array is now stable
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY!,
-    libraries: GOOGLE_MAP_LIBRARIES,
+    libraries: [...GOOGLE_MAP_LIBRARIES],
   });
 
   const handlePlaceChanged = async () => {
@@ -94,7 +92,7 @@ const LocationCell: React.FC<LocationCellProps> = ({
             onLoad={(a) => setAutocomplete(a)}
             onPlaceChanged={handlePlaceChanged}
           >
-            <div className="relative w-auto">
+            <div className="relative w-96">
               <Input
                 placeholder="Enter address..."
                 value={address}
@@ -103,7 +101,7 @@ const LocationCell: React.FC<LocationCellProps> = ({
                   setAddress(cleanValue);
                 }}
                 disabled={isChanging}
-                className="pr-8"
+                className="pr-8 w-full"
               />
 
               {isChanging && (

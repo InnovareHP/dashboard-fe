@@ -38,7 +38,7 @@ export function generateReferralColumns(
 
   const selectColumn: ColumnDef<ReferralRow> = {
     id: "select",
-    header: () => <div className="px-4"></div>,
+    header: () => <div className="px-4">Select</div>,
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}

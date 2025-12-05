@@ -16,21 +16,14 @@ import {
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 import { Link, useRouteContext, useRouter } from "@tanstack/react-router";
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-  User,
-} from "lucide-react";
+import { ChevronsUpDown, CreditCard, LogOut, User } from "lucide-react";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const router = useRouter();
 
   const data = useRouteContext({ from: "__root__" });
+  const { activeOrganizationId } = useRouteContext({ from: "/_team" });
 
   const handleLogout = () => {
     authClient.signOut();
@@ -91,31 +84,21 @@ export function NavUser() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
+
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link to="/profile">
+                <Link to={`/${activeOrganizationId}/profile` as any}>
                   <User />
                   Profile
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
+
               <DropdownMenuItem>
                 <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
+                <Link to={`/${activeOrganizationId}/settings/billing` as any}>
+                  Billing
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
