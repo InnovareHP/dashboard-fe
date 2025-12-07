@@ -1,11 +1,7 @@
-import type { ReferralHistoryItem, ReferralRow } from "@/lib/types";
+import type { ReferralHistoryItem } from "@/lib/types";
 import {
-  createReferral,
   createReferralTimeline,
-  deleteReferralColumn,
-  getReferral,
   getReferralTimeline,
-  updateReferral,
 } from "@/services/referral/referral-service";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/react-db";
@@ -18,36 +14,36 @@ const queryClient = new QueryClient();
  * - Only stores `data` (rows).
  * - Fetch `columns` separately with React Query.
  */
-export const referralCollection = createCollection(
-  queryCollectionOptions({
-    queryKey: ["referrals"],
-    queryFn: async () => {
-      const response = await getReferral();
+// export const referralCollection = createCollection(
+//   queryCollectionOptions({
+//     queryKey: ["referrals"],
+//     queryFn: async () => {
+//       const response = await getReferral();
 
-      return response.data;
-    },
-    getKey: (item: ReferralRow) => item.id,
-    queryClient,
-    onUpdate: async ({ transaction }) => {
-      const mutation = transaction.mutations[0];
-      await updateReferral(
-        mutation.modified.id as string,
-        mutation.modified.field_id as string,
-        mutation.modified.value as string,
-        mutation.modified.reason as string
-      );
-    },
-    onInsert: async ({ transaction }) => {
-      const mutation = transaction.mutations[0];
-      await createReferral(mutation.modified);
-    },
+//       return response.data;
+//     },
+//     getKey: (item: ReferralRow) => item.id,
+//     queryClient,
+//     onUpdate: async ({ transaction }) => {
+//       const mutation = transaction.mutations[0];
+//       await updateReferral(
+//         mutation.modified.id as string,
+//         mutation.modified.field_id as string,
+//         mutation.modified.value as string,
+//         mutation.modified.reason as string
+//       );
+//     },
+//     onInsert: async ({ transaction }) => {
+//       const mutation = transaction.mutations[0];
+//       await createReferral(mutation.modified);
+//     },
 
-    onDelete: async ({ transaction }) => {
-      const mutation = transaction.mutations;
-      await deleteReferralColumn(mutation.map((m) => m.modified.id as string));
-    },
-  })
-);
+//     onDelete: async ({ transaction }) => {
+//       const mutation = transaction.mutations;
+//       await deleteReferralColumn(mutation.map((m) => m.modified.id as string));
+//     },
+//   })
+// );
 
 export const referralTimelineCollection = createCollection(
   queryCollectionOptions({

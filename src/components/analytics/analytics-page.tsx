@@ -87,11 +87,7 @@ export default function ReferralAnalyticsDashboard() {
   });
 
   // MAIN ANALYTICS (runs when date range exists)
-  const {
-    data: analytics,
-    isLoading: isLoadingAnalytics,
-    refetch: refetchAnalytics,
-  } = useQuery({
+  const { data: analytics, refetch: refetchAnalytics } = useQuery({
     queryKey: ["analytics", dateRange],
     queryFn: async () => {
       const start = dateRange.start ? dateRange.start.toISOString() : null;

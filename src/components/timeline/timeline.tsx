@@ -36,7 +36,7 @@ export default function LeadHistoryTimeline() {
 
   const { data: history = [] } = useQuery({
     queryKey: ["lead-timeline", lead],
-    queryFn: async () => await getLeadTimeline(lead),
+    queryFn: async () => await getLeadTimeline(lead, 10, 1),
   });
 
   const addMutation = useMutation({
