@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
 
     server: {
       host: true,
-      allowedHosts: [env.VITE_APP_URL],
+      allowedHosts: ["dashboard-fe-prod.up.railway.app"],
       port: 3000,
     },
 
