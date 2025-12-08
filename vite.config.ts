@@ -13,6 +13,13 @@ export default defineConfig({
     viteReact(),
     tailwindcss(),
   ],
+
+  server: {
+    host: true,
+    allowedHosts: [import.meta.env.VITE_APP_URL!],
+    port: 3000,
+  },
+
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
