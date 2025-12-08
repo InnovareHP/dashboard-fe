@@ -19,7 +19,7 @@ import { useRouteContext, useRouter } from "@tanstack/react-router";
 import { AlertCircle, LogOut, Mail, Shield, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import toast from "sonner";
+import { toast } from "sonner";
 import { z } from "zod";
 
 /* ---------------- PASSWORD SCHEMA ---------------- */
