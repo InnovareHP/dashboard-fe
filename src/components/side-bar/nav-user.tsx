@@ -21,9 +21,7 @@ import { ChevronsUpDown, CreditCard, LogOut, User } from "lucide-react";
 export function NavUser() {
   const { isMobile } = useSidebar();
   const router = useRouter();
-
-  const data = useRouteContext({ from: "__root__" });
-  const { activeOrganizationId } = useRouteContext({ from: "/_team" });
+  const { activeOrganizationId, user } = useRouteContext({ from: "/_team" });
 
   const handleLogout = () => {
     authClient.signOut();
@@ -43,17 +41,17 @@ export function NavUser() {
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage
-                  src={data?.user?.image ?? undefined}
-                  alt={data?.user?.name ?? undefined}
+                  src={user?.image ?? undefined}
+                  alt={user?.name ?? undefined}
                 />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">
-                  {data?.user?.name ?? undefined}
+                  {user?.name ?? undefined}
                 </span>
                 <span className="truncate text-xs">
-                  {data?.user?.email ?? undefined}
+                  {user?.email ?? undefined}
                 </span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
@@ -69,17 +67,17 @@ export function NavUser() {
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage
-                    src={data?.user?.image ?? undefined}
-                    alt={data?.user?.name ?? undefined}
+                    src={user?.image ?? undefined}
+                    alt={user?.name ?? undefined}
                   />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
-                    {data?.user?.name ?? undefined}
+                    {user?.name ?? undefined}
                   </span>
                   <span className="truncate text-xs">
-                    {data?.user?.email ?? undefined}
+                    {user?.email ?? undefined}
                   </span>
                 </div>
               </div>

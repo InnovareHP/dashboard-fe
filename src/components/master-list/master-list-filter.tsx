@@ -63,7 +63,7 @@ export function MasterListFilters({
     <>
       {/* === TOP BAR FILTERS === */}
       <div className="mb-6 p-4 border rounded-lg bg-white shadow-sm space-y-4">
-        <div className="flex justify-start items-start  gap-4">
+        <div className="flex justify-start flex-wrap items-start  gap-4">
           <div className="w-auto">
             <ButtonGroup>
               <Input
