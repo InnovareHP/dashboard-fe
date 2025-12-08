@@ -35,9 +35,8 @@ export function ResetPasswordForm({
 
   const handleResetPassword = async (values: z.infer<typeof formSchema>) => {
     try {
-      const { error } = await authClient.forgetPassword({
+      const { error } = await authClient.requestPasswordReset({
         email: values.email,
-        redirectTo: `${import.meta.env.VITE_APP_URL}/reset-password/verify`,
       });
 
       if (error) {

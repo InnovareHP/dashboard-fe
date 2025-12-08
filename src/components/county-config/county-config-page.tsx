@@ -1,4 +1,3 @@
-import { countyCollection } from "@/collection/county/county-collection";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -11,10 +10,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import type { CountyRow } from "@/lib/types";
+import {
+  createCounty,
+  deleteCounty,
+  getCounties,
+} from "@/services/referral/referral-service";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLiveQuery } from "@tanstack/react-db";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
@@ -29,40 +32,51 @@ const CountySchema = z.object({
 export type CountyFormType = z.infer<typeof CountySchema>;
 
 export default function CountyConfigTablePage() {
-  const { data: counties } = useLiveQuery(countyCollection);
+  const queryClient = useQueryClient();
+
+  const { data: counties } = useQuery({
+    queryKey: ["counties"],
+    queryFn: getCounties,
+  });
+
+  const createCountyMutation = useMutation({
+    mutationFn: createCounty,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["counties"] });
+      toast.success("County added successfully!");
+      form.reset({ id: uuidv4(), name: "", assigned_to: "" });
+    },
+    onError: () => {
+      toast.error("Failed to add county");
+    },
+  });
+
+  const deleteCountyMutation = useMutation({
+    mutationFn: deleteCounty,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["counties"] });
+      toast.success("County deleted successfully!");
+    },
+    onError: () => {
+      toast.error("Failed to delete county");
+    },
+  });
+
   const form = useForm<CountyFormType>({
     resolver: zodResolver(CountySchema),
     defaultValues: { id: uuidv4(), name: "", assigned_to: "" },
   });
 
-  const [isSaving, setIsSaving] = useState(false);
-
-  const onSubmit = async (values: CountyFormType) => {
-    setIsSaving(true);
-    try {
-      countyCollection.insert([values as CountyRow]);
-      toast.success("County added successfully!");
-      form.reset();
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to add county");
-    } finally {
-      setIsSaving(false);
-    }
+  const onSubmit = (values: CountyFormType) => {
+    createCountyMutation.mutate(values as CountyRow);
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      countyCollection.delete([id]);
-      toast.success("County deleted successfully!");
-    } catch {
-      toast.error("Failed to delete county");
-    }
+  const handleDelete = (id: string) => {
+    deleteCountyMutation.mutate(id);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 p-8 space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
@@ -73,12 +87,11 @@ export default function CountyConfigTablePage() {
           </p>
         </div>
         <Badge variant="outline" className="text-lg py-2 px-4">
-          {counties?.filter((c) => c.assigned_to)?.length ?? 0}/
+          {counties?.filter((c: CountyRow) => c.assigned_to)?.length ?? 0}/
           {counties?.length ?? 0} Assigned
         </Badge>
       </div>
 
-      {/* Add County Form */}
       <Card className="p-6 border border-gray-200">
         <Form {...form}>
           <form
@@ -110,15 +123,18 @@ export default function CountyConfigTablePage() {
               )}
             />
 
-            <Button type="submit" disabled={isSaving} className="mt-2 md:mt-0">
+            <Button
+              type="submit"
+              disabled={createCountyMutation.isPending}
+              className="mt-2 md:mt-0"
+            >
               <Plus className="w-4 h-4 mr-2" />
-              {isSaving ? "Saving..." : "Add County"}
+              {createCountyMutation.isPending ? "Saving..." : "Add County"}
             </Button>
           </form>
         </Form>
       </Card>
 
-      {/* County Table */}
       <Card className="overflow-hidden border border-gray-200">
         <div className="overflow-x-auto">
           <table className="min-w-full border-collapse text-sm">
@@ -130,7 +146,7 @@ export default function CountyConfigTablePage() {
                 <th className="px-4 py-3 text-left font-semibold">
                   Assigned Person
                 </th>
-
+                <th className="px-4 py-3 text-center font-semibold">Status</th>
                 <th className="px-4 py-3 text-center font-semibold">Actions</th>
               </tr>
             </thead>
@@ -145,7 +161,6 @@ export default function CountyConfigTablePage() {
                   >
                     <td className="px-4 py-3">{county.name}</td>
                     <td className="px-4 py-3">{county.assigned_to || "—"}</td>
-
                     <td className="px-4 py-3 text-center">
                       {county.assigned_to ? (
                         <Badge
@@ -169,6 +184,7 @@ export default function CountyConfigTablePage() {
                         size="icon"
                         onClick={() => handleDelete(county.id)}
                         className="text-gray-400 hover:text-red-500"
+                        disabled={deleteCountyMutation.isPending}
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -178,7 +194,7 @@ export default function CountyConfigTablePage() {
               ) : (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={4}
                     className="text-center py-10 text-gray-500 text-sm"
                   >
                     No counties configured yet.

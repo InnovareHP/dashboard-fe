@@ -1,13 +1,4 @@
-import type { ReferralHistoryItem } from "@/lib/types";
-import {
-  createReferralTimeline,
-  getReferralTimeline,
-} from "@/services/referral/referral-service";
-import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import { createCollection } from "@tanstack/react-db";
-import { QueryClient } from "@tanstack/react-query";
-
-const queryClient = new QueryClient();
+// const queryClient = new QueryClient();
 
 /**
  * Lead Collection using TanStack DB
@@ -45,22 +36,22 @@ const queryClient = new QueryClient();
 //   })
 // );
 
-export const referralTimelineCollection = createCollection(
-  queryCollectionOptions({
-    queryKey: ["referral-timeline"],
-    queryFn: async ({ queryKey }: { queryKey: string[] }) => {
-      const referralId = queryKey[1];
-      const response = await getReferralTimeline(referralId);
-      return response.data;
-    },
-    getKey: (item: ReferralHistoryItem) => item.id,
-    queryClient,
-    onInsert: async ({ transaction }) => {
-      const mutation = transaction.mutations[0];
-      await createReferralTimeline(
-        mutation.modified.id as string,
-        mutation.modified
-      );
-    },
-  })
-);
+// export const referralTimelineCollection = createCollection(
+//   queryCollectionOptions({
+//     queryKey: ["referral-timeline"],
+//     queryFn: async ({ queryKey }: { queryKey: string[] }) => {
+//       const referralId = queryKey[1];
+//       const response = await getReferralTimeline(referralId);
+//       return response.data;
+//     },
+//     getKey: (item: ReferralHistoryItem) => item.id,
+//     queryClient,
+//     onInsert: async ({ transaction }) => {
+//       const mutation = transaction.mutations[0];
+//       await createReferralTimeline(
+//         mutation.modified.id as string,
+//         mutation.modified
+//       );
+//     },
+//   })
+// );
