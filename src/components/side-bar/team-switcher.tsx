@@ -20,30 +20,38 @@ import { ChevronsUpDown, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+type OrganizationsResponse = Organization[];
+
 export function TeamSwitcher() {
   const { isMobile } = useSidebar();
   const queryClient = useQueryClient();
-  const orgData = queryClient.getQueryData(["organizations"]) as Organization[];
   const router = useRouter();
   const { activeOrganizationId } = useRouteContext({ from: "/_team" });
 
-  const teams: Organization[] = orgData ?? [];
+  // ✅ FIX: subscribe to the query instead of reading cache directly
+  const orgData = queryClient.getQueryData<OrganizationsResponse>([
+    "organizations",
+  ]);
 
-  const currentTeam = orgData?.find(
-    (org) => org.id === activeOrganizationId
-  ) as Organization;
-
-  const [activeTeam, setActiveTeam] = useState<Organization>(currentTeam);
+  const [activeTeam, setActiveTeam] = useState<Organization | null>(null);
+  const [teams, setTeams] = useState<Organization[]>([]);
 
   useEffect(() => {
-    setActiveTeam(currentTeam);
-  }, [activeOrganizationId]);
+    if (!activeOrganizationId || !orgData?.length) return;
+
+    setTeams(orgData);
+
+    const currentTeam = orgData.find((org) => org.id === activeOrganizationId);
+
+    setActiveTeam(currentTeam ?? null);
+  }, [orgData]);
 
   const HandleSelectActiveTeam = (team: Organization) => {
     try {
       authClient.organization.setActive({
         organizationId: team.id,
       });
+
       setActiveTeam(team);
 
       router.navigate({
@@ -77,10 +85,10 @@ export function TeamSwitcher() {
 
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
-                    {activeTeam?.name ?? ""}
+                    {activeTeam?.name ?? "Select a team"}
                   </span>
                   <span className="truncate text-xs">
-                    {activeTeam?.name ?? "Select a team"}
+                    {activeTeam?.name ?? "No team selected"}
                   </span>
                 </div>
 
@@ -101,6 +109,7 @@ export function TeamSwitcher() {
 
             {teams.map((team, index) => {
               const Logo = team.logo ?? User;
+
               return (
                 <DropdownMenuItem
                   key={team.id ?? team.name}
@@ -110,9 +119,11 @@ export function TeamSwitcher() {
                   <div className="flex size-6 items-center justify-center rounded-md border">
                     <Logo className="size-3.5 shrink-0" />
                   </div>
+
                   <div className="flex items-center gap-2">
                     <span>{team.name}</span>
                   </div>
+
                   <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
                 </DropdownMenuItem>
               );

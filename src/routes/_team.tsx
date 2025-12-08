@@ -9,7 +9,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
-import { useQueries, type UseQueryResult } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import type { Session, User } from "better-auth";
 
@@ -74,25 +74,20 @@ export const Route = createFileRoute("/_team")({
 });
 
 function RouteComponent() {
-  const results = useQueries<[UseQueryResult<OrganizationsResponse>]>({
-    queries: [
-      {
-        queryKey: ["organizations"],
-        queryFn: async (): Promise<OrganizationsResponse> => {
-          const { data, error } = await authClient.organization.list();
-          if (error || !data) {
-            throw new Error("Failed to fetch organizations");
-          }
-          return data as unknown as OrganizationsResponse;
-        },
-        staleTime: 5 * 60 * 1000,
-      },
-    ],
+  const organizations = useQuery({
+    queryKey: ["organizations"],
+    queryFn: async (): Promise<OrganizationsResponse> => {
+      const { data, error } = await authClient.organization.list();
+      if (error || !data) {
+        throw new Error("Failed to fetch organizations");
+      }
+      return data as unknown as OrganizationsResponse;
+    },
   });
 
   return (
     <SidebarProvider>
-      <Loader isLoading={results.some((result) => result.isLoading)} />
+      <Loader isLoading={organizations.isLoading} />
       <AppSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
