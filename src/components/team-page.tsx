@@ -47,6 +47,7 @@ import { authClient } from "@/lib/auth-client";
 import { formatCapitalize } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouteContext } from "@tanstack/react-router";
 import type { Invitation } from "better-auth/plugins";
 import { formatDate } from "date-fns";
 import debounce from "lodash.debounce";
@@ -63,6 +64,7 @@ const formSchema = z.object({
 });
 
 const TeamPage = () => {
+  const { memberData } = useRouteContext({ from: "/_team" });
   const { data: organizationData } = authClient.useActiveOrganization();
   const queryClient = useQueryClient();
 
@@ -256,81 +258,83 @@ const TeamPage = () => {
               Manage your team members and collaborate effectively
             </p>
           </div>
-          <Dialog
-            open={isInviteDialogOpen}
-            onOpenChange={setIsInviteDialogOpen}
-          >
-            <DialogTrigger asChild>
-              <Button className="flex items-center space-x-2 w-full sm:w-auto">
-                <UserPlus className="w-4 h-4" />
-                <span>Invite Member</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>Invite Team Member</DialogTitle>
-                <DialogDescription>
-                  Send an invitation to join {organizationData?.name}
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={form.handleSubmit(handleInvite)}>
-                <div className="space-y-4">
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="colleague@email.com"
-                    {...form.register("email")}
-                  />
+          {memberData?.role === "owner" && (
+            <Dialog
+              open={isInviteDialogOpen}
+              onOpenChange={setIsInviteDialogOpen}
+            >
+              <DialogTrigger asChild>
+                <Button className="flex items-center space-x-2 w-full sm:w-auto">
+                  <UserPlus className="w-4 h-4" />
+                  <span>Invite Member</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Invite Team Member</DialogTitle>
+                  <DialogDescription>
+                    Send an invitation to join {organizationData?.name}
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={form.handleSubmit(handleInvite)}>
+                  <div className="space-y-4">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="colleague@email.com"
+                      {...form.register("email")}
+                    />
 
-                  <Label htmlFor="role">Role</Label>
-                  <Select
-                    {...form.register("role")}
-                    onValueChange={(value) =>
-                      form.setValue("role", value as "member" | "owner")
-                    }
-                    defaultValue="member"
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="member">Member</SelectItem>
-                      <SelectItem value="owner">Owner</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <Label htmlFor="role">Role</Label>
+                    <Select
+                      {...form.register("role")}
+                      onValueChange={(value) =>
+                        form.setValue("role", value as "member" | "owner")
+                      }
+                      defaultValue="member"
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="member">Member</SelectItem>
+                        <SelectItem value="owner">Owner</SelectItem>
+                      </SelectContent>
+                    </Select>
 
-                  <Label htmlFor="message">Personal Message (Optional)</Label>
-                  <Textarea
-                    id="message"
-                    placeholder="Welcome to our team!"
-                    rows={3}
-                    {...form.register("message")}
-                  />
-                </div>
-                <DialogFooter className="pt-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsInviteDialogOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    disabled={form.formState.isSubmitting}
-                    type="submit"
-                    className="flex items-center space-x-2"
-                  >
-                    <Send className="w-4 h-4" />
-                    <span>
-                      {form.formState.isSubmitting
-                        ? "Sending..."
-                        : "Send Invitation"}
-                    </span>
-                  </Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
+                    <Label htmlFor="message">Personal Message (Optional)</Label>
+                    <Textarea
+                      id="message"
+                      placeholder="Welcome to our team!"
+                      rows={3}
+                      {...form.register("message")}
+                    />
+                  </div>
+                  <DialogFooter className="pt-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsInviteDialogOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      disabled={form.formState.isSubmitting}
+                      type="submit"
+                      className="flex items-center space-x-2"
+                    >
+                      <Send className="w-4 h-4" />
+                      <span>
+                        {form.formState.isSubmitting
+                          ? "Sending..."
+                          : "Send Invitation"}
+                      </span>
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
 
         <Card className="shadow-lg border-0">
@@ -411,247 +415,254 @@ const TeamPage = () => {
 
         <Tabs defaultValue="members" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="members">Team Members</TabsTrigger>
+            {memberData?.role === "owner" && (
+              <TabsTrigger value="members">Team Members</TabsTrigger>
+            )}
             <TabsTrigger value="invitations">Pending Invitations</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="members" className="space-y-6">
-            <Card className="bg-white/95 backdrop-blur border-0">
-              <CardHeader>
-                <div className="flex flex-wrap gap-2 items-center justify-between">
-                  <CardTitle className="text-xl font-bold text-gray-900">
-                    Employees
-                  </CardTitle>
-                  <div className="flex items-center space-x-3">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                      <Input
-                        placeholder="Search"
-                        value={memberTableField.search}
-                        onChange={(e) => debouncedSearch(e.target.value)}
-                        className="pl-10 w-64"
-                      />
+          {memberData?.role === "owner" && (
+            <TabsContent value="members" className="space-y-6">
+              <Card className="bg-white/95 backdrop-blur border-0">
+                <CardHeader>
+                  <div className="flex flex-wrap gap-2 items-center justify-between">
+                    <CardTitle className="text-xl font-bold text-gray-900">
+                      Employees
+                    </CardTitle>
+                    <div className="flex items-center space-x-3">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                          placeholder="Search"
+                          value={memberTableField.search}
+                          onChange={(e) => debouncedSearch(e.target.value)}
+                          className="pl-10 w-64"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ReusableTable
-                  data={
-                    Array.isArray(employees?.data?.members)
-                      ? employees.data.members
-                      : []
-                  }
-                  columns={[
-                    {
-                      key: "user_name",
-                      header: "Name",
-                      render: (row) => (
-                        <div className="flex items-center space-x-2">
-                          <Avatar>
-                            <AvatarImage src={row?.user.image ?? undefined} />
-                            <AvatarFallback>
-                              {row?.user.name?.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span>{row?.user.name}</span>
-                        </div>
-                      ),
-                    },
-                    {
-                      key: "user_email",
-                      header: "Email",
-                      render: (row) => row?.user.email,
-                    },
-                    {
-                      key: "member_position",
-                      header: "Role",
-                      render: (row) => formatCapitalize(row?.role),
-                    },
-                    {
-                      key: "member_created_at",
-                      header: "Joined Date",
-                      render: (row) =>
-                        formatDate(
-                          new Date(row?.createdAt ?? ""),
-                          "MM/dd/yyyy"
-                        ),
-                    },
-                    {
-                      key: "action",
-                      header: "Action",
-                      render: (row) => (
-                        <>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <MoreHorizontal className="w-4 h-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-
-                            <DropdownMenuContent align="end">
-                              {/* Remove */}
-                              <DropdownMenuItem
-                                onClick={() => handleRemoveFromTeam(row.userId)}
-                              >
-                                Remove From Team
-                              </DropdownMenuItem>
-
-                              {/* Edit Role Trigger */}
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  setSelectedRow(row as any); // <-- store row in state
-                                  setIsOpenEditRoleDialog(true);
-                                }}
-                              >
-                                Edit Role
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-
-                          {/* Dialog OUTSIDE the menu */}
-                          <Dialog
-                            open={isOpenEditRoleDialog}
-                            onOpenChange={setIsOpenEditRoleDialog}
-                          >
-                            <DialogContent className="sm:max-w-md">
-                              <DialogHeader>
-                                <DialogTitle>Edit Role</DialogTitle>
-                              </DialogHeader>
-
-                              <Select
-                                value={selectedRow?.role as string}
-                                onValueChange={(value) => {
-                                  handleEditRole(
-                                    selectedRow?.id as string,
-                                    value
-                                  );
-                                  setIsOpenEditRoleDialog(false);
-                                }}
-                              >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="Select Role" />
-                                </SelectTrigger>
-
-                                <SelectContent>
-                                  <SelectItem value="member">
-                                    {formatCapitalize("member")}
-                                  </SelectItem>
-                                  <SelectItem value="owner">
-                                    {formatCapitalize("owner")}
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </DialogContent>
-                          </Dialog>
-                        </>
-                      ),
-                    },
-                  ]}
-                  currentPage={memberTableField.page}
-                  itemsPerPage={10}
-                  onPageChange={(page) => {
-                    setMemberTableField((prev) => ({
-                      ...prev,
-                      page,
-                    }));
-                  }}
-                  totalCount={employees?.data?.total}
-                  emptyMessage="No members found"
-                  isLoading={isLoading}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="invitations" className="space-y-6">
-            <Card className="shadow-lg border-0">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Mail className="w-5 h-5 text-blue-600" />
-                  <span>Pending Invitations</span>
-                  <Badge variant="secondary">{invitations?.length}</Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea>
-                  {invitations?.length === 0 ? (
-                    <div className="text-center py-8">
-                      <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        No pending invitations
-                      </h3>
-                      <p className="text-gray-600">
-                        All team members have been successfully onboarded.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {invitations?.map((invitation) => (
-                        <div
-                          key={invitation.id}
-                          className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-                        >
-                          <div className="flex items-center space-x-4">
-                            <Avatar className="w-10 h-10">
-                              <AvatarFallback className="bg-gray-200">
-                                {invitation.email.charAt(0).toUpperCase()}
+                </CardHeader>
+                <CardContent>
+                  <ReusableTable
+                    data={
+                      Array.isArray(employees?.data?.members)
+                        ? employees.data.members
+                        : []
+                    }
+                    columns={[
+                      {
+                        key: "user_name",
+                        header: "Name",
+                        render: (row) => (
+                          <div className="flex items-center space-x-2">
+                            <Avatar>
+                              <AvatarImage src={row?.user.image ?? undefined} />
+                              <AvatarFallback>
+                                {row?.user.name?.charAt(0)}
                               </AvatarFallback>
                             </Avatar>
-                            <div>
-                              <p className="font-medium text-gray-900">
-                                {invitation.email}
-                              </p>
-                              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                <span>{invitation.role}</span>
-                              </div>
-                            </div>
+                            <span>{row?.user.name}</span>
                           </div>
-                          <div className="flex items-center space-x-3">
-                            {getStatusBadge(invitation.status)}
-                            <div className="text-sm text-gray-500">
-                              {formatDate(
-                                new Date(invitation.expiresAt),
-                                "MM/dd/yyyy"
-                              )}
-                            </div>
+                        ),
+                      },
+                      {
+                        key: "user_email",
+                        header: "Email",
+                        render: (row) => row?.user.email,
+                      },
+                      {
+                        key: "member_position",
+                        header: "Role",
+                        render: (row) => formatCapitalize(row?.role),
+                      },
+                      {
+                        key: "member_created_at",
+                        header: "Joined Date",
+                        render: (row) =>
+                          formatDate(
+                            new Date(row?.createdAt ?? ""),
+                            "MM/dd/yyyy"
+                          ),
+                      },
+                      {
+                        key: "action",
+                        header: "Action",
+                        render: (row) => (
+                          <>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8"
-                                >
-                                  <MoreVertical className="w-4 h-4" />
+                                <Button variant="ghost" size="icon">
+                                  <MoreHorizontal className="w-4 h-4" />
                                 </Button>
                               </DropdownMenuTrigger>
+
                               <DropdownMenuContent align="end">
+                                {/* Remove */}
                                 <DropdownMenuItem
                                   onClick={() =>
-                                    handleResendInvitation(invitation)
+                                    handleRemoveFromTeam(row.userId)
                                   }
                                 >
-                                  Resend Invitation
+                                  Remove From Team
                                 </DropdownMenuItem>
+
+                                {/* Edit Role Trigger */}
                                 <DropdownMenuItem
-                                  onClick={() =>
-                                    handleCancelInvitation(invitation.id)
-                                  }
+                                  onClick={() => {
+                                    setSelectedRow(row as any); // <-- store row in state
+                                    setIsOpenEditRoleDialog(true);
+                                  }}
                                 >
-                                  Cancel Invitation
+                                  Edit Role
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
+
+                            {/* Dialog OUTSIDE the menu */}
+                            <Dialog
+                              open={isOpenEditRoleDialog}
+                              onOpenChange={setIsOpenEditRoleDialog}
+                            >
+                              <DialogContent className="sm:max-w-md">
+                                <DialogHeader>
+                                  <DialogTitle>Edit Role</DialogTitle>
+                                </DialogHeader>
+
+                                <Select
+                                  value={selectedRow?.role as string}
+                                  onValueChange={(value) => {
+                                    handleEditRole(
+                                      selectedRow?.id as string,
+                                      value
+                                    );
+                                    setIsOpenEditRoleDialog(false);
+                                  }}
+                                >
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select Role" />
+                                  </SelectTrigger>
+
+                                  <SelectContent>
+                                    <SelectItem value="member">
+                                      {formatCapitalize("member")}
+                                    </SelectItem>
+                                    <SelectItem value="owner">
+                                      {formatCapitalize("owner")}
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </DialogContent>
+                            </Dialog>
+                          </>
+                        ),
+                      },
+                    ]}
+                    currentPage={memberTableField.page}
+                    itemsPerPage={10}
+                    onPageChange={(page) => {
+                      setMemberTableField((prev) => ({
+                        ...prev,
+                        page,
+                      }));
+                    }}
+                    totalCount={employees?.data?.total}
+                    emptyMessage="No members found"
+                    isLoading={isLoading}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
+          {memberData?.role === "owner" && (
+            <TabsContent value="invitations" className="space-y-6">
+              <Card className="shadow-lg border-0">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Mail className="w-5 h-5 text-blue-600" />
+                    <span>Pending Invitations</span>
+                    <Badge variant="secondary">{invitations?.length}</Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ScrollArea>
+                    {invitations?.length === 0 ? (
+                      <div className="text-center py-8">
+                        <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                          No pending invitations
+                        </h3>
+                        <p className="text-gray-600">
+                          All team members have been successfully onboarded.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {invitations?.map((invitation) => (
+                          <div
+                            key={invitation.id}
+                            className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                          >
+                            <div className="flex items-center space-x-4">
+                              <Avatar className="w-10 h-10">
+                                <AvatarFallback className="bg-gray-200">
+                                  {invitation.email.charAt(0).toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <p className="font-medium text-gray-900">
+                                  {invitation.email}
+                                </p>
+                                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                                  <span>{invitation.role}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-3">
+                              {getStatusBadge(invitation.status)}
+                              <div className="text-sm text-gray-500">
+                                {formatDate(
+                                  new Date(invitation.expiresAt),
+                                  "MM/dd/yyyy"
+                                )}
+                              </div>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                  >
+                                    <MoreVertical className="w-4 h-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem
+                                    onClick={() =>
+                                      handleResendInvitation(invitation)
+                                    }
+                                  >
+                                    Resend Invitation
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() =>
+                                      handleCancelInvitation(invitation.id)
+                                    }
+                                  >
+                                    Cancel Invitation
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <ScrollBar orientation="horizontal" />
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                        ))}
+                      </div>
+                    )}
+                    <ScrollBar orientation="horizontal" />
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
         </Tabs>
       </div>
     </div>
