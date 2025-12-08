@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
       allowedHosts: ["dashboard-fe-prod.up.railway.app"],
       port: 3000,
     },
-
+    //test
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
