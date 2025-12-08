@@ -81,7 +81,7 @@ export function LoginForm({
                     Welcome back
                   </h1>
                   <p className="text-slate-600 dark:text-slate-400">
-                    Login to your Acme Inc account
+                    Login to your Dashboard account
                   </p>
                 </div>
 

@@ -25,7 +25,7 @@ const StepOne = ({
   <div className="space-y-8 flex flex-col items-center justify-center">
     <div className="text-center space-y-2">
       <h1 className="text-2xl font-semibold">
-        How did you hear about Geeni AI?
+        How did you hear about Dashboard?
       </h1>
       <p>This helps us customize your experience</p>
     </div>

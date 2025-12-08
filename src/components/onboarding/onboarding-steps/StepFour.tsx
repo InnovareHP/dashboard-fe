@@ -27,7 +27,7 @@ const StepFour = ({ register, isSubmitting }: StepFourProps) => (
       <Input
         id="organizationName"
         type="text"
-        placeholder="e.g. Acme Corp"
+        placeholder="e.g. Dashboard Inc"
         className="focus-visible:ring-primary"
         {...register("organizationName", { required: true })}
       />
