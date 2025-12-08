@@ -27,8 +27,9 @@ export function NavUser() {
 
   const handleLogout = () => {
     authClient.signOut();
+
+    router.navigate({ to: "/login" });
     router.invalidate();
-    router.navigate({ to: "/" });
   };
 
   return (
