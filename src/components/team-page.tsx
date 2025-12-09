@@ -59,7 +59,7 @@ import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 
 const formSchema = z.object({
   email: z.email(),
-  role: z.enum(["member", "owner"]),
+  role: z.enum(["liason", "owner"]),
   message: z.string(),
 });
 
@@ -74,7 +74,7 @@ const TeamPage = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
-      role: "member",
+      role: "liason",
       message: "",
     },
     mode: "onChange",
@@ -162,7 +162,7 @@ const TeamPage = () => {
     try {
       await authClient.organization.inviteMember({
         email: data.email,
-        role: data.role as "member" | "admin" | "owner",
+        role: data.role as "liason" | "admin" | "owner",
         organizationId: organizationData?.id ?? "",
         resend: true,
       });
@@ -181,7 +181,7 @@ const TeamPage = () => {
     try {
       await authClient.organization.inviteMember({
         email: data.email,
-        role: data.role as "member" | "admin" | "owner",
+        role: data.role as "liason" | "admin" | "owner",
         organizationId: data.organizationId,
         resend: true,
       });
@@ -290,15 +290,15 @@ const TeamPage = () => {
                     <Select
                       {...form.register("role")}
                       onValueChange={(value) =>
-                        form.setValue("role", value as "member" | "owner")
+                        form.setValue("role", value as "liason" | "owner")
                       }
-                      defaultValue="member"
+                      defaultValue="liason"
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="member">Member</SelectItem>
+                        <SelectItem value="liason">Liason</SelectItem>
                         <SelectItem value="owner">Owner</SelectItem>
                       </SelectContent>
                     </Select>
@@ -543,8 +543,8 @@ const TeamPage = () => {
                                   </SelectTrigger>
 
                                   <SelectContent>
-                                    <SelectItem value="member">
-                                      {formatCapitalize("member")}
+                                    <SelectItem value="liason">
+                                      {formatCapitalize("liason")}
                                     </SelectItem>
                                     <SelectItem value="owner">
                                       {formatCapitalize("owner")}
