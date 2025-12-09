@@ -44,6 +44,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: "Referral List",
             url: `/${activeOrganizationId}/referral-list`,
           },
+          {
+            title: "Mileage Log",
+            url: `/${activeOrganizationId}/mileage-log`,
+          },
         ],
       },
 

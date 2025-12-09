@@ -28,6 +28,7 @@ import { Route as TeamTeamPlansRouteImport } from './routes/_team/$team/plans'
 import { Route as AuthResetPasswordVerifyRouteImport } from './routes/_auth/reset-password/verify'
 import { Route as AuthEmailVerificationRouteImport } from './routes/_auth/email.verification'
 import { Route as TeamTeamReferralListIndexRouteImport } from './routes/_team/$team/referral-list/index'
+import { Route as TeamTeamMileageLogIndexRouteImport } from './routes/_team/$team/mileage-log/index'
 import { Route as TeamTeamMasterListIndexRouteImport } from './routes/_team/$team/master-list/index'
 import { Route as TeamTeamSettingsBillingRouteImport } from './routes/_team/$team/settings/billing'
 import { Route as TeamTeamReferralListCountyConfigRouteImport } from './routes/_team/$team/referral-list/county-config'
@@ -128,6 +129,11 @@ const TeamTeamReferralListIndexRoute =
     path: '/$team/referral-list/',
     getParentRoute: () => TeamRoute,
   } as any)
+const TeamTeamMileageLogIndexRoute = TeamTeamMileageLogIndexRouteImport.update({
+  id: '/$team/mileage-log/',
+  path: '/$team/mileage-log/',
+  getParentRoute: () => TeamRoute,
+} as any)
 const TeamTeamMasterListIndexRoute = TeamTeamMasterListIndexRouteImport.update({
   id: '/$team/master-list/',
   path: '/$team/master-list/',
@@ -177,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
   '/$team/settings/billing': typeof TeamTeamSettingsBillingRoute
   '/$team/master-list': typeof TeamTeamMasterListIndexRoute
+  '/$team/mileage-log': typeof TeamTeamMileageLogIndexRoute
   '/$team/referral-list': typeof TeamTeamReferralListIndexRoute
   '/$team/master-list/leads/$lead/timeline': typeof TeamTeamMasterListLeadsLeadTimelineRoute
   '/$team/master-list/leads/$lead': typeof TeamTeamMasterListLeadsLeadIndexRoute
@@ -201,6 +208,7 @@ export interface FileRoutesByTo {
   '/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
   '/$team/settings/billing': typeof TeamTeamSettingsBillingRoute
   '/$team/master-list': typeof TeamTeamMasterListIndexRoute
+  '/$team/mileage-log': typeof TeamTeamMileageLogIndexRoute
   '/$team/referral-list': typeof TeamTeamReferralListIndexRoute
   '/$team/master-list/leads/$lead/timeline': typeof TeamTeamMasterListLeadsLeadTimelineRoute
   '/$team/master-list/leads/$lead': typeof TeamTeamMasterListLeadsLeadIndexRoute
@@ -228,6 +236,7 @@ export interface FileRoutesById {
   '/_team/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
   '/_team/$team/settings/billing': typeof TeamTeamSettingsBillingRoute
   '/_team/$team/master-list/': typeof TeamTeamMasterListIndexRoute
+  '/_team/$team/mileage-log/': typeof TeamTeamMileageLogIndexRoute
   '/_team/$team/referral-list/': typeof TeamTeamReferralListIndexRoute
   '/_team/$team/master-list/leads/$lead/timeline': typeof TeamTeamMasterListLeadsLeadTimelineRoute
   '/_team/$team/master-list/leads/$lead/': typeof TeamTeamMasterListLeadsLeadIndexRoute
@@ -254,6 +263,7 @@ export interface FileRouteTypes {
     | '/$team/referral-list/county-config'
     | '/$team/settings/billing'
     | '/$team/master-list'
+    | '/$team/mileage-log'
     | '/$team/referral-list'
     | '/$team/master-list/leads/$lead/timeline'
     | '/$team/master-list/leads/$lead'
@@ -278,6 +288,7 @@ export interface FileRouteTypes {
     | '/$team/referral-list/county-config'
     | '/$team/settings/billing'
     | '/$team/master-list'
+    | '/$team/mileage-log'
     | '/$team/referral-list'
     | '/$team/master-list/leads/$lead/timeline'
     | '/$team/master-list/leads/$lead'
@@ -304,6 +315,7 @@ export interface FileRouteTypes {
     | '/_team/$team/referral-list/county-config'
     | '/_team/$team/settings/billing'
     | '/_team/$team/master-list/'
+    | '/_team/$team/mileage-log/'
     | '/_team/$team/referral-list/'
     | '/_team/$team/master-list/leads/$lead/timeline'
     | '/_team/$team/master-list/leads/$lead/'
@@ -453,6 +465,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamTeamReferralListIndexRouteImport
       parentRoute: typeof TeamRoute
     }
+    '/_team/$team/mileage-log/': {
+      id: '/_team/$team/mileage-log/'
+      path: '/$team/mileage-log'
+      fullPath: '/$team/mileage-log'
+      preLoaderRoute: typeof TeamTeamMileageLogIndexRouteImport
+      parentRoute: typeof TeamRoute
+    }
     '/_team/$team/master-list/': {
       id: '/_team/$team/master-list/'
       path: '/$team/master-list'
@@ -531,6 +550,7 @@ interface TeamRouteChildren {
   TeamTeamIndexRoute: typeof TeamTeamIndexRoute
   TeamTeamReferralListCountyConfigRoute: typeof TeamTeamReferralListCountyConfigRoute
   TeamTeamMasterListIndexRoute: typeof TeamTeamMasterListIndexRoute
+  TeamTeamMileageLogIndexRoute: typeof TeamTeamMileageLogIndexRoute
   TeamTeamReferralListIndexRoute: typeof TeamTeamReferralListIndexRoute
   TeamTeamMasterListLeadsLeadTimelineRoute: typeof TeamTeamMasterListLeadsLeadTimelineRoute
   TeamTeamMasterListLeadsLeadIndexRoute: typeof TeamTeamMasterListLeadsLeadIndexRoute
@@ -545,6 +565,7 @@ const TeamRouteChildren: TeamRouteChildren = {
   TeamTeamIndexRoute: TeamTeamIndexRoute,
   TeamTeamReferralListCountyConfigRoute: TeamTeamReferralListCountyConfigRoute,
   TeamTeamMasterListIndexRoute: TeamTeamMasterListIndexRoute,
+  TeamTeamMileageLogIndexRoute: TeamTeamMileageLogIndexRoute,
   TeamTeamReferralListIndexRoute: TeamTeamReferralListIndexRoute,
   TeamTeamMasterListLeadsLeadTimelineRoute:
     TeamTeamMasterListLeadsLeadTimelineRoute,
