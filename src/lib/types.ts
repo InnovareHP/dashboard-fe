@@ -182,3 +182,15 @@ export type Organization = {
   createdAt: Date;
   metadata?: any;
 };
+
+export type MileageLogRow = {
+  id: string;
+  destination: string;
+  countiesMarketed: string;
+  beginningMileage: number;
+  endingMileage: number;
+  totalMiles: number;
+  rateType: string;
+  ratePerMile: number;
+  reimbursementAmount: number;
+};

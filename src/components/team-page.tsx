@@ -247,7 +247,7 @@ const TeamPage = () => {
   }, [employees, invitations]);
 
   return (
-    <div className="min-h-screen p-0 sm:p-6 rounded-xl">
+    <div className="min-h-screen p-0 bg-gray-50 sm:p-8 rounded-xl">
       <div className="max-w-8xl mx-auto space-y-8">
         <div className="flex flex-wrap space-y-4 items-center justify-between">
           <div>
@@ -416,9 +416,13 @@ const TeamPage = () => {
         <Tabs defaultValue="members" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">
             {memberData?.role === "owner" && (
-              <TabsTrigger value="members">Team Members</TabsTrigger>
+              <>
+                <TabsTrigger value="members">Team Members</TabsTrigger>
+                <TabsTrigger value="invitations">
+                  Pending Invitations
+                </TabsTrigger>
+              </>
             )}
-            <TabsTrigger value="invitations">Pending Invitations</TabsTrigger>
           </TabsList>
 
           {memberData?.role === "owner" && (

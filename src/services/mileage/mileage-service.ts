@@ -1,15 +1,21 @@
 import { axiosClient } from "@/lib/axios-client";
+import type { MileageLogRow } from "@/lib/types";
 
 export const getMileageLogs = async (filters?: any) => {
   const response = await axiosClient.get("/api/liason/mileage", {
-    params: filters,
+    params: {
+      ...filters,
+    },
   });
 
   if (response.status !== 200) {
     throw new Error("Failed to fetch mileage logs");
   }
 
-  return response.data;
+  return response.data as {
+    data: MileageLogRow[];
+    total: number;
+  };
 };
 
 export const createMileageLog = async (data: any) => {
@@ -45,4 +51,3 @@ export const deleteMileageLog = async (id: string) => {
 
   return response.data;
 };
-

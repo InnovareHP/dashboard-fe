@@ -133,10 +133,10 @@ export default function ReferralAnalyticsDashboard() {
   } = Recharts;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-8 bg-gray-50 space-y-6">
       {/* HEADER */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">
+        <h1 className="text-3xl font-bold text-gray-900">
           Referral Intelligence Dashboard
         </h1>
         <p className="text-muted-foreground mt-2">
