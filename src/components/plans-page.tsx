@@ -74,13 +74,15 @@ export function PlansPage({
     try {
       if (!activeOrganizationId) return;
 
-      await authClient.subscription.upgrade({
+      const { error } = await authClient.subscription.upgrade({
         plan: "Dashboard",
         referenceId: activeOrganizationId,
         seats: 10,
         successUrl: `${import.meta.env.VITE_APP_URL}/${activeOrganizationId}/success`,
         cancelUrl: `${import.meta.env.VITE_APP_URL}${location.href}`,
       });
+
+      if (error) toast.error(error.message);
     } catch (error: any) {
       toast.error(error.message);
     }

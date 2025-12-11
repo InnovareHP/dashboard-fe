@@ -147,6 +147,12 @@ export function EditableCell({
     gcTime: 1000 * 60 * 5,
   });
 
+  const { data: assignedToOptions = [] } = useQuery({
+    queryKey: ["assigned-to-users"],
+    queryFn: () => getDropdownOptions("ASSIGNED_TO"), // MUST RETURN {id, user_name}
+    enabled: type === "ASSIGNED_TO",
+  });
+
   const { mutate: createDropdownOptionMutation } = useMutation({
     mutationFn: async (option: string) =>
       isReferral
@@ -234,6 +240,26 @@ export function EditableCell({
           />
         </PopoverContent>
       </Popover>
+    );
+  }
+
+  // ---- ASSIGNED TO ----
+
+  if (type === "ASSIGNED_TO") {
+    return (
+      <Select defaultValue={val} onValueChange={(v) => handleUpdate(String(v))}>
+        <SelectTrigger className="w-auto text-sm">
+          <SelectValue placeholder={val || "Select an option"} />
+        </SelectTrigger>
+
+        <SelectContent>
+          {assignedToOptions.map((opt) => (
+            <SelectItem key={opt.id} value={opt.id}>
+              {opt.value}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     );
   }
 

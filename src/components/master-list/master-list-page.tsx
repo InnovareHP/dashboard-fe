@@ -132,7 +132,9 @@ export default function MasterListPage() {
 
   return (
     <div className="p-8 bg-gray-50 space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900">Lead Master List</h1>
+      <h1 className="text-3xl font-bold text-gray-900">
+        Master Marketing List
+      </h1>
 
       <MasterListFilters
         columns={data?.pages[0].columns ?? []}

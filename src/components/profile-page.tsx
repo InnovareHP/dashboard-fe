@@ -13,16 +13,15 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { useTeamLayoutContext } from "@/routes/_team";
 import { uploadImage } from "@/services/image/image-service";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouteContext, useRouter } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { AlertCircle, LogOut, Mail, Shield, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-
-/* ---------------- PASSWORD SCHEMA ---------------- */
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(6, "Current password is required"),
@@ -31,13 +30,11 @@ const passwordSchema = z.object({
 
 type PasswordFormValues = z.infer<typeof passwordSchema>;
 
-/* ---------------- COMPONENT ---------------- */
-
 export function ProfilePage({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { user, memberData } = useRouteContext({ from: "/_team" });
+  const { user, memberData } = useTeamLayoutContext();
   const router = useRouter();
 
   const [isUploading, setIsUploading] = useState(false);
