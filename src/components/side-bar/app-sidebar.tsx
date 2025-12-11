@@ -8,16 +8,29 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { useRouteContext } from "@tanstack/react-router";
-import { CircuitBoard, Settings2, SquareTerminal } from "lucide-react";
+import type { User as BetterAuthUser } from "better-auth";
+import type { Member, Organization } from "better-auth/plugins/organization";
+import {
+  CircuitBoard,
+  FileText,
+  Settings2,
+  SquareTerminal,
+} from "lucide-react";
 import * as React from "react";
 
-// This is sample data.
-
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { activeOrganizationId, memberData } = useRouteContext({
-    from: "/_team",
-  });
+type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
+  activeOrganizationId: string;
+  memberData: Member;
+  organizations: Organization[];
+  user: BetterAuthUser;
+};
+export function AppSidebar({
+  activeOrganizationId,
+  memberData,
+  organizations,
+  user,
+  ...props
+}: AppSidebarProps) {
   const data = {
     navMain: [
       {
@@ -49,16 +62,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: `/${activeOrganizationId}/mileage-log`,
           },
           {
-            title: "Mileage List",
-            url: `/${activeOrganizationId}/mileage-list`,
-          },
-          {
             title: "Marketing Log",
             url: `/${activeOrganizationId}/marketing-log`,
           },
         ],
       },
-
+      {
+        title: "Reports",
+        icon: FileText,
+        items: [
+          {
+            title: "Mileage Report",
+            url: `/${activeOrganizationId}/mileage-report`,
+          },
+        ],
+      },
       {
         title: "Settings",
         url: `/${activeOrganizationId}/settings`,
@@ -92,13 +110,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher />
+        <TeamSwitcher
+          activeOrganizationId={activeOrganizationId}
+          organizations={organizations}
+        />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser />
+        <NavUser user={user} activeOrganizationId={activeOrganizationId} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

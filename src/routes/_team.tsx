@@ -1,4 +1,7 @@
-// routes/_team/$team/index.tsx
+// routes/_team/$team/route.tsx
+
+import { createContext, useContext, useEffect } from "react";
+
 import Loader from "@/components/loader";
 import { AppSidebar } from "@/components/side-bar/app-sidebar";
 import { DynamicBreadcrumb } from "@/components/ui/bread-crumbs";
@@ -9,101 +12,183 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
+
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import type { Session, User } from "better-auth";
 
-type Organization = {
-  id: string;
-  name: string;
-  plan: string;
+import type { Subscription } from "@/lib/types";
+import type { Session, User } from "better-auth";
+import type { Member, Organization } from "better-auth/plugins/organization";
+
+type TeamLayoutContextValue = {
+  user: User;
+  activeOrganizationId: string;
+  organizations: Organization[];
+  memberData: Member | null;
+  activeSubscription: Subscription | null;
 };
 
-type OrganizationsResponse = { organizations: Organization[] };
+export const TeamLayoutContext = createContext<TeamLayoutContextValue | null>(
+  null
+);
+
+export const useTeamLayoutContext = () => {
+  const ctx = useContext(TeamLayoutContext);
+  if (!ctx) {
+    throw new Error(
+      "useTeamLayoutContext must be used inside <TeamLayoutContext.Provider>"
+    );
+  }
+  return ctx;
+};
 
 export const Route = createFileRoute("/_team")({
+  // ✅ Only auth / org guard here
   beforeLoad: async (context) => {
     const params = context.params as { team: string };
-    const user = context.context.user as unknown as User & {
-      user_is_onboarded: boolean;
+    const { user, session } = context.context as {
+      user: User;
+      session: Session & { activeOrganizationId: string };
     };
 
-    if (!user) {
-      throw redirect({ to: "/login" as any });
-    }
-
-    const session = context.context.session as unknown as Session & {
-      activeOrganizationId: string;
-    };
-
-    if (!session.activeOrganizationId) {
-      throw redirect({ to: "/login" as any });
+    if (!user || !session?.activeOrganizationId) {
+      throw redirect({ to: "/login" });
     }
 
     if (params.team !== session.activeOrganizationId) {
       throw redirect({ to: `/${session.activeOrganizationId}` as any });
     }
 
-    const [subscriptions, memberData] = await Promise.all([
-      authClient.subscription.list({
-        query: {
-          referenceId: session.activeOrganizationId,
-        },
-      }),
-      authClient.organization.getActiveMember(),
-    ]);
-
-    const activeSubscription = subscriptions?.data?.find(
-      (sub) => sub.status === "active" || sub.status === "trialing"
-    );
-
-    if (!activeSubscription) {
-      throw redirect({
-        to: `/billing` as any,
-      });
-    }
-
     return {
-      activeOrganizationId: session.activeOrganizationId,
-      activeSubscription,
       user,
-      memberData: memberData.data,
+      activeOrganizationId: session.activeOrganizationId,
     };
   },
-  component: RouteComponent,
+
+  component: TeamLayout,
 });
 
-function RouteComponent() {
-  const organizations = useQuery({
+function TeamLayout() {
+  const { user, activeOrganizationId } = Route.useRouteContext() as {
+    user: User;
+    activeOrganizationId: string;
+  };
+
+  const {
+    data: organizations,
+    isLoading: orgLoading,
+    error: orgError,
+  } = useQuery({
     queryKey: ["organizations"],
-    queryFn: async (): Promise<OrganizationsResponse> => {
+    queryFn: async () => {
       const { data, error } = await authClient.organization.list();
-      if (error || !data) {
-        throw new Error("Failed to fetch organizations");
-      }
-      return data as unknown as OrganizationsResponse;
+      if (error || !data) throw new Error("Failed to load organizations");
+      return data as unknown as Organization[];
     },
+    staleTime: 1000 * 60 * 60, // 1 hour
+    gcTime: 1000 * 60 * 60,
   });
 
+  const {
+    data: memberData,
+    isLoading: memberLoading,
+    error: memberError,
+  } = useQuery({
+    queryKey: ["member-data", activeOrganizationId],
+    queryFn: async () => {
+      const { data } = await authClient.organization.getActiveMember();
+      return data as Member;
+    },
+    staleTime: 1000 * 60 * 30, // 30 min
+    gcTime: 1000 * 60 * 30,
+  });
+
+  const {
+    data: activeSubscription,
+    isLoading: subscriptionLoading,
+    error: subscriptionError,
+  } = useQuery({
+    queryKey: ["subscription", activeOrganizationId],
+    queryFn: async () => {
+      const res = await authClient.subscription.list({
+        query: { referenceId: activeOrganizationId },
+      });
+      return (res.data?.find(
+        (s) => s.status === "active" || s.status === "trialing"
+      ) ?? null) as Subscription | null;
+    },
+    staleTime: 1000 * 60 * 15,
+    gcTime: 1000 * 60 * 15,
+  });
+
+  // redirect if no active / trial subscription
+  useEffect(() => {
+    if (subscriptionLoading) return;
+    if (
+      activeSubscription &&
+      activeSubscription.status !== "active" &&
+      activeSubscription.status !== "trialing"
+    ) {
+      window.location.href = "/billing";
+    }
+  }, [subscriptionLoading, activeSubscription]);
+
+  const isLoading =
+    orgLoading ||
+    memberLoading ||
+    subscriptionLoading ||
+    !organizations ||
+    !memberData ||
+    orgError ||
+    memberError ||
+    subscriptionError;
+
+  const ctxValue: TeamLayoutContextValue | null =
+    !isLoading && organizations && memberData
+      ? {
+          user,
+          activeOrganizationId,
+          organizations: organizations as unknown as Organization[],
+          memberData: memberData as Member,
+          activeSubscription: activeSubscription as Subscription | null,
+        }
+      : null;
+
   return (
-    <SidebarProvider>
-      <Loader isLoading={organizations.isLoading} />
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator
-              orientation="vertical"
-              className="mr-2 data-[orientation=vertical]:h-4"
+    <TeamLayoutContext.Provider value={ctxValue as TeamLayoutContextValue}>
+      <SidebarProvider>
+        <Loader isLoading={isLoading as boolean} />
+
+        {!isLoading && ctxValue && (
+          <>
+            <AppSidebar
+              activeOrganizationId={activeOrganizationId}
+              memberData={memberData}
+              organizations={organizations as unknown as Organization[]}
+              user={user}
             />
-            <DynamicBreadcrumb />
-          </div>
-        </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0 overflow-auto">
-          <Outlet />
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+
+            <SidebarInset>
+              <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+                <div className="flex items-center gap-2 px-4">
+                  <SidebarTrigger className="-ml-1" />
+
+                  <Separator
+                    orientation="vertical"
+                    className="mr-2 data-[orientation=vertical]:h-4"
+                  />
+
+                  <DynamicBreadcrumb />
+                </div>
+              </header>
+
+              <div className="flex flex-1 flex-col gap-4 p-4 pt-0 overflow-auto">
+                <Outlet />
+              </div>
+            </SidebarInset>
+          </>
+        )}
+      </SidebarProvider>
+    </TeamLayoutContext.Provider>
   );
 }

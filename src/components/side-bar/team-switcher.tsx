@@ -14,37 +14,38 @@ import {
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 import type { Organization } from "@/lib/types";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRouteContext, useRouter } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { ChevronsUpDown, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-type OrganizationsResponse = Organization[];
-
-export function TeamSwitcher() {
+type TeamSwitcherProps = {
+  activeOrganizationId: string;
+  organizations: Organization[];
+};
+export function TeamSwitcher({
+  activeOrganizationId,
+  organizations,
+}: TeamSwitcherProps) {
   const { isMobile } = useSidebar();
-  const queryClient = useQueryClient();
   const router = useRouter();
-  const { activeOrganizationId } = useRouteContext({ from: "/_team" });
 
-  // ✅ FIX: subscribe to the query instead of reading cache directly
-  const orgData = queryClient.getQueryData<OrganizationsResponse>([
-    "organizations",
-  ]);
-
-  const [activeTeam, setActiveTeam] = useState<Organization | null>(null);
-  const [teams, setTeams] = useState<Organization[]>([]);
+  const [activeTeam, setActiveTeam] = useState<Organization | undefined>(
+    undefined
+  );
+  const [teams, setTeams] = useState<Organization[] | undefined>(undefined);
 
   useEffect(() => {
-    if (!activeOrganizationId || !orgData?.length) return;
+    if (!activeOrganizationId || !organizations?.length) return;
 
-    setTeams(orgData);
+    setTeams(organizations);
 
-    const currentTeam = orgData.find((org) => org.id === activeOrganizationId);
+    const currentTeam = organizations.find(
+      (org) => org.id === activeOrganizationId
+    );
 
-    setActiveTeam(currentTeam ?? null);
-  }, [orgData]);
+    setActiveTeam(currentTeam ?? undefined);
+  }, [organizations]);
 
   const HandleSelectActiveTeam = (team: Organization) => {
     try {
@@ -61,7 +62,6 @@ export function TeamSwitcher() {
       });
 
       router.invalidate({});
-      queryClient.invalidateQueries({ queryKey: ["organizations"] });
     } catch (error) {
       toast.error("Failed to switch team");
     }
@@ -107,7 +107,7 @@ export function TeamSwitcher() {
               Teams
             </DropdownMenuLabel>
 
-            {teams.map((team, index) => {
+            {teams?.map((team, index) => {
               const Logo = team.logo ?? User;
 
               return (

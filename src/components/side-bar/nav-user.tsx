@@ -15,13 +15,18 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
-import { Link, useRouteContext, useRouter } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
+import type { User as BetterAuthUser } from "better-auth";
 import { ChevronsUpDown, CreditCard, LogOut, User } from "lucide-react";
 
-export function NavUser() {
+type NavUserProps = {
+  user: BetterAuthUser;
+  activeOrganizationId: string;
+};
+
+export function NavUser({ user, activeOrganizationId }: NavUserProps) {
   const { isMobile } = useSidebar();
   const router = useRouter();
-  const { activeOrganizationId, user } = useRouteContext({ from: "/_team" });
 
   const handleLogout = () => {
     authClient.signOut();

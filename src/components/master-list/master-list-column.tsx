@@ -12,6 +12,7 @@ type ColumnType = {
 type LeadRow = {
   id: string;
   lead_name: string;
+  assigned_to: string;
   [key: string]: any;
 };
 
@@ -54,9 +55,23 @@ export function generateLeadColumns(
       <EditableCell
         id={row.original.id}
         fieldName="Organization"
-        fieldKey="lead_name"
+        fieldKey="Lead"
         value={row.original.lead_name}
         type="TEXT"
+      />
+    ),
+  };
+
+  const AssignedToColumn: ColumnDef<LeadRow> = {
+    header: "Account Manager",
+    accessorKey: "assigned_to",
+    cell: ({ row }) => (
+      <EditableCell
+        id={row.original.id}
+        fieldName="Account Manager"
+        fieldKey="ASSIGNED_TO"
+        value={row.original.assigned_to}
+        type="ASSIGNED_TO"
       />
     ),
   };
@@ -67,5 +82,11 @@ export function generateLeadColumns(
     accessorKey: "create_column",
   };
 
-  return [selectColumn, OrganizerColumn, ...dynamicColumns, createNewColumn];
+  return [
+    selectColumn,
+    OrganizerColumn,
+    AssignedToColumn,
+    ...dynamicColumns,
+    createNewColumn,
+  ];
 }

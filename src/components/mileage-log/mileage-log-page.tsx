@@ -164,7 +164,7 @@ const MileageLogPage = () => {
                     <FormItem>
                       <FormLabel>Destination</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input placeholder="Enter Destination" {...field} />
                       </FormControl>
                     </FormItem>
                   )}
@@ -177,7 +177,10 @@ const MileageLogPage = () => {
                     <FormItem>
                       <FormLabel>Counties Marketed</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input
+                          placeholder="Enter Counties Marketed"
+                          {...field}
+                        />
                       </FormControl>
                     </FormItem>
                   )}
@@ -196,6 +199,7 @@ const MileageLogPage = () => {
                           onChange={(e) =>
                             field.onChange(Number(e.target.value))
                           }
+                          placeholder="Enter Beginning Mileage"
                         />
                       </FormControl>
                     </FormItem>
@@ -215,6 +219,7 @@ const MileageLogPage = () => {
                           onChange={(e) =>
                             field.onChange(Number(e.target.value))
                           }
+                          placeholder="Enter Ending Mileage"
                         />
                       </FormControl>
                     </FormItem>
@@ -229,7 +234,12 @@ const MileageLogPage = () => {
                     <FormItem>
                       <FormLabel>Total Miles</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field} disabled />
+                        <Input
+                          type="number"
+                          {...field}
+                          disabled
+                          placeholder="Enter Total Miles"
+                        />
                       </FormControl>
                     </FormItem>
                   )}

@@ -1,4 +1,5 @@
-import { createFileRoute, Link, useRouteContext } from "@tanstack/react-router";
+import { useTeamLayoutContext } from "@/routes/_team";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import confetti from "canvas-confetti";
 import { motion } from "framer-motion";
 import { CheckCircle2, Sparkles } from "lucide-react";
@@ -9,9 +10,7 @@ export const Route = createFileRoute("/_team/$team/success")({
 });
 
 function RouteComponent() {
-  const { activeSubscription } = useRouteContext({
-    from: "/_team",
-  });
+  const { activeSubscription } = useTeamLayoutContext();
 
   useEffect(() => {
     const duration = 1800;

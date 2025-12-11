@@ -5,6 +5,7 @@ export const statement = {
   ...defaultStatements,
   organization: ["create", "share", "update", "delete"],
   project: ["create", "share", "update", "delete"],
+  stripe: ["create", "update", "delete"],
 } as const;
 
 export const ac = createAccessControl(statement);

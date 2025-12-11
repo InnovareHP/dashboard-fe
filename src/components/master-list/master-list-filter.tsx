@@ -26,9 +26,9 @@ export function MasterListFilters({
   columns: { id: string; name: string; type: string }[];
   filterMeta: any;
   setFilterMeta: (meta: any) => void;
-  refetch: () => void;
   isReferral?: boolean;
   isMileage?: boolean;
+  refetch: () => void;
 }) {
   const [searchValue, setSearchValue] = useState("");
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -46,9 +46,6 @@ export function MasterListFilters({
   const handleSearch = () => {
     setFilterMeta((prev: any) => ({
       ...prev,
-      filters: {
-        ...prev.filters,
-      },
       search: searchValue,
     }));
   };
@@ -61,31 +58,68 @@ export function MasterListFilters({
     refetch();
   };
 
+  // ⭐ SPECIAL CASE: MILEAGE MODE
+  if (isMileage) {
+    return (
+      <>
+        <div className="mb-6 p-4 border rounded-lg bg-white shadow-sm space-y-4">
+          <div className="flex justify-start flex-wrap items-start gap-4">
+            <Button onClick={handleRefresh}>
+              Refresh <RefreshCcw className="w-4 h-4" />
+            </Button>
+
+            {/* ONLY DATE RANGE SHOWN */}
+            <DateRangeFilter
+              from={filterMeta.mileageDateFrom}
+              to={filterMeta.mileageDateTo}
+              onChange={(range) =>
+                setFilterMeta({
+                  ...filterMeta,
+                  mileageDateFrom: range.from,
+                  mileageDateTo: range.to,
+                })
+              }
+            />
+
+            <Button
+              variant="secondary"
+              onClick={() =>
+                setFilterMeta({
+                  mileageDateFrom: null,
+                  mileageDateTo: null,
+                  filters: {},
+                  filter: {},
+                  limit: filterMeta.limit,
+                })
+              }
+            >
+              Reset
+            </Button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // ⭐ NORMAL MODE (lead/referral)
   return (
     <>
       {/* === TOP BAR FILTERS === */}
       <div className="mb-6 p-4 border rounded-lg bg-white shadow-sm space-y-4">
         <div className="flex justify-start flex-wrap items-start  gap-4">
+          {/* SEARCH BAR */}
           <div className="w-auto">
             <ButtonGroup>
               <Input
                 placeholder={
-                  isMileage
-                    ? "Search mileage logs..."
-                    : isReferral
-                      ? "Search referrals..."
-                      : "Search leads..."
+                  isReferral ? "Search referrals..." : "Search leads..."
                 }
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
-              <Button
-                variant={"outline"}
-                onClick={handleSearch}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              >
-                <SearchIcon />{" "}
+              <Button variant={"outline"} onClick={handleSearch}>
+                <SearchIcon />
               </Button>
             </ButtonGroup>
           </div>
@@ -94,38 +128,24 @@ export function MasterListFilters({
             Refresh <RefreshCcw className="w-4 h-4" />
           </Button>
 
+          {/* NORMAL DATE RANGE */}
           <DateRangeFilter
             from={
-              isMileage
-                ? filterMeta.mileageDateFrom
-                : isReferral
-                  ? filterMeta.referralDateFrom
-                  : filterMeta.leadDateFrom
+              isReferral ? filterMeta.referralDateFrom : filterMeta.leadDateFrom
             }
-            to={
-              isMileage
-                ? filterMeta.mileageDateTo
-                : isReferral
-                  ? filterMeta.referralDateTo
-                  : filterMeta.leadDateTo
-            }
+            to={isReferral ? filterMeta.referralDateTo : filterMeta.leadDateTo}
             onChange={(range) =>
               setFilterMeta((prev: any) => ({
                 ...prev,
-                ...(isMileage
+                ...(isReferral
                   ? {
-                      mileageDateFrom: range.from,
-                      mileageDateTo: range.to,
+                      referralDateFrom: range.from,
+                      referralDateTo: range.to,
                     }
-                  : isReferral
-                    ? {
-                        referralDateFrom: range.from,
-                        referralDateTo: range.to,
-                      }
-                    : {
-                        leadDateFrom: range.from,
-                        leadDateTo: range.to,
-                      }),
+                  : {
+                      leadDateFrom: range.from,
+                      leadDateTo: range.to,
+                    }),
               }))
             }
           />
@@ -138,20 +158,15 @@ export function MasterListFilters({
             variant="secondary"
             onClick={() =>
               setFilterMeta({
-                ...(isMileage
+                ...(isReferral
                   ? {
-                      mileageDateFrom: null,
-                      mileageDateTo: null,
+                      referralDateFrom: null,
+                      referralDateTo: null,
                     }
-                  : isReferral
-                    ? {
-                        referralDateFrom: null,
-                        referralDateTo: null,
-                      }
-                    : {
-                        leadDateFrom: null,
-                        leadDateTo: null,
-                      }),
+                  : {
+                      leadDateFrom: null,
+                      leadDateTo: null,
+                    }),
                 filters: {},
                 filter: {},
                 limit: filterMeta.limit,
@@ -173,12 +188,7 @@ export function MasterListFilters({
 
             <div className="mt-6 space-y-6">
               {columns
-                .filter(
-                  (col) =>
-                    col.type === "TEXT" ||
-                    col.type === "EMAIL" ||
-                    col.type === "PHONE"
-                )
+                .filter((col) => ["TEXT", "EMAIL", "PHONE"].includes(col.type))
                 .map((col) => (
                   <div key={col.name} className="space-y-4">
                     <label className="text-sm font-medium">{col.name}</label>
@@ -196,13 +206,6 @@ export function MasterListFilters({
                 className="w-full"
                 onClick={() => {
                   setIsSheetOpen(false);
-                  setFilterMeta((prev: any) => ({
-                    ...prev,
-                    filter: {
-                      ...prev.filter,
-                      ...filterMeta.filter,
-                    },
-                  }));
                 }}
               >
                 Apply Filters

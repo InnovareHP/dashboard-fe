@@ -45,9 +45,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
 import { formatCapitalize } from "@/lib/utils";
+import { useTeamLayoutContext } from "@/routes/_team";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouteContext } from "@tanstack/react-router";
 import type { Invitation } from "better-auth/plugins";
 import { formatDate } from "date-fns";
 import debounce from "lodash.debounce";
@@ -64,7 +64,7 @@ const formSchema = z.object({
 });
 
 const TeamPage = () => {
-  const { memberData } = useRouteContext({ from: "/_team" });
+  const { memberData } = useTeamLayoutContext();
   const { data: organizationData } = authClient.useActiveOrganization();
   const queryClient = useQueryClient();
 
