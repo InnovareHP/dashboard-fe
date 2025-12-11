@@ -57,34 +57,40 @@ export function AppSidebar({
             title: "Referral List",
             url: `/${activeOrganizationId}/referral-list`,
           },
-          {
-            title: "Mileage Log",
-            url: `/${activeOrganizationId}/mileage-log`,
-          },
-          {
-            title: "Marketing Log",
-            url: `/${activeOrganizationId}/marketing-log`,
-          },
-        ],
-      },
-      {
-        title: "Reports",
-        icon: FileText,
-        items: [
-          {
-            title: "Mileage Report",
-            url: `/${activeOrganizationId}/mileage-report`,
-          },
-          ...(memberData?.role === "owner" || memberData?.role === "admin"
+          ...(memberData?.role !== "owner"
             ? [
                 {
-                  title: "Marketing Report",
-                  url: `/${activeOrganizationId}/marketing-report`,
+                  title: "Mileage Log",
+                  url: `/${activeOrganizationId}/mileage-log`,
+                },
+                {
+                  title: "Marketing Log",
+                  url: `/${activeOrganizationId}/marketing-log`,
                 },
               ]
             : []),
         ],
       },
+
+      ...(memberData?.role === "owner" || memberData?.role === "admin"
+        ? [
+            {
+              title: "Reports",
+              icon: FileText,
+              items: [
+                {
+                  title: "Mileage Report",
+                  url: `/${activeOrganizationId}/mileage-report`,
+                },
+
+                {
+                  title: "Marketing Report",
+                  url: `/${activeOrganizationId}/marketing-report`,
+                },
+              ],
+            },
+          ]
+        : []),
       {
         title: "Settings",
         url: `/${activeOrganizationId}/settings`,

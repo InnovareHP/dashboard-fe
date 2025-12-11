@@ -7,9 +7,7 @@ import { ReusableTable } from "../reusable-table/generic-table";
 
 export default function MarketingReportPage() {
   const [filterMeta, setFilterMeta] = useState({
-    marketingDateFrom: null,
-    marketingDateTo: null,
-    filter: {},
+    filter: { marketingDateFrom: null, marketingDateTo: null },
     limit: 20,
   });
 
@@ -74,4 +72,3 @@ export default function MarketingReportPage() {
     </div>
   );
 }
-

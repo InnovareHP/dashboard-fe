@@ -72,13 +72,16 @@ export function MasterListFilters({
 
             {/* ONLY DATE RANGE SHOWN */}
             <DateRangeFilter
-              from={filterMeta.mileageDateFrom}
-              to={filterMeta.mileageDateTo}
+              from={filterMeta.filter.mileageDateFrom}
+              to={filterMeta.filter.mileageDateTo}
               onChange={(range) =>
                 setFilterMeta({
                   ...filterMeta,
-                  mileageDateFrom: range.from,
-                  mileageDateTo: range.to,
+                  filter: {
+                    ...filterMeta.filter,
+                    mileageDateFrom: range.from,
+                    mileageDateTo: range.to,
+                  },
                 })
               }
             />
@@ -87,8 +90,6 @@ export function MasterListFilters({
               variant="secondary"
               onClick={() =>
                 setFilterMeta({
-                  mileageDateFrom: null,
-                  mileageDateTo: null,
                   filters: {},
                   filter: {},
                   limit: filterMeta.limit,
@@ -115,13 +116,16 @@ export function MasterListFilters({
 
             {/* ONLY DATE RANGE SHOWN */}
             <DateRangeFilter
-              from={filterMeta.marketingDateFrom}
-              to={filterMeta.marketingDateTo}
+              from={filterMeta.filter.marketingDateFrom}
+              to={filterMeta.filter.marketingDateTo}
               onChange={(range) =>
                 setFilterMeta({
                   ...filterMeta,
-                  marketingDateFrom: range.from,
-                  marketingDateTo: range.to,
+                  filter: {
+                    ...filterMeta.filter,
+                    marketingDateFrom: range.from,
+                    marketingDateTo: range.to,
+                  },
                 })
               }
             />
@@ -130,8 +134,6 @@ export function MasterListFilters({
               variant="secondary"
               onClick={() =>
                 setFilterMeta({
-                  marketingDateFrom: null,
-                  marketingDateTo: null,
                   filters: {},
                   filter: {},
                   limit: filterMeta.limit,
