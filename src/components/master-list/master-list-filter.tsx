@@ -20,6 +20,7 @@ export function MasterListFilters({
   filterMeta,
   setFilterMeta,
   isReferral = false,
+  isMileage = false,
   refetch,
 }: {
   columns: { id: string; name: string; type: string }[];
@@ -27,6 +28,7 @@ export function MasterListFilters({
   setFilterMeta: (meta: any) => void;
   refetch: () => void;
   isReferral?: boolean;
+  isMileage?: boolean;
 }) {
   const [searchValue, setSearchValue] = useState("");
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -68,7 +70,11 @@ export function MasterListFilters({
             <ButtonGroup>
               <Input
                 placeholder={
-                  isReferral ? "Search referrals..." : "Search leads..."
+                  isMileage
+                    ? "Search mileage logs..."
+                    : isReferral
+                      ? "Search referrals..."
+                      : "Search leads..."
                 }
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
@@ -89,13 +95,37 @@ export function MasterListFilters({
           </Button>
 
           <DateRangeFilter
-            from={filterMeta.leadDateFrom}
-            to={filterMeta.leadDateTo}
+            from={
+              isMileage
+                ? filterMeta.mileageDateFrom
+                : isReferral
+                  ? filterMeta.referralDateFrom
+                  : filterMeta.leadDateFrom
+            }
+            to={
+              isMileage
+                ? filterMeta.mileageDateTo
+                : isReferral
+                  ? filterMeta.referralDateTo
+                  : filterMeta.leadDateTo
+            }
             onChange={(range) =>
               setFilterMeta((prev: any) => ({
                 ...prev,
-                leadDateFrom: range.from,
-                leadDateTo: range.to,
+                ...(isMileage
+                  ? {
+                      mileageDateFrom: range.from,
+                      mileageDateTo: range.to,
+                    }
+                  : isReferral
+                    ? {
+                        referralDateFrom: range.from,
+                        referralDateTo: range.to,
+                      }
+                    : {
+                        leadDateFrom: range.from,
+                        leadDateTo: range.to,
+                      }),
               }))
             }
           />
@@ -108,9 +138,22 @@ export function MasterListFilters({
             variant="secondary"
             onClick={() =>
               setFilterMeta({
-                leadDateFrom: null,
-                leadDateTo: null,
+                ...(isMileage
+                  ? {
+                      mileageDateFrom: null,
+                      mileageDateTo: null,
+                    }
+                  : isReferral
+                    ? {
+                        referralDateFrom: null,
+                        referralDateTo: null,
+                      }
+                    : {
+                        leadDateFrom: null,
+                        leadDateTo: null,
+                      }),
                 filters: {},
+                filter: {},
                 limit: filterMeta.limit,
               })
             }

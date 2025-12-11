@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { MileageLogRow } from "@/lib/types";
 import { formatCapitalize } from "@/lib/utils";
 import {
   createMileageLog,
@@ -300,7 +301,7 @@ const MileageLogPage = () => {
             ) : mileageLogsData?.data &&
               Array.isArray(mileageLogsData?.data) &&
               mileageLogsData?.data?.length > 0 ? (
-              <ReusableTable
+              <ReusableTable<MileageLogRow>
                 data={
                   Array.isArray(mileageLogsData?.data)
                     ? mileageLogsData.data
