@@ -31,6 +31,7 @@ import { Route as TeamTeamReferralListIndexRouteImport } from './routes/_team/$t
 import { Route as TeamTeamMileageReportIndexRouteImport } from './routes/_team/$team/mileage-report/index'
 import { Route as TeamTeamMileageLogIndexRouteImport } from './routes/_team/$team/mileage-log/index'
 import { Route as TeamTeamMasterListIndexRouteImport } from './routes/_team/$team/master-list/index'
+import { Route as TeamTeamMarketingReportIndexRouteImport } from './routes/_team/$team/marketing-report/index'
 import { Route as TeamTeamMarketingLogIndexRouteImport } from './routes/_team/$team/marketing-log/index'
 import { Route as TeamTeamSettingsBillingRouteImport } from './routes/_team/$team/settings/billing'
 import { Route as TeamTeamReferralListCountyConfigRouteImport } from './routes/_team/$team/referral-list/county-config'
@@ -147,6 +148,12 @@ const TeamTeamMasterListIndexRoute = TeamTeamMasterListIndexRouteImport.update({
   path: '/$team/master-list/',
   getParentRoute: () => TeamRoute,
 } as any)
+const TeamTeamMarketingReportIndexRoute =
+  TeamTeamMarketingReportIndexRouteImport.update({
+    id: '/$team/marketing-report/',
+    path: '/$team/marketing-report/',
+    getParentRoute: () => TeamRoute,
+  } as any)
 const TeamTeamMarketingLogIndexRoute =
   TeamTeamMarketingLogIndexRouteImport.update({
     id: '/$team/marketing-log/',
@@ -197,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
   '/$team/settings/billing': typeof TeamTeamSettingsBillingRoute
   '/$team/marketing-log': typeof TeamTeamMarketingLogIndexRoute
+  '/$team/marketing-report': typeof TeamTeamMarketingReportIndexRoute
   '/$team/master-list': typeof TeamTeamMasterListIndexRoute
   '/$team/mileage-log': typeof TeamTeamMileageLogIndexRoute
   '/$team/mileage-report': typeof TeamTeamMileageReportIndexRoute
@@ -224,6 +232,7 @@ export interface FileRoutesByTo {
   '/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
   '/$team/settings/billing': typeof TeamTeamSettingsBillingRoute
   '/$team/marketing-log': typeof TeamTeamMarketingLogIndexRoute
+  '/$team/marketing-report': typeof TeamTeamMarketingReportIndexRoute
   '/$team/master-list': typeof TeamTeamMasterListIndexRoute
   '/$team/mileage-log': typeof TeamTeamMileageLogIndexRoute
   '/$team/mileage-report': typeof TeamTeamMileageReportIndexRoute
@@ -254,6 +263,7 @@ export interface FileRoutesById {
   '/_team/$team/referral-list/county-config': typeof TeamTeamReferralListCountyConfigRoute
   '/_team/$team/settings/billing': typeof TeamTeamSettingsBillingRoute
   '/_team/$team/marketing-log/': typeof TeamTeamMarketingLogIndexRoute
+  '/_team/$team/marketing-report/': typeof TeamTeamMarketingReportIndexRoute
   '/_team/$team/master-list/': typeof TeamTeamMasterListIndexRoute
   '/_team/$team/mileage-log/': typeof TeamTeamMileageLogIndexRoute
   '/_team/$team/mileage-report/': typeof TeamTeamMileageReportIndexRoute
@@ -283,6 +293,7 @@ export interface FileRouteTypes {
     | '/$team/referral-list/county-config'
     | '/$team/settings/billing'
     | '/$team/marketing-log'
+    | '/$team/marketing-report'
     | '/$team/master-list'
     | '/$team/mileage-log'
     | '/$team/mileage-report'
@@ -310,6 +321,7 @@ export interface FileRouteTypes {
     | '/$team/referral-list/county-config'
     | '/$team/settings/billing'
     | '/$team/marketing-log'
+    | '/$team/marketing-report'
     | '/$team/master-list'
     | '/$team/mileage-log'
     | '/$team/mileage-report'
@@ -339,6 +351,7 @@ export interface FileRouteTypes {
     | '/_team/$team/referral-list/county-config'
     | '/_team/$team/settings/billing'
     | '/_team/$team/marketing-log/'
+    | '/_team/$team/marketing-report/'
     | '/_team/$team/master-list/'
     | '/_team/$team/mileage-log/'
     | '/_team/$team/mileage-report/'
@@ -512,6 +525,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamTeamMasterListIndexRouteImport
       parentRoute: typeof TeamRoute
     }
+    '/_team/$team/marketing-report/': {
+      id: '/_team/$team/marketing-report/'
+      path: '/$team/marketing-report'
+      fullPath: '/$team/marketing-report'
+      preLoaderRoute: typeof TeamTeamMarketingReportIndexRouteImport
+      parentRoute: typeof TeamRoute
+    }
     '/_team/$team/marketing-log/': {
       id: '/_team/$team/marketing-log/'
       path: '/$team/marketing-log'
@@ -590,6 +610,7 @@ interface TeamRouteChildren {
   TeamTeamIndexRoute: typeof TeamTeamIndexRoute
   TeamTeamReferralListCountyConfigRoute: typeof TeamTeamReferralListCountyConfigRoute
   TeamTeamMarketingLogIndexRoute: typeof TeamTeamMarketingLogIndexRoute
+  TeamTeamMarketingReportIndexRoute: typeof TeamTeamMarketingReportIndexRoute
   TeamTeamMasterListIndexRoute: typeof TeamTeamMasterListIndexRoute
   TeamTeamMileageLogIndexRoute: typeof TeamTeamMileageLogIndexRoute
   TeamTeamMileageReportIndexRoute: typeof TeamTeamMileageReportIndexRoute
@@ -607,6 +628,7 @@ const TeamRouteChildren: TeamRouteChildren = {
   TeamTeamIndexRoute: TeamTeamIndexRoute,
   TeamTeamReferralListCountyConfigRoute: TeamTeamReferralListCountyConfigRoute,
   TeamTeamMarketingLogIndexRoute: TeamTeamMarketingLogIndexRoute,
+  TeamTeamMarketingReportIndexRoute: TeamTeamMarketingReportIndexRoute,
   TeamTeamMasterListIndexRoute: TeamTeamMasterListIndexRoute,
   TeamTeamMileageLogIndexRoute: TeamTeamMileageLogIndexRoute,
   TeamTeamMileageReportIndexRoute: TeamTeamMileageReportIndexRoute,

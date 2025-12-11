@@ -21,6 +21,7 @@ export function MasterListFilters({
   setFilterMeta,
   isReferral = false,
   isMileage = false,
+  isMarketing = false,
   refetch,
 }: {
   columns: { id: string; name: string; type: string }[];
@@ -28,6 +29,7 @@ export function MasterListFilters({
   setFilterMeta: (meta: any) => void;
   isReferral?: boolean;
   isMileage?: boolean;
+  isMarketing?: boolean;
   refetch: () => void;
 }) {
   const [searchValue, setSearchValue] = useState("");
@@ -87,6 +89,49 @@ export function MasterListFilters({
                 setFilterMeta({
                   mileageDateFrom: null,
                   mileageDateTo: null,
+                  filters: {},
+                  filter: {},
+                  limit: filterMeta.limit,
+                })
+              }
+            >
+              Reset
+            </Button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // ⭐ SPECIAL CASE: MARKETING MODE
+  if (isMarketing) {
+    return (
+      <>
+        <div className="mb-6 p-4 border rounded-lg bg-white shadow-sm space-y-4">
+          <div className="flex justify-start flex-wrap items-start gap-4">
+            <Button onClick={handleRefresh}>
+              Refresh <RefreshCcw className="w-4 h-4" />
+            </Button>
+
+            {/* ONLY DATE RANGE SHOWN */}
+            <DateRangeFilter
+              from={filterMeta.marketingDateFrom}
+              to={filterMeta.marketingDateTo}
+              onChange={(range) =>
+                setFilterMeta({
+                  ...filterMeta,
+                  marketingDateFrom: range.from,
+                  marketingDateTo: range.to,
+                })
+              }
+            />
+
+            <Button
+              variant="secondary"
+              onClick={() =>
+                setFilterMeta({
+                  marketingDateFrom: null,
+                  marketingDateTo: null,
                   filters: {},
                   filter: {},
                   limit: filterMeta.limit,

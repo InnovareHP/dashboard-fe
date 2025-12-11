@@ -75,6 +75,14 @@ export function AppSidebar({
             title: "Mileage Report",
             url: `/${activeOrganizationId}/mileage-report`,
           },
+          ...(memberData?.role === "owner" || memberData?.role === "admin"
+            ? [
+                {
+                  title: "Marketing Report",
+                  url: `/${activeOrganizationId}/marketing-report`,
+                },
+              ]
+            : []),
         ],
       },
       {

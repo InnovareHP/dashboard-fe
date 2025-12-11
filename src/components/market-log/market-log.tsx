@@ -251,34 +251,34 @@ const MarketLogPage = () => {
                   {
                     key: "destination",
                     header: "Destination",
-                    render: (row) => row.facility,
+                    render: (row: any) => row.facility,
                   },
                   {
                     key: "touchpoint",
                     header: "Touchpoint",
-                    render: (row) =>
+                    render: (row: any) =>
                       row.touchpoint.join(", ").replace("_", " "),
                   },
                   {
                     key: "talkedTo",
                     header: "Talked To",
-                    render: (row) => row.talkedTo,
+                    render: (row: any) => row.talkedTo,
                   },
                   {
                     key: "createdAt",
                     header: "Created At",
-                    render: (row) => formatDateTime(row.createdAt),
+                    render: (row: any) => formatDateTime(row.createdAt),
                   },
                   {
                     key: "notes",
                     header: "Notes",
-                    render: (row) => row.notes,
+                    render: (row: any) => row.notes,
                   },
 
                   {
                     key: "action",
                     header: "Action",
-                    render: (row) => (
+                    render: (row: any) => (
                       <Button
                         variant="destructive"
                         size="sm"

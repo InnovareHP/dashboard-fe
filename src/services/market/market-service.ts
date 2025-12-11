@@ -4,6 +4,7 @@ export const getMarketLogs = async (filters?: any) => {
   const response = await axiosClient.get("/api/liason/marketing", {
     params: {
       ...filters,
+      filter: filters?.filter ? JSON.stringify(filters.filter) : undefined,
     },
   });
 
@@ -11,9 +12,13 @@ export const getMarketLogs = async (filters?: any) => {
     throw new Error("Failed to fetch market logs");
   }
 
-  return response.data as {
-    data: any[];
-    total: number;
+  // Return response data directly - API should handle pagination and return { data, columns, nextPage }
+  // If API doesn't return columns, provide empty array for compatibility
+  const data = response.data;
+
+  return {
+    ...data,
+    columns: data.columns || [],
   };
 };
 
