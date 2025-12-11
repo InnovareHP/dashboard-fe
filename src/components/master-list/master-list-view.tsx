@@ -34,7 +34,13 @@ function serializeValue(value: unknown): string {
   }
 }
 
-export function MasterListView({ leadId }: { leadId: string }) {
+export function MasterListView({
+  leadId,
+  isReferral,
+}: {
+  leadId: string;
+  isReferral: boolean;
+}) {
   const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("details");
@@ -99,7 +105,7 @@ export function MasterListView({ leadId }: { leadId: string }) {
         <DialogHeader className="px-6 pt-6 pb-4 from-blue-50 to-purple-50">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-2xl font-bold text-gray-900">
-              Referral Details
+              {isReferral ? "Referral Details" : "Lead Details"}
             </DialogTitle>
 
             <Badge className="bg-green-500 hover:bg-green-600 text-white">

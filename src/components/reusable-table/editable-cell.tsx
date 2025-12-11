@@ -239,7 +239,7 @@ export function EditableCell({
 
   // ---- TIME ----
   if (type === "TIMELINE") {
-    return <MasterListView leadId={id} />;
+    return <MasterListView isReferral={isReferral} leadId={id} />;
   }
 
   // ---- CHECKBOX ----

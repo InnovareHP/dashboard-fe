@@ -47,19 +47,19 @@ export function generateLeadColumns(
     enableHiding: false,
   };
 
-  //   const leadNameColumn: ColumnDef<LeadRow> = {
-  //     header: "Lead Name",
-  //     accessorKey: "lead_name",
-  //     cell: ({ row }) => (
-  //       <EditableCell
-  //         id={row.original.id}
-  //         fieldName="Lead Name"
-  //         fieldKey="lead_name"
-  //         value={row.original.lead_name}
-  //         type="TEXT"
-  //       />
-  //     ),
-  //   };
+  const OrganizerColumn: ColumnDef<LeadRow> = {
+    header: "Organization",
+    accessorKey: "Organization",
+    cell: ({ row }) => (
+      <EditableCell
+        id={row.original.id}
+        fieldName="Organization"
+        fieldKey="lead_name"
+        value={row.original.lead_name}
+        type="TEXT"
+      />
+    ),
+  };
 
   const createNewColumn: ColumnDef<LeadRow> = {
     header: () => <CreateColumnModal />,
@@ -67,5 +67,5 @@ export function generateLeadColumns(
     accessorKey: "create_column",
   };
 
-  return [selectColumn, ...dynamicColumns, createNewColumn];
+  return [selectColumn, OrganizerColumn, ...dynamicColumns, createNewColumn];
 }

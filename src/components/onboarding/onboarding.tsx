@@ -220,6 +220,8 @@ const OnBoardingPage = () => {
         organizationId: createRes?.id,
       });
 
+      refetch();
+
       navigate({ to: `/${createRes?.id}` });
     } catch (err: any) {
       form.setError("root", {

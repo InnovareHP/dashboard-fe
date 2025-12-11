@@ -2,11 +2,11 @@ import { NavMain } from "@/components/side-bar/nav-main";
 import { NavUser } from "@/components/side-bar/nav-user";
 import { TeamSwitcher } from "@/components/side-bar/team-switcher";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarRail,
 } from "@/components/ui/sidebar";
 import { useRouteContext } from "@tanstack/react-router";
 import { CircuitBoard, Settings2, SquareTerminal } from "lucide-react";
@@ -47,6 +47,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {
             title: "Mileage Log",
             url: `/${activeOrganizationId}/mileage-log`,
+          },
+          {
+            title: "Marketing Log",
+            url: `/${activeOrganizationId}/marketing-log`,
           },
         ],
       },
