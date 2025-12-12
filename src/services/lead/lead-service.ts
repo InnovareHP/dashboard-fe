@@ -1,5 +1,5 @@
 import { axiosClient } from "@/lib/axios-client";
-import type { LeadHistoryItem, LeadOptions } from "@/lib/types";
+import type { LeadAnalyze, LeadHistoryItem, LeadOptions } from "@/lib/types";
 
 export const getLeads = async (filters: any) => {
   const response = await axiosClient.get("/api/leads", {
@@ -21,6 +21,18 @@ export const getColumnOptions = async () => {
   }
 
   return response.data;
+};
+
+export const getLeadAnalysis = async (leadId: string, filters: any) => {
+  const response = await axiosClient.get(`/api/leads/${leadId}/analyze`, {
+    params: { ...filters },
+  });
+
+  if (response.status !== 200) {
+    throw new Error("Failed to fetch lead analysis");
+  }
+
+  return response.data as LeadAnalyze;
 };
 
 export const getDropdownOptions = async (fieldKey: string) => {

@@ -2,6 +2,7 @@ import { EditableCell } from "@/components/reusable-table/editable-cell";
 import { type ColumnDef } from "@tanstack/react-table";
 import { CreateColumnModal } from "../reusable-table/create-column";
 import { Checkbox } from "../ui/checkbox";
+import { AnalyzeLeadDialog } from "./analyze-cell";
 
 type ColumnType = {
   id: string;
@@ -62,6 +63,12 @@ export function generateLeadColumns(
     ),
   };
 
+  const AnalyzeColumn: ColumnDef<LeadRow> = {
+    header: "Analyze",
+    accessorKey: "analyze",
+    cell: ({ row }) => <AnalyzeLeadDialog leadId={row.original.id} />,
+  };
+
   const AssignedToColumn: ColumnDef<LeadRow> = {
     header: "Account Manager",
     accessorKey: "assigned_to",
@@ -85,6 +92,7 @@ export function generateLeadColumns(
   return [
     selectColumn,
     OrganizerColumn,
+    AnalyzeColumn,
     AssignedToColumn,
     ...dynamicColumns,
     createNewColumn,

@@ -194,3 +194,17 @@ export type MileageLogRow = {
   ratePerMile: number;
   reimbursementAmount: number;
 };
+
+export type LeadAnalyze = {
+  leadId: string;
+  assignedTo: string;
+  leadName: string;
+  summary: {
+    totalInteractions: number;
+    facilitiesCovered: string[];
+    touchpointsUsed: { type: string; count: number }[];
+    peopleContacted: string[];
+    engagementLevel: string;
+    narrative: string;
+  };
+};
