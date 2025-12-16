@@ -4,7 +4,9 @@ import { createAuthClient } from "better-auth/react";
 import { ac, admin, liason, owner } from "./permissions";
 
 export const authClient = createAuthClient({
-  baseURL: import.meta.env.VITE_API_URL!,
+  baseURL: import.meta.env.VITE_API_URL.includes("localhost:3000")
+    ? import.meta.env.VITE_API_URL
+    : "https://dashboard-be-prod.up.railway.app",
   plugins: [
     organizationClient({
       ac,
