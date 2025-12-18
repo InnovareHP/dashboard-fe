@@ -13,6 +13,7 @@ import type { Member, Organization } from "better-auth/plugins/organization";
 import {
   CircuitBoard,
   FileText,
+  Folder,
   Settings2,
   SquareTerminal,
 } from "lucide-react";
@@ -91,6 +92,20 @@ export function AppSidebar({
             },
           ]
         : []),
+      {
+        title: "Import / Export",
+        icon: Folder,
+        items: [
+          {
+            title: "Master List",
+            url: `/${activeOrganizationId}/import/master-list`,
+          },
+          {
+            title: "Referral List",
+            url: `/${activeOrganizationId}/import/referral-list`,
+          },
+        ],
+      },
       {
         title: "Settings",
         url: `/${activeOrganizationId}/settings`,
