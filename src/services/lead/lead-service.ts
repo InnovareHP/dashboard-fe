@@ -165,3 +165,11 @@ export const deleteLeadTimeline = async (id: string) => {
 
   return response.data;
 };
+
+export const importLeads = async (data: any) => {
+  const response = await axiosClient.post("/api/leads/csv-import", {
+    excelData: data,
+  });
+
+  return response.data;
+};

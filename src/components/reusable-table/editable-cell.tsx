@@ -108,7 +108,6 @@ export function EditableCell({
     location?: boolean,
     reason?: string
   ) => {
-    if (!newVal || newVal === value) return;
     setVal(newVal);
 
     try {

@@ -53,10 +53,10 @@ export function MasterListFilters({
   };
 
   const handleRefresh = () => {
-    setFilterMeta((prev: any) => ({
-      ...prev,
+    setFilterMeta(() => ({
       filters: {},
     }));
+    setSearchValue("");
     refetch();
   };
 

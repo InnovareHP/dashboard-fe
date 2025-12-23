@@ -1,19 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { DateRangeFilter } from "@/components/ui/date-range-filter";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download, Upload } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { AlertCircle, CheckCircle2, FileText, Upload, X } from "lucide-react";
 import { useState } from "react";
 
 export default function ReferralListImportPage() {
   const [file, setFile] = useState<File | null>(null);
-  const [includeAnalytics, setIncludeAnalytics] = useState(false);
-  const [analyticsDateRange, setAnalyticsDateRange] = useState<{
-    from: Date | null;
-    to: Date | null;
-  }>({ from: null, to: null });
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -21,173 +19,135 @@ export default function ReferralListImportPage() {
     }
   };
 
+  const removeFile = () => setFile(null);
+
   const handleUpload = () => {
     if (file) {
-      // TODO: Implement referral list import logic
-      console.log("Uploading referral list file:", file.name);
-    }
-  };
-
-  const handleExport = (format: "csv" | "excel") => {
-    // TODO: Implement referral list export logic
-    console.log("Exporting referral list as", format);
-    if (includeAnalytics) {
-      console.log("Including analytics export (PDF) with date range:", analyticsDateRange);
+      console.log("Uploading:", file.name);
     }
   };
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Referral List</h1>
-        <p className="text-muted-foreground">
-          Import or export referral list data from CSV or Excel files
+    <div className="container max-w-3xl mx-auto py-12 space-y-8 animate-in fade-in duration-500">
+      {/* Header Section */}
+      <div className="flex flex-col gap-2 text-center sm:text-left">
+        <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
+          Referral List
+        </h1>
+        <p className="text-lg text-muted-foreground">
+          Import your referral data records using CSV or Excel files.
         </p>
       </div>
 
-      <Tabs defaultValue="import" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="import">
-            <Upload className="mr-2 h-4 w-4" />
-            Import
-          </TabsTrigger>
-          <TabsTrigger value="export">
-            <Download className="mr-2 h-4 w-4" />
-            Export
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="import" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Upload File</CardTitle>
-              <CardDescription>
-                Select a file to import into the Referral List. Supported formats: CSV, XLSX
+      <Card className="border-2 shadow-sm">
+        <CardHeader className="space-y-4">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-primary/10 rounded-xl">
+              <FileText className="h-8 w-8 text-primary" />
+            </div>
+            <div>
+              <CardTitle className="text-2xl font-bold">Upload Data</CardTitle>
+              <CardDescription className="text-base">
+                Select the file you wish to process and sync with the referral
+                records.
               </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-center w-full">
-                <label
-                  htmlFor="file-upload"
-                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
-                >
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <Upload className="w-10 h-10 mb-3 text-gray-400" />
-                    <p className="mb-2 text-sm text-gray-500">
-                      <span className="font-semibold">Click to upload</span> or drag and drop
-                    </p>
-                    <p className="text-xs text-gray-500">CSV, XLSX (MAX. 10MB)</p>
-                  </div>
-                  <input
-                    id="file-upload"
-                    type="file"
-                    className="hidden"
-                    accept=".csv,.xlsx,.xls"
-                    onChange={handleFileChange}
-                  />
-                </label>
-              </div>
+            </div>
+          </div>
+        </CardHeader>
 
-              {file && (
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm font-medium">Selected file:</p>
-                  <p className="text-sm text-gray-600">{file.name}</p>
-                  <p className="text-xs text-gray-500">
-                    {(file.size / 1024 / 1024).toFixed(2)} MB
+        <CardContent className="space-y-6">
+          {/* Dropzone Area */}
+          {!file ? (
+            <div className="group relative">
+              <label
+                htmlFor="file-upload"
+                className={cn(
+                  "flex flex-col items-center justify-center w-full h-72",
+                  "border-2 border-dashed rounded-2xl cursor-pointer",
+                  "bg-muted/30 border-muted-foreground/20",
+                  "group-hover:bg-muted/50 group-hover:border-primary/50 transition-all duration-300"
+                )}
+              >
+                <div className="flex flex-col items-center justify-center p-6 text-center">
+                  <div className="p-4 bg-background rounded-full shadow-sm mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <Upload className="w-10 h-10 text-muted-foreground group-hover:text-primary" />
+                  </div>
+                  <p className="text-base text-foreground mb-1">
+                    <span className="font-semibold text-primary underline underline-offset-4">
+                      Click to browse
+                    </span>{" "}
+                    or drag and drop your file
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    CSV, XLSX, or XLS (Max size: 10MB)
                   </p>
                 </div>
-              )}
-
-              <Button
-                onClick={handleUpload}
-                disabled={!file}
-                className="w-full"
-              >
-                <Upload className="mr-2 h-4 w-4" />
-                Import Referral List
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="export" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Export Referral List</CardTitle>
-              <CardDescription>
-                Download your referral list data in CSV or Excel format
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-col items-center justify-center w-full p-8 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
-                <Download className="w-10 h-10 mb-3 text-gray-400" />
-                <p className="mb-2 text-sm text-gray-500 text-center">
-                  Export your referral list data
-                </p>
-                <p className="text-xs text-gray-500 text-center">
-                  Available formats: CSV, XLSX
-                </p>
-              </div>
-
-              <div className="space-y-4 pt-4 border-t">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="include-analytics"
-                    checked={includeAnalytics}
-                    onCheckedChange={(checked) => {
-                      setIncludeAnalytics(checked as boolean);
-                      if (!checked) {
-                        setAnalyticsDateRange({ from: null, to: null });
-                      }
-                    }}
-                  />
-                  <Label
-                    htmlFor="include-analytics"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Include Analytics Export (PDF)
-                  </Label>
-                </div>
-
-                {includeAnalytics && (
-                  <div className="space-y-2 pl-6">
-                    <Label className="text-sm text-muted-foreground">
-                      Select date range for analytics
-                    </Label>
-                    <DateRangeFilter
-                      from={analyticsDateRange.from}
-                      to={analyticsDateRange.to}
-                      onChange={(range) => {
-                        setAnalyticsDateRange(range);
-                      }}
-                    />
+                <input
+                  id="file-upload"
+                  type="file"
+                  className="hidden"
+                  accept=".csv,.xlsx,.xls"
+                  onChange={handleFileChange}
+                />
+              </label>
+            </div>
+          ) : (
+            /* Selected File Preview */
+            <div className="relative overflow-hidden rounded-2xl border bg-accent/20 p-6 animate-in zoom-in-95 duration-300">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center space-x-5">
+                  <div className="bg-background p-4 rounded-xl shadow-sm border border-primary/10">
+                    <FileText className="h-10 w-10 text-primary" />
                   </div>
-                )}
+                  <div className="space-y-1">
+                    <p className="text-base font-bold text-foreground break-all">
+                      {file.name}
+                    </p>
+                    <p className="text-sm text-muted-foreground font-medium">
+                      {(file.size / 1024 / 1024).toFixed(2)} MB • Ready for
+                      processing
+                    </p>
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-200">
+                      <CheckCircle2 className="h-3 w-3" />
+                      Validated
+                    </div>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={removeFile}
+                  className="rounded-full h-8 w-8 hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
+            </div>
+          )}
 
-              <div className="space-y-2 pt-4">
-                <Button
-                  onClick={() => handleExport("csv")}
-                  className="w-full"
-                  variant="outline"
-                >
-                  <Download className="mr-2 h-4 w-4" />
-                  Export as CSV
-                </Button>
-                <Button
-                  onClick={() => handleExport("excel")}
-                  className="w-full"
-                  variant="outline"
-                >
-                  <Download className="mr-2 h-4 w-4" />
-                  Export as Excel
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+          {/* Action Footer */}
+          <div className="pt-4 space-y-4">
+            <Button
+              onClick={handleUpload}
+              disabled={!file}
+              size="lg"
+              className="w-full text-lg font-bold h-14 shadow-xl shadow-primary/10 active:scale-[0.99] transition-all"
+            >
+              <Upload className="mr-2 h-5 w-5" />
+              Upload and Sync Referral List
+            </Button>
+
+            <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-50 border border-amber-100">
+              <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
+              <p className="text-sm text-amber-800 leading-relaxed">
+                <strong>Attention:</strong> Uploading will overwrite existing
+                data for matching records. Please ensure your column headers
+                match the referral template before proceeding.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
-
