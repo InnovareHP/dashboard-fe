@@ -10,7 +10,7 @@ import {
   flexRender,
   type Table as ReactTable,
 } from "@tanstack/react-table";
-import { MoreHorizontalIcon, Plus, Trash2Icon } from "lucide-react";
+import { ArrowDown, MoreHorizontalIcon, Plus, Trash2Icon } from "lucide-react";
 import Loader from "../loader";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
@@ -140,9 +140,9 @@ const ReusableTable = <T extends { id: string }>({
         </ScrollArea>
 
         {hasMore && (
-          <div className="flex items-center justify-between mt-4">
-            <Button onClick={onLoadMore} variant="ghost" className="flex gap-2">
-              Load More
+          <div className="flex w-full justify-center items-center mt-4">
+            <Button onClick={onLoadMore} className="flex gap-2">
+              Load More <ArrowDown className="w-4 h-4" />
             </Button>
           </div>
         )}
