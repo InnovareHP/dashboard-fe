@@ -208,3 +208,15 @@ export type LeadAnalyze = {
     narrative: string;
   };
 };
+
+export type LiaisonAnalyticsCardData = {
+  memberId: string;
+  memberName: string;
+  totalLeads: number;
+  newLeads: number;
+  totalInteractions: number;
+  engagementLevel: "Low" | "Medium" | "High";
+  facilitiesCovered: string[];
+  touchpointsUsed: { type: string; count: number }[];
+  peopleContacted: string[];
+};

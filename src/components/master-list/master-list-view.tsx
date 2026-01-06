@@ -97,7 +97,7 @@ export function MasterListView({
           className="flex items-center gap-2 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition-all"
         >
           <FileText className="h-4 w-4" />
-          View Lead
+          View Organization
         </Button>
       </DialogTrigger>
 
@@ -176,7 +176,7 @@ export function MasterListView({
                         className="group rounded-xl border p-4 hover:shadow-md transition-all"
                       >
                         <div className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
-                          {key}
+                          {key.split("_").join(" ")}
                         </div>
 
                         <EditableCell

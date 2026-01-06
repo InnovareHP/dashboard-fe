@@ -184,7 +184,7 @@ export default function MasterListPage() {
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen max-w-6xl mx-auto">
+    <div className="p-8 bg-gray-50 min-h-screen max-w-7xl mx-auto">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
