@@ -44,6 +44,10 @@ export function AppSidebar({
             title: "Analytics",
             url: `/${activeOrganizationId}`,
           },
+          {
+            title: "Master List Analytics",
+            url: `/${activeOrganizationId}/master-list-analytics`,
+          },
         ],
       },
       {
@@ -93,17 +97,17 @@ export function AppSidebar({
           ]
         : []),
       {
-        title: "Import / Export",
+        title: "Import",
         icon: Folder,
         items: [
           {
             title: "Master List",
             url: `/${activeOrganizationId}/import/master-list`,
           },
-          {
-            title: "Referral List",
-            url: `/${activeOrganizationId}/import/referral-list`,
-          },
+          // {
+          //   title: "Referral List",
+          //   url: `/${activeOrganizationId}/import/referral-list`,
+          // },
         ],
       },
       {

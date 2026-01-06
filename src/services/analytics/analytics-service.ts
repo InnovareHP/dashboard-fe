@@ -22,12 +22,30 @@ export const getAnalytics = async (
 export const getAnalyticsSummary = async (analytics: AnalyticsResponse) => {
   const response = await axiosClient.get(`/api/analytics/summary`, {
     params: {
-      analytics,    
+      analytics,
     },
   });
 
   if (response.status !== 200) {
     throw new Error("Failed to fetch analytics summary");
+  }
+
+  return response.data;
+};
+
+export const getMarketingList = async (
+  start: string | null,
+  end: string | null
+) => {
+  const response = await axiosClient.get(`/api/analytics/marketing`, {
+    params: {
+      start,
+      end,
+    },
+  });
+
+  if (response.status !== 200) {
+    throw new Error("Failed to fetch marketing list");
   }
 
   return response.data;

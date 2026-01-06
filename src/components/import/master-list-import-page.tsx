@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { cn, isValidHeader, normalizeHeader } from "@/lib/utils";
 import { importLeads } from "@/services/lead/lead-service";
+import { toast } from "sonner";
 
 export default function MasterListImportPage() {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -117,6 +118,10 @@ export default function MasterListImportPage() {
     try {
       const res = await importLeads(rows);
       setResult(res);
+
+      toast.success("Leads imported successfully");
+
+      removeFile();
     } catch (e: any) {
       setError(e?.message ?? "Something went wrong while uploading.");
     } finally {

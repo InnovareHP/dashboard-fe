@@ -121,7 +121,6 @@ function TeamLayout() {
     gcTime: 1000 * 60 * 15,
   });
 
-  // redirect if no active / trial subscription
   useEffect(() => {
     if (subscriptionLoading) return;
     if (

@@ -176,7 +176,7 @@ export default function ReferralListPage() {
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen max-w-6xl mx-auto">
+    <div className="p-8 bg-gray-50 min-h-screen max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">

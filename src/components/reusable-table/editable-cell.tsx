@@ -242,9 +242,11 @@ export function EditableCell({
     );
   }
 
+  // ---- ANALYZE ----
+
   // ---- ASSIGNED TO ----
 
-  if (type === "ASSIGNED_TO") {
+  if (type === "ASSIGNED_TO" || fieldName === "account_manager") {
     return (
       <Select defaultValue={val} onValueChange={(v) => handleUpdate(String(v))}>
         <SelectTrigger className="w-auto text-sm">
@@ -335,7 +337,7 @@ export function EditableCell({
               )}
             </>
           ) : (
-            <Link to={"county-config" as string}>
+            <Link to={"/$team/county-config" as string}>
               <Button variant="ghost" className="w-full text-xs text-blue-600">
                 + County Config
               </Button>
@@ -359,16 +361,14 @@ export function EditableCell({
     const parseValue = (val: string): string[] => {
       if (!val) return [];
       try {
-        // If it's valid JSON, parse it
         const parsed = JSON.parse(val);
         if (Array.isArray(parsed))
           return [...new Set(parsed.map((v) => String(v).trim()))];
       } catch {
-        // Fallback: treat as comma-separated string
         return [
           ...new Set(
             val
-              .replace(/[\[\]\\"]/g, "") // remove [ ], \, "
+              .replace(/[\[\]\\"]/g, "")
               .split(",")
               .map((v) => v.trim())
               .filter(Boolean)
@@ -395,7 +395,6 @@ export function EditableCell({
 
     const handlePopoverChange = (nextOpen: boolean) => {
       if (!nextOpen) {
-        // Save only when popover closes
         handleUpdate(selectedValues.join(","));
       }
       setOpen(nextOpen);
