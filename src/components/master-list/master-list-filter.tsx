@@ -60,7 +60,6 @@ export function MasterListFilters({
     refetch();
   };
 
-  // ⭐ SPECIAL CASE: MILEAGE MODE
   if (isMileage) {
     return (
       <>
@@ -104,7 +103,6 @@ export function MasterListFilters({
     );
   }
 
-  // ⭐ SPECIAL CASE: MARKETING MODE
   if (isMarketing) {
     return (
       <>
@@ -235,7 +233,9 @@ export function MasterListFilters({
 
             <div className="mt-6 space-y-6">
               {columns
-                .filter((col) => ["TEXT", "EMAIL", "PHONE"].includes(col.type))
+                .filter((col) =>
+                  ["TEXT", "EMAIL", "PHONE", "DROPDOWN"].includes(col.type)
+                )
                 .map((col) => (
                   <div key={col.name} className="space-y-4">
                     <label className="text-sm font-medium">{col.name}</label>
@@ -252,7 +252,7 @@ export function MasterListFilters({
               <Button
                 className="w-full"
                 onClick={() => {
-                  setIsSheetOpen(false);
+                  refetch();
                 }}
               >
                 Apply Filters

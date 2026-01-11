@@ -29,7 +29,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, XCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { MasterListView } from "../master-list/master-list-view";
@@ -298,7 +298,6 @@ export function EditableCell({
               {opt.value}
             </SelectItem>
           ))}
-
           {hasCurrentVal && (
             <SelectItem key="current-val" value={val}>
               {val}
@@ -306,8 +305,15 @@ export function EditableCell({
           )}
 
           <div className="border-t my-1" />
-
-          {fieldName !== "County" ? (
+          <Button
+            variant="ghost"
+            className="w-full text-xs text-red-600"
+            onClick={() => handleUpdate("")}
+          >
+            <XCircle className="w-4 h-4 cursor-pointer" />
+            Remove value
+          </Button>
+          {fieldName === "County" && !isReferral ? (
             <>
               {adding ? (
                 <div className="flex items-center gap-2 px-2 py-1">

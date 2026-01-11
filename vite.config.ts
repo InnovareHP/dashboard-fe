@@ -17,7 +17,7 @@ export default defineConfig(() => {
 
     server: {
       host: true,
-      allowedHosts: ["dashboard-fe-prod.up.railway.app"],
+      allowedHosts: ["dashboard-fe-prod.up.railway.app", "dash.innovarehp.com"],
       port: 3000,
     },
     //test

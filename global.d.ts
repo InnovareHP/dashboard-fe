@@ -3,4 +3,9 @@ declare global {
     memberRole: string;
     activeOrganizationId: string;
   }
+  interface Member extends Member {
+    memberRole: string;
+  }
 }
+
+export {};

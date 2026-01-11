@@ -162,7 +162,7 @@ function TeamLayout() {
           <>
             <AppSidebar
               activeOrganizationId={activeOrganizationId}
-              memberData={memberData}
+              memberData={memberData as Member & { memberRole: string }}
               organizations={organizations as unknown as Organization[]}
               user={user}
             />

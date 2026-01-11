@@ -21,7 +21,7 @@ import * as React from "react";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   activeOrganizationId: string;
-  memberData: Member;
+  memberData: Member & { memberRole: string };
   organizations: Organization[];
   user: BetterAuthUser;
 };
@@ -58,11 +58,11 @@ export function AppSidebar({
             title: "Master List",
             url: `/${activeOrganizationId}/master-list`,
           },
-          {
-            title: "Referral List",
-            url: `/${activeOrganizationId}/referral-list`,
-          },
-          ...(memberData?.role !== "owner"
+          // {
+          //   title: "Referral List",
+          //   url: `/${activeOrganizationId}/referral-list`,
+          // },
+          ...(memberData?.memberRole === "liason"
             ? [
                 {
                   title: "Mileage Log",
@@ -77,7 +77,7 @@ export function AppSidebar({
         ],
       },
 
-      ...(memberData?.role === "owner" || memberData?.role === "admin"
+      ...(memberData?.memberRole === "owner"
         ? [
             {
               title: "Reports",

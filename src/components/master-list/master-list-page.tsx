@@ -31,7 +31,7 @@ export default function MasterListPage() {
     hasNextPage,
     refetch,
     isFetchingNextPage,
-    isFetching,
+    isLoading,
   } = useInfiniteQuery({
     queryKey: ["leads", filterMeta],
 
@@ -184,8 +184,8 @@ export default function MasterListPage() {
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen max-w-7xl mx-auto">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="p-8 bg-gray-50 min-h-screen">
+      <div className="space-y-6">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -216,7 +216,6 @@ export default function MasterListPage() {
           </div>
         </div>
 
-        {/* Filters Wrapper */}
         <div className="bg-white">
           <MasterListFilters
             columns={data?.pages[0].columns ?? []}
@@ -231,7 +230,7 @@ export default function MasterListPage() {
           <ReusableTable
             table={table}
             columns={columns}
-            isFetchingList={isFetchingNextPage || isFetching}
+            isFetchingList={isFetchingNextPage || isLoading}
             onLoadMore={() => {
               if (hasNextPage) {
                 fetchNextPage();

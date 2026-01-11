@@ -1,5 +1,14 @@
+import { getDropdownOptions } from "@/services/lead/lead-service";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Input } from "../ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 export function FilterComponent({
   col,
@@ -18,9 +27,18 @@ export function FilterComponent({
     filterMeta.filter[col.name] ?? ""
   );
 
-  const handleBlur = () => {
-    updateFilter(col.name, localValue || undefined);
+  const handleChange = (value: string) => {
+    setLocalValue(value);
+    updateFilter(col.name, value);
   };
+
+  const { data: options = [] } = useQuery({
+    queryKey: ["dropdown-options", col.id],
+    queryFn: () => getDropdownOptions(col.id),
+    enabled: col.type === "DROPDOWN",
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 5,
+  });
 
   switch (col.type) {
     case "TEXT":
@@ -30,8 +48,7 @@ export function FilterComponent({
         <Input
           placeholder={`Filter by ${col.name}`}
           value={localValue}
-          onChange={(e) => setLocalValue(e.target.value)}
-          onBlur={handleBlur}
+          onChange={(e) => handleChange(e.target.value)}
         />
       );
 
@@ -41,11 +58,23 @@ export function FilterComponent({
           type="number"
           placeholder={`Filter by ${col.name}`}
           value={localValue}
-          onChange={(e) => setLocalValue(e.target.value)}
-          onBlur={() =>
-            updateFilter(col.name, localValue ? Number(localValue) : undefined)
-          }
+          onChange={(e) => handleChange(e.target.value)}
         />
+      );
+    case "DROPDOWN":
+      return (
+        <Select defaultValue={localValue} onValueChange={handleChange}>
+          <SelectTrigger className="w-full text-sm">
+            <SelectValue placeholder={`Filter by ${col.name}`} />
+          </SelectTrigger>
+          <SelectContent>
+            {options.map((option) => (
+              <SelectItem key={option.id} value={option.value}>
+                {option.value}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       );
 
     default:
@@ -53,8 +82,7 @@ export function FilterComponent({
         <Input
           placeholder={`Filter by ${col.name}`}
           value={localValue}
-          onChange={(e) => setLocalValue(e.target.value)}
-          onBlur={handleBlur}
+          onChange={(e) => handleChange(e.target.value)}
         />
       );
   }
