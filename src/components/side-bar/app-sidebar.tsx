@@ -44,10 +44,10 @@ export function AppSidebar({
             title: "Analytics",
             url: `/${activeOrganizationId}`,
           },
-          {
-            title: "Master List Analytics",
-            url: `/${activeOrganizationId}/master-list-analytics`,
-          },
+          // {
+          //   title: "Master List Analytics",
+          //   url: `/${activeOrganizationId}/master-list-analytics`,
+          // },
         ],
       },
       {

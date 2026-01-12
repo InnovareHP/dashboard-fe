@@ -60,7 +60,6 @@ export function exportToCSV(
     return formattedRow;
   });
 
-  console.log(csvData);
 
   // 4. Generate CSV string
   const csv = Papa.unparse(csvData, { header: true });
