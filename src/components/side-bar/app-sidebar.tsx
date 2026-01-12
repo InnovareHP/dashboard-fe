@@ -7,6 +7,7 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { createLead } from "@/services/lead/lead-service";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -37,7 +38,6 @@ export function AppSidebar({
   user,
   ...props
 }: AppSidebarProps) {
-  console.log(memberData);
   const data = {
     navMain: [
       {
@@ -147,6 +147,8 @@ export function AppSidebar({
     ],
   };
 
+  const { open } = useSidebar();
+
   const queryClient = useQueryClient();
 
   const addLeadMutation = useMutation({
@@ -203,7 +205,7 @@ export function AppSidebar({
           activeOrganizationId={activeOrganizationId}
           organizations={organizations}
         />
-        <AddRow isReferral={false} onAdd={handleAddNewLead} />
+        {open && <AddRow isReferral={false} onAdd={handleAddNewLead} />}
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
