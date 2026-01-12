@@ -60,7 +60,6 @@ export function exportToCSV(
     return formattedRow;
   });
 
-
   // 4. Generate CSV string
   const csv = Papa.unparse(csvData, { header: true });
 
@@ -103,3 +102,34 @@ export const normalizeHeader = (header: string) =>
     .replace(/\r?\n|\r/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+
+export const mapAIAnalysisToInsights = (analysis: {
+  keyInsights: string[];
+  strengths: string[];
+  weaknesses: string[];
+  actionableRecommendations: string[];
+  engagementOptimizations: string[];
+}) => {
+  return [
+    {
+      title: "Key Insights",
+      items: analysis.keyInsights,
+    },
+    {
+      title: "Strengths",
+      items: analysis.strengths,
+    },
+    {
+      title: "Weaknesses",
+      items: analysis.weaknesses,
+    },
+    {
+      title: "Actionable Recommendations",
+      items: analysis.actionableRecommendations,
+    },
+    {
+      title: "Engagement Optimizations",
+      items: analysis.engagementOptimizations,
+    },
+  ];
+};

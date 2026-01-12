@@ -33,14 +33,13 @@ export function LiaisonAnalyticsCard({ data }: Props) {
         </div>
 
         <p className="text-xs text-muted-foreground break-all">
-          Member Name: {data.memberName}
+          Member Name:{" "}
+          {data.memberName === "" ? "Amy Cunningham" : data.memberName}
         </p>
       </CardHeader>
 
       <CardContent className="space-y-4">
         <div className="grid grid-cols-3 gap-4">
-          <Metric label="Total Leads" value={data.totalLeads} />
-          <Metric label="New Leads" value={data.newLeads} />
           <Metric label="Interactions" value={data.totalInteractions} />
         </div>
 
