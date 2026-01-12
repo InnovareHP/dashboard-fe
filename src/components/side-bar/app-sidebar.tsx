@@ -8,7 +8,9 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import type { User as BetterAuthUser } from "better-auth";
+import { createLead } from "@/services/lead/lead-service";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { type User as BetterAuthUser } from "better-auth";
 import type { Member, Organization } from "better-auth/plugins/organization";
 import {
   CircuitBoard,
@@ -18,6 +20,9 @@ import {
   SquareTerminal,
 } from "lucide-react";
 import * as React from "react";
+import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
+import AddRow from "../reusable-table/add-row";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   activeOrganizationId: string;
@@ -133,13 +138,63 @@ export function AppSidebar({
               ]
             : []),
 
-          {
-            title: "County Config",
-            url: `/${activeOrganizationId}/referral-list/county-config`,
-          },
+          // {
+          //   title: "County Config",
+          //   url: `/${activeOrganizationId}/referral-list/county-config`,
+          // },
         ],
       },
     ],
+  };
+
+  const queryClient = useQueryClient();
+
+  const addLeadMutation = useMutation({
+    mutationFn: createLead,
+    onMutate: async (newLead) => {
+      await queryClient.cancelQueries({ queryKey: ["leads"] });
+      const previousData = queryClient.getQueryData(["leads"]);
+      queryClient.setQueryData(["leads"], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          pages: [
+            {
+              ...old.pages[0],
+              data: [newLead[0], ...old.pages[0].data],
+            },
+            ...old.pages.slice(1),
+          ],
+        };
+      });
+      return { previousData };
+    },
+    onError: (_err, _newLead, context: any) => {
+      queryClient.setQueryData(["leads"], context.previousData);
+      toast.error("Failed to add lead.");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["leads"] });
+    },
+  });
+
+  const handleAddNewLead = (value: string) => {
+    const newLead = [
+      {
+        id: uuidv4(),
+        lead_name: value,
+        status: "",
+        activities_time: 0,
+        create_contact: "",
+        company: "",
+        title: "",
+        email: "",
+        phone: "",
+        last_interaction: "",
+        active_sequences: 0,
+      },
+    ];
+    addLeadMutation.mutate(newLead);
   };
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -148,6 +203,7 @@ export function AppSidebar({
           activeOrganizationId={activeOrganizationId}
           organizations={organizations}
         />
+        <AddRow isReferral={false} onAdd={handleAddNewLead} />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />

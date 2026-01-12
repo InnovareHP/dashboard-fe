@@ -10,7 +10,7 @@ import {
   flexRender,
   type Table as ReactTable,
 } from "@tanstack/react-table";
-import { ArrowDown, MoreHorizontalIcon, Plus, Trash2Icon } from "lucide-react";
+import { ArrowDown, MoreHorizontalIcon, Trash2Icon } from "lucide-react";
 import Loader from "../loader";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
@@ -23,6 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import AddRow from "./add-row";
 
 type Props<T> = {
   table: ReactTable<T>;
@@ -31,7 +32,7 @@ type Props<T> = {
   onLoadMore: () => void;
   hasMore: boolean;
   setActivePage: () => void;
-  onAdd: () => void;
+  onAdd: (value: string) => void;
   onDelete: (ids: string[]) => void;
   isReferral?: boolean;
 };
@@ -59,7 +60,12 @@ const ReusableTable = <T extends { id: string }>({
           {hasSelected && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon" aria-label="More Options">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="my-4"
+                  aria-label="More Options"
+                >
                   <MoreHorizontalIcon />
                 </Button>
               </DropdownMenuTrigger>
@@ -149,10 +155,7 @@ const ReusableTable = <T extends { id: string }>({
 
         <div className="flex items-center justify-between mt-4">
           <div className="flex items-center gap-3">
-            <Button onClick={onAdd} variant="ghost" className="flex gap-2">
-              <Plus className="w-4 h-4" />{" "}
-              {isReferral ? "Add New Referral" : "Add New Lead"}
-            </Button>
+            <AddRow isReferral={isReferral} onAdd={onAdd} />
           </div>
 
           <span className="text-sm text-muted-foreground">

@@ -10,10 +10,11 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { Download, Plus } from "lucide-react";
+import { Download } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
+import AddRow from "../reusable-table/add-row";
 import { MasterListFilters } from "./master-list-filter";
 
 export default function MasterListPage() {
@@ -123,11 +124,11 @@ export default function MasterListPage() {
   });
 
   // --- Handlers ---
-  const handleAddNewLead = () => {
+  const handleAddNewLead = (value: string) => {
     const newLead = [
       {
         id: uuidv4(),
-        lead_name: "",
+        lead_name: value,
         status: "",
         activities_time: 0,
         create_contact: "",
@@ -206,13 +207,7 @@ export default function MasterListPage() {
               <Download className="h-4 w-4" />
               Export CSV
             </Button>
-            <Button
-              onClick={handleAddNewLead}
-              className="flex items-center gap-2 shadow-sm"
-            >
-              <Plus className="h-4 w-4" />
-              Add Lead
-            </Button>
+            <AddRow isReferral={false} onAdd={handleAddNewLead} />
           </div>
         </div>
 

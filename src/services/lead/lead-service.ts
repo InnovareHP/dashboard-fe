@@ -89,8 +89,9 @@ export const updateLead = async (
 };
 
 export const createLead = async (data: any) => {
+  console.log(data);
   const response = await axiosClient.post("/api/leads", {
-    data,
+    lead_name: data[0].lead_name,
   });
 
   return response.data;
