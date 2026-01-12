@@ -257,7 +257,7 @@ const MarketLogPage = () => {
                     key: "touchpoint",
                     header: "Touchpoint",
                     render: (row: any) =>
-                      row.touchpoint.join(", ").replace("_", " "),
+                      row.touchpoints.join(", ").replace(/_/g, " "),
                   },
                   {
                     key: "talkedTo",
