@@ -9,6 +9,7 @@ export const Route = createFileRoute("/_team/$team/mileage-log/")({
       memberRole: string;
       activeOrganizationId: string;
     };
+
     if (session?.memberRole !== "liason") {
       throw redirect({ to: `/${session.activeOrganizationId}` as any });
     }

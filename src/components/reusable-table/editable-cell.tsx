@@ -305,14 +305,16 @@ export function EditableCell({
           )}
 
           <div className="border-t my-1" />
-          <Button
-            variant="ghost"
-            className="w-full text-xs text-red-600"
-            onClick={() => handleUpdate("")}
-          >
-            <XCircle className="w-4 h-4 cursor-pointer" />
-            Remove value
-          </Button>
+          {val && (
+            <Button
+              variant="ghost"
+              className="w-full text-xs text-red-600"
+              onClick={() => handleUpdate("")}
+            >
+              <XCircle className="w-4 h-4 cursor-pointer" />
+              Remove value
+            </Button>
+          )}
           {fieldName === "County" && !isReferral ? (
             <>
               {adding ? (

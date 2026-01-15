@@ -26,6 +26,7 @@ const AddRow = ({
   onAdd: (value: string) => void;
 }) => {
   const [open, setOpen] = React.useState(false);
+  
 
   const {
     register,

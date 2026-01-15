@@ -1,86 +1,244 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import type { LiaisonAnalyticsCardData } from "@/lib/types";
-import { Metric } from "./metrics";
-import { Section } from "./section";
+import {
+  Activity,
+  Award,
+  Building2,
+  Calendar,
+  Flame,
+  Mail,
+  MessageSquare,
+  Phone,
+  TrendingUp,
+  Users,
+  Video,
+} from "lucide-react";
 
 type Props = {
   data: LiaisonAnalyticsCardData;
 };
 
+const getTouchpointIcon = (type: string) => {
+  const lowerType = type.toLowerCase();
+  if (lowerType.includes("email")) return Mail;
+  if (lowerType.includes("call") || lowerType.includes("phone")) return Phone;
+  if (lowerType.includes("meeting") || lowerType.includes("visit"))
+    return Video;
+  if (lowerType.includes("message") || lowerType.includes("text"))
+    return MessageSquare;
+  if (lowerType.includes("event")) return Calendar;
+  return Activity;
+};
+
 export function LiaisonAnalyticsCard({ data }: Props) {
-  const engagementColor = {
-    Low: "bg-red-100 text-red-700",
-    Medium: "bg-yellow-100 text-yellow-700",
-    High: "bg-green-100 text-green-700",
+  const engagementConfig = {
+    Low: {
+      gradient: "from-rose-500 to-red-500",
+      bgGradient: "from-rose-50 to-red-50",
+      icon: Flame,
+      color: "text-red-600",
+      ringColor: "ring-red-200",
+    },
+    Medium: {
+      gradient: "from-amber-500 to-orange-500",
+      bgGradient: "from-amber-50 to-orange-50",
+      icon: TrendingUp,
+      color: "text-amber-600",
+      ringColor: "ring-amber-200",
+    },
+    High: {
+      gradient: "from-emerald-500 to-green-500",
+      bgGradient: "from-emerald-50 to-green-50",
+      icon: Award,
+      color: "text-emerald-600",
+      ringColor: "ring-emerald-200",
+    },
   };
 
-  return (
-    <Card className="h-full">
-      <CardHeader className="space-y-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-semibold">
-            Liaison Performance
-          </CardTitle>
+  const config = engagementConfig[data.engagementLevel];
+  const EngagementIcon = config.icon;
 
-          <Badge
-            variant="outline"
-            className={engagementColor[data.engagementLevel]}
+  // Calculate progress percentage (example: out of 100 interactions)
+  const progressPercentage = Math.min(
+    (data.totalInteractions / 100) * 100,
+    100
+  );
+
+  return (
+    <Card className="group h-full hover:shadow-2xl transition-all duration-300 border-0 bg-gradient-to-br from-white via-gray-50/50 to-gray-100/30 overflow-hidden">
+      {/* Decorative top gradient bar */}
+      <div className={`h-1.5 bg-gradient-to-r ${config.gradient}`} />
+
+      <CardHeader className="space-y-4 pb-4">
+        {/* Header with engagement badge */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1">
+            <CardTitle className="text-lg font-bold text-gray-900 mb-1">
+              {data.memberName === "" ? "Amy Cunningham" : data.memberName}
+            </CardTitle>
+            <p className="text-xs text-gray-500 font-medium">
+              Liaison Performance
+            </p>
+          </div>
+
+          <div
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r ${config.bgGradient} ring-2 ${config.ringColor}`}
           >
-            {data.engagementLevel} Engagement
-          </Badge>
+            <EngagementIcon className={`h-3.5 w-3.5 ${config.color}`} />
+            <span className={`text-xs font-semibold ${config.color}`}>
+              {data.engagementLevel}
+            </span>
+          </div>
         </div>
 
-        <p className="text-xs text-muted-foreground break-all">
-          Member Name:{" "}
-          {data.memberName === "" ? "Amy Cunningham" : data.memberName}
-        </p>
+        {/* Interaction Stats - Large & Bold */}
+        <div
+          className={`relative rounded-xl bg-gradient-to-br ${config.bgGradient} p-5 ring-1 ${config.ringColor}`}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div
+                className={`p-2 rounded-lg bg-gradient-to-br ${config.gradient} shadow-md`}
+              >
+                <Activity className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-gray-900">
+                  {data.totalInteractions}
+                </p>
+                <p className="text-xs text-gray-600 font-medium">
+                  Total Interactions
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="w-full h-2 bg-white/60 rounded-full overflow-hidden">
+            <div
+              className={`h-full bg-gradient-to-r ${config.gradient} transition-all duration-500 shadow-sm`}
+              style={{ width: `${progressPercentage}%` }}
+            />
+          </div>
+        </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-3 gap-4">
-          <Metric label="Interactions" value={data.totalInteractions} />
-        </div>
+      <CardContent className="space-y-5">
+        {/* Facilities Section */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Building2 className="h-4 w-4 text-blue-600" />
+            <p className="text-sm font-semibold text-gray-900">
+              Facilities Covered
+            </p>
+            <span className="ml-auto text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+              {data.facilitiesCovered.length}
+            </span>
+          </div>
 
-        <Separator />
-
-        {/* FACILITIES */}
-        <Section
-          title="Facilities Covered"
-          emptyLabel="No facilities logged"
-          items={data.facilitiesCovered}
-        />
-
-        {/* PEOPLE */}
-        <Section
-          title="People Contacted"
-          emptyLabel="No contacts logged"
-          items={data.peopleContacted}
-        />
-
-        {/* TOUCHPOINTS */}
-        <div className="space-y-2">
-          <p className="text-sm font-medium">Touchpoints Used</p>
-
-          {data.touchpointsUsed.length === 0 ? (
-            <p className="text-xs text-muted-foreground">
-              No touchpoints recorded
+          {data.facilitiesCovered.length === 0 ? (
+            <p className="text-xs text-gray-500 italic pl-6">
+              No facilities logged
             </p>
           ) : (
-            <div className="space-y-1">
-              {data.touchpointsUsed.map((tp) => (
-                <div key={tp.type} className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">
-                    {tp.type.replace(/_/g, " ")}
-                  </span>
-                  <span className="font-medium">{tp.count}</span>
-                </div>
+            <div className="flex flex-wrap gap-2 pl-6">
+              {data.facilitiesCovered.map((facility) => (
+                <Badge
+                  key={facility}
+                  variant="secondary"
+                  className="bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 font-medium"
+                >
+                  {facility}
+                </Badge>
               ))}
             </div>
           )}
         </div>
+
+        {/* People Contacted Section */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Users className="h-4 w-4 text-purple-600" />
+            <p className="text-sm font-semibold text-gray-900">
+              People Contacted
+            </p>
+            <span className="ml-auto text-xs font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full">
+              {data.peopleContacted.length}
+            </span>
+          </div>
+
+          {data.peopleContacted.length === 0 ? (
+            <p className="text-xs text-gray-500 italic pl-6">
+              No contacts logged
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-2 pl-6">
+              {data.peopleContacted.map((person) => (
+                <Badge
+                  key={person}
+                  variant="secondary"
+                  className="bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 font-medium"
+                >
+                  {person}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Touchpoints Section - Enhanced */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Phone className="h-4 w-4 text-indigo-600" />
+            <p className="text-sm font-semibold text-gray-900">
+              Touchpoints Used
+            </p>
+          </div>
+
+          {data.touchpointsUsed.length === 0 ? (
+            <p className="text-xs text-gray-500 italic pl-6">
+              No touchpoints recorded
+            </p>
+          ) : (
+            <div className="space-y-2 pl-6">
+              {data.touchpointsUsed.map((tp) => {
+                const Icon = getTouchpointIcon(tp.type);
+                const percentage = (tp.count / data.totalInteractions) * 100;
+
+                return (
+                  <div key={tp.type} className="space-y-1">
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2">
+                        <Icon className="h-3.5 w-3.5 text-indigo-600" />
+                        <span className="text-gray-700 font-medium capitalize">
+                          {tp.type.replace(/_/g, " ")}
+                        </span>
+                      </div>
+                      <span className="font-bold text-indigo-600">
+                        {tp.count}
+                      </span>
+                    </div>
+
+                    {/* Mini progress bar */}
+                    <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500"
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </CardContent>
+
+      {/* Hover effect overlay */}
+      <div
+        className={`absolute inset-0 bg-gradient-to-br ${config.bgGradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none`}
+      />
     </Card>
   );
 }

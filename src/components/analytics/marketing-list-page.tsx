@@ -10,6 +10,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { Calendar } from "../ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import LoadingSkeleton from "../ui/skeleton-loader";
 import { AIInsights } from "./ai-insights";
 import { LiaisonAnalyticsCard } from "./analytics-card";
 
@@ -84,13 +85,17 @@ const MarketingListPage = () => {
     error,
     refetch: refetchAnalytics,
   } = useQuery({
-    queryKey: ["marketing-lead-analytics"],
-    queryFn: () => getMarketingList(dateRange.start, dateRange.end),
+    queryKey: ["marketing-lead-analytics", dateRange],
+    queryFn: () =>
+      getMarketingList(
+        dateRange.start ? new Date(dateRange.start).toISOString() : null,
+        dateRange.end ? new Date(dateRange.end).toISOString() : null
+      ),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   if (isLoading) {
-    return <div className="p-6">Loading analytics...</div>;
+    return <LoadingSkeleton />;
   }
 
   if (isError) {
@@ -144,32 +149,71 @@ const MarketingListPage = () => {
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen w-full space-y-6">
-      <h1 className="text-2xl font-semibold">Marketing Lead Analytics</h1>
+    <div className="min-h-screen w-full">
+      {/* Header Section */}
+      <div className="border-b border-gray-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+        <div className="p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            {/* Title & Description */}
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
+                Marketing Lead Analytics
+              </h1>
+              <p className="text-sm text-gray-600 mt-1">
+                Track performance, insights, and engagement metrics
+              </p>
+            </div>
 
-      <div className="flex flex-wrap items-center gap-4">
-        <DateRangeFilter
-          onChange={(range) => {
-            setDateRange({
-              start: range.start?.toISOString() ?? null,
-              end: range.end?.toISOString() ?? null,
-            });
-            refetchAnalytics();
-          }}
-        />
+            {/* Actions */}
+            <div className="flex flex-wrap items-center gap-3">
+              <DateRangeFilter
+                onChange={(range) => {
+                  setDateRange({
+                    start: range.start?.toISOString() ?? null,
+                    end: range.end?.toISOString() ?? null,
+                  });
+                  refetchAnalytics();
+                }}
+              />
 
-        <Button onClick={handleExportPDF} variant="default">
-          Export to PDF
-        </Button>
+              <Button
+                onClick={handleExportPDF}
+                variant="default"
+                className="bg-primary text-primary-foreground shadow-xs hover:bg-primary/90"
+              >
+                Export to PDF
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div id="marketing-analytics-pdf" className="space-y-6 bg-white p-8">
-        <AIInsights insights={mapAIAnalysisToInsights(data?.analysis)} />
+      {/* Main Content */}
+      <div className="p-6 sm:p-8 space-y-8">
+        <div id="marketing-analytics-pdf" className="space-y-8">
+          {/* AI Insights Section */}
+          <AIInsights insights={mapAIAnalysisToInsights(data?.analysis)} />
 
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {data.analytics?.map((liaison: LiaisonAnalyticsCardData) => (
-            <LiaisonAnalyticsCard key={liaison.memberId} data={liaison} />
-          ))}
+          {/* Analytics Cards Section */}
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  Liaison Performance Overview
+                </h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  {data.analytics?.length || 0} liaison
+                  {(data.analytics?.length || 0) !== 1 ? "s" : ""} tracked
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {data.analytics?.map((liaison: LiaisonAnalyticsCardData) => (
+                <LiaisonAnalyticsCard key={liaison.memberId} data={liaison} />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

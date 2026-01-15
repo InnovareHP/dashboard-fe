@@ -23,10 +23,8 @@ export const getColumnOptions = async () => {
   return response.data;
 };
 
-export const getLeadAnalysis = async (leadId: string, filters: any) => {
-  const response = await axiosClient.get(`/api/leads/${leadId}/analyze`, {
-    params: { ...filters },
-  });
+export const getLeadAnalysis = async (leadId: string) => {
+  const response = await axiosClient.get(`/api/leads/${leadId}/analyze`, {});
 
   if (response.status !== 200) {
     throw new Error("Failed to fetch lead analysis");
@@ -89,7 +87,6 @@ export const updateLead = async (
 };
 
 export const createLead = async (data: any) => {
-  console.log(data);
   const response = await axiosClient.post("/api/leads", {
     lead_name: data[0].lead_name,
   });

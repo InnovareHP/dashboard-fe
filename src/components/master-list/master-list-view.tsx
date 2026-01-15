@@ -4,7 +4,6 @@ import {
   Dialog,
   DialogContent,
   DialogFooter,
-  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -18,7 +17,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { Clock, FileText } from "lucide-react";
+import { Building2, CheckCircle2, Clock, FileText } from "lucide-react";
 import * as React from "react";
 import { EditableCell } from "../reusable-table/editable-cell";
 
@@ -94,25 +93,43 @@ export function MasterListView({
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="flex items-center gap-2 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition-all"
+          size="sm"
+          className="flex items-center gap-2 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-colors"
         >
-          <FileText className="h-4 w-4" />
+          <Building2 className="h-4 w-4" />
           View Organization
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-5xl max-h-[90vh] p-0">
-        <DialogHeader className="px-6 pt-6 pb-4 from-blue-50 to-purple-50">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-2xl font-bold text-gray-900">
-              {isReferral ? "Referral Details" : "Lead Details"}
-            </DialogTitle>
+      <DialogContent className="max-w-5xl max-h-[90vh] p-0 gap-0">
+        {/* Custom Header */}
+        <div className="px-6 pt-6 pb-4 border-b bg-slate-50">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-blue-100">
+                <Building2 className="h-5 w-5 text-blue-700" />
+              </div>
+              <div>
+                <DialogTitle className="text-xl font-bold text-gray-900">
+                  {isReferral ? "Referral Details" : "Organization Details"}
+                </DialogTitle>
+                <p className="text-sm text-gray-600 mt-0.5">
+                  Complete organization information
+                </p>
+              </div>
+            </div>
 
-            <Badge className="bg-green-500 hover:bg-green-600 text-white">
-              {data?.data.Status}
-            </Badge>
+            {data?.data.Status && (
+              <Badge
+                variant="outline"
+                className="bg-emerald-50 text-emerald-700 border-emerald-200 flex items-center gap-1.5"
+              >
+                <CheckCircle2 className="h-3 w-3" />
+                {data.data.Status}
+              </Badge>
+            )}
           </div>
-        </DialogHeader>
+        </div>
 
         {isLoading ? (
           <div className="px-6 pb-6">
@@ -165,31 +182,33 @@ export function MasterListView({
             <TabsContent value="details" className="mt-0">
               <ScrollArea className="h-[calc(90vh-240px)] px-6 py-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {entries.map(([key, rawValue]) => {
-                    const value = serializeValue(rawValue);
-                    const type = fieldTypes[key] ?? "TEXT";
-                    const fieldId = fieldIds[key] ?? "";
+                  {entries
+                    .filter(([key]) => key !== "History")
+                    .map(([key, rawValue]) => {
+                      const value = serializeValue(rawValue);
+                      const type = fieldTypes[key] ?? "TEXT";
+                      const fieldId = fieldIds[key] ?? "";
 
-                    return (
-                      <div
-                        key={key}
-                        className="group rounded-xl border p-4 hover:shadow-md transition-all"
-                      >
-                        <div className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
-                          {key.split("_").join(" ")}
+                      return (
+                        <div
+                          key={key}
+                          className="group rounded-xl border p-4 hover:shadow-md transition-all"
+                        >
+                          <div className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
+                            {key.split("_").join(" ")}
+                          </div>
+
+                          <EditableCell
+                            id={leadId}
+                            fieldKey={fieldId}
+                            fieldName={key}
+                            value={value}
+                            type={type}
+                            isReferral
+                          />
                         </div>
-
-                        <EditableCell
-                          id={leadId}
-                          fieldKey={fieldId}
-                          fieldName={key}
-                          value={value}
-                          type={type}
-                          isReferral
-                        />
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
                 </div>
               </ScrollArea>
             </TabsContent>
