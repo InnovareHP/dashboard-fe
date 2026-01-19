@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useRouter } from "@tanstack/react-router";
 import type { ErrorContext } from "better-auth/react";
-import { Loader2, Lock, Mail, Shield, TrendingUp, Users } from "lucide-react";
+import { Loader2, Lock, Mail, TrendingUp, Users } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod/v3";
@@ -108,19 +108,7 @@ export function LoginForm({
             </div>
           </div>
 
-          <div className="flex items-start gap-4">
-            <div className="p-3 rounded-xl bg-purple-50 flex-shrink-0">
-              <Shield className="w-7 h-7 text-purple-600" />
-            </div>
-            <div>
-              <h3 className="font-bold text-gray-900 mb-2 text-lg">
-                Secure & Compliant
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                ADA-compliant platform with enterprise-grade security
-              </p>
-            </div>
-          </div>
+         
         </div>
       </div>
 
