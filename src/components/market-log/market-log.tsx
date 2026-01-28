@@ -19,6 +19,7 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { formatDateTime } from "@/lib/utils";
 import {
   createMarketLog,
@@ -57,6 +58,7 @@ export const CreateMarketSchema = z.object({
     ])
   ),
   talkedTo: z.string().min(1),
+  activity: z.string().optional(),
   notes: z.string().optional(),
 });
 
@@ -118,6 +120,7 @@ const MarketLogPage = () => {
       facility: "",
       touchpoint: [],
       talkedTo: "",
+      activity: "",
       notes: "",
     },
   });
@@ -211,6 +214,23 @@ const MarketLogPage = () => {
 
                 <FormField
                   control={form.control}
+                  name="activity"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Reason for Visit</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Enter Reason for Visit"
+                          className="min-h-24"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="notes"
                   render={({ field }) => (
                     <FormItem>
@@ -263,6 +283,11 @@ const MarketLogPage = () => {
                     key: "talkedTo",
                     header: "Talked To",
                     render: (row: any) => row.talkedTo,
+                  },
+                  {
+                    key: "activity",
+                    header: "Reason for Visit",
+                    render: (row: any) => row.activity || "—",
                   },
                   {
                     key: "createdAt",
