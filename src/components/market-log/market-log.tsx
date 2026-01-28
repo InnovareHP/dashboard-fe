@@ -58,7 +58,7 @@ export const CreateMarketSchema = z.object({
     ])
   ),
   talkedTo: z.string().min(1),
-  activity: z.string().optional(),
+  reasonForVisit: z.string().min(1),
   notes: z.string().optional(),
 });
 
@@ -104,6 +104,9 @@ const MarketLogPage = () => {
       form.reset();
       setOpen(false);
     },
+    onError: (error) => {
+      toast.error(error.message);
+    },
   });
 
   const deleteMarketMutation = useMutation({
@@ -120,7 +123,7 @@ const MarketLogPage = () => {
       facility: "",
       touchpoint: [],
       talkedTo: "",
-      activity: "",
+      reasonForVisit: "",
       notes: "",
     },
   });
@@ -214,7 +217,7 @@ const MarketLogPage = () => {
 
                 <FormField
                   control={form.control}
-                  name="activity"
+                  name="reasonForVisit"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Reason for Visit</FormLabel>
@@ -285,9 +288,9 @@ const MarketLogPage = () => {
                     render: (row: any) => row.talkedTo,
                   },
                   {
-                    key: "activity",
+                    key: "reasonForVisit",
                     header: "Reason for Visit",
-                    render: (row: any) => row.activity || "—",
+                    render: (row: any) => row.reasonForVisit || "—",
                   },
                   {
                     key: "createdAt",
