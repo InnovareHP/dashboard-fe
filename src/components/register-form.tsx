@@ -6,24 +6,24 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "@tanstack/react-router";
 import {
-  CheckCircle2,
-  Loader2,
-  Lock,
-  Mail,
-  User,
-  UserPlus,
-  Zap,
+    CheckCircle2,
+    Loader2,
+    Lock,
+    Mail,
+    User,
+    UserPlus,
+    Zap,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod/v3";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from "./ui/form";
 
 export function RegisterForm({
@@ -85,11 +85,14 @@ export function RegisterForm({
     >
       {/* Left Side - Branding/Benefits */}
       <div className="hidden lg:flex flex-col justify-center w-full max-w-xl space-y-10">
-        <div>
-          <h1 className="text-5xl font-bold text-gray-900 mb-4 leading-tight">
-            Join Referral Intelligence Dashboard
+        <div className="space-y-6">
+          <h1 className="text-5xl font-bold text-gray-900 leading-tight">
+            Join{" "}
+            <span className="text-blue-600 whitespace-nowrap">Innovare HP</span>
+            <br />
+            Referral Intelligence Dashboard
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-gray-600 leading-relaxed">
             Start optimizing your healthcare marketing today
           </p>
         </div>
