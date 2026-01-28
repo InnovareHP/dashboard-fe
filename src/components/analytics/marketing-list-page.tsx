@@ -6,43 +6,54 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { useState } from "react";
 
+import { getLiaisons } from "@/services/options/options-service";
 import { Button } from "../ui/button";
 import { DateRangeFilter } from "../ui/date-range-filter";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import LoadingSkeleton from "../ui/skeleton-loader";
 import { AIInsights } from "./ai-insights";
 import { LiaisonAnalyticsCard } from "./analytics-card";
 
+type Filters = {
+  start: Date | null;
+  end: Date | null;
+  userId: string | null;
+};
+
 const MarketingListPage = () => {
-  /* UI-selected range (NO FETCH) */
-  const [selectedRange, setSelectedRange] = useState<{
-    start: string | null;
-    end: string | null;
-  }>({
+  /* UI-only filters */
+  const [pendingFilters, setPendingFilters] = useState<Filters>({
     start: null,
     end: null,
+    userId: null,
   });
 
-  /* Applied range (TRIGGERS FETCH) */
-  const [appliedRange, setAppliedRange] = useState<{
-    start: string | null;
-    end: string | null;
-  }>({
+  /* Applied filters (TRIGGERS FETCH) */
+  const [filters, setFilters] = useState<Filters>({
     start: null,
     end: null,
+    userId: null,
   });
 
-  /* ----------------------------------------
-     React Query
-  ---------------------------------------- */
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["marketing-lead-analytics", appliedRange],
-    queryFn: () => getMarketingList(appliedRange.start, appliedRange.end),
+    queryKey: ["marketing-lead-analytics", filters],
+    queryFn: () => getMarketingList(filters.start, filters.end, filters.userId),
     staleTime: 1000 * 60 * 5,
   });
 
-  /* ----------------------------------------
-     PDF Export
-  ---------------------------------------- */
+  const { data: liaisons = [] } = useQuery({
+    queryKey: ["liaisons"],
+    queryFn: () => getLiaisons(true),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 5,
+  });
+
   const handleExportPDF = async () => {
     const element = document.getElementById("marketing-analytics-pdf");
     if (!element) return;
@@ -85,9 +96,6 @@ const MarketingListPage = () => {
     pdf.save("marketing-analytics.pdf");
   };
 
-  /* ----------------------------------------
-     Render
-  ---------------------------------------- */
   return (
     <div className="min-h-screen w-full">
       {/* Header */}
@@ -102,32 +110,50 @@ const MarketingListPage = () => {
             </div>
 
             <div className="flex flex-wrap gap-3">
+              {/* Date Range */}
               <DateRangeFilter
-                from={
-                  selectedRange.start ? new Date(selectedRange.start) : null
-                }
-                to={selectedRange.end ? new Date(selectedRange.end) : null}
+                from={pendingFilters.start}
+                to={pendingFilters.end}
                 onChange={(range: { from: Date | null; to: Date | null }) =>
-                  setSelectedRange({
-                    start: range.from?.toISOString() ?? null,
-                    end: range.to?.toISOString() ?? null,
-                  })
+                  setPendingFilters((prev) => ({
+                    ...prev,
+                    start: range.from,
+                    end: range.to,
+                  }))
                 }
               />
 
-              <Button
-                onClick={() => {
-                  if (!selectedRange.start || !selectedRange.end) return;
-                  setAppliedRange(selectedRange);
-                }}
-                disabled={!selectedRange.start || !selectedRange.end}
+              {/* Liaison */}
+              <Select
+                value={pendingFilters.userId ?? undefined}
+                onValueChange={(value) =>
+                  setPendingFilters((prev) => ({
+                    ...prev,
+                    userId: value,
+                  }))
+                }
               >
-                Apply Date Range
+                <SelectTrigger className="w-fit">
+                  <SelectValue placeholder="Select a liaison" />
+                </SelectTrigger>
+                <SelectContent>
+                  {liaisons.map((liaison) => (
+                    <SelectItem key={liaison.id} value={liaison.id}>
+                      {liaison.value}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Apply */}
+              <Button onClick={() => setFilters(pendingFilters)}>
+                Apply Filters
               </Button>
 
+              {/* Export */}
               <Button
                 onClick={handleExportPDF}
-                disabled={!appliedRange.start || !appliedRange.end || !data}
+                disabled={!filters.start || !filters.end || !data}
               >
                 Export to PDF
               </Button>

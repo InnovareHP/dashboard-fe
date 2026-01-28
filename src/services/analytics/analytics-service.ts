@@ -34,13 +34,15 @@ export const getAnalyticsSummary = async (analytics: AnalyticsResponse) => {
 };
 
 export const getMarketingList = async (
-  start: string | null,
-  end: string | null
+  start: Date | null,
+  end: Date | null,
+  userId: string | null
 ) => {
   const response = await axiosClient.get(`/api/analytics/marketing`, {
     params: {
       start,
       end,
+      userId,
     },
   });
 
