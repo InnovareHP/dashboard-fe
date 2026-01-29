@@ -19,6 +19,7 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { formatDateTime } from "@/lib/utils";
 import {
   createMarketLog,
@@ -57,6 +58,7 @@ export const CreateMarketSchema = z.object({
     ])
   ),
   talkedTo: z.string().min(1),
+  reasonForVisit: z.string().min(1),
   notes: z.string().optional(),
 });
 
@@ -102,6 +104,9 @@ const MarketLogPage = () => {
       form.reset();
       setOpen(false);
     },
+    onError: (error) => {
+      toast.error(error.message);
+    },
   });
 
   const deleteMarketMutation = useMutation({
@@ -118,6 +123,7 @@ const MarketLogPage = () => {
       facility: "",
       touchpoint: [],
       talkedTo: "",
+      reasonForVisit: "",
       notes: "",
     },
   });
@@ -211,6 +217,23 @@ const MarketLogPage = () => {
 
                 <FormField
                   control={form.control}
+                  name="reasonForVisit"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Reason for Visit</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Enter Reason for Visit"
+                          className="min-h-24"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="notes"
                   render={({ field }) => (
                     <FormItem>
@@ -263,6 +286,11 @@ const MarketLogPage = () => {
                     key: "talkedTo",
                     header: "Talked To",
                     render: (row: any) => row.talkedTo,
+                  },
+                  {
+                    key: "reasonForVisit",
+                    header: "Reason for Visit",
+                    render: (row: any) => row.reasonForVisit || "—",
                   },
                   {
                     key: "createdAt",
