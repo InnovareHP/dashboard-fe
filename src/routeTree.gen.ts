@@ -240,9 +240,20 @@ export interface FileRoutesByFullPath {
   '/$team/settings': typeof TeamTeamSettingsRouteWithChildren
   '/$team/success': typeof TeamTeamSuccessRoute
   '/$team/team': typeof TeamTeamTeamRoute
-  '/reset-password': typeof AuthResetPasswordIndexRoute
-  '/$team': typeof TeamTeamIndexRoute
+  '/reset-password/': typeof AuthResetPasswordIndexRoute
+  '/$team/': typeof TeamTeamIndexRoute
   '/$team/settings/billing': typeof TeamTeamSettingsBillingRoute
+<<<<<<< HEAD
+  '/$team/import/': typeof TeamTeamImportIndexRoute
+  '/$team/marketing-log/': typeof TeamTeamMarketingLogIndexRoute
+  '/$team/marketing-report/': typeof TeamTeamMarketingReportIndexRoute
+  '/$team/master-list/': typeof TeamTeamMasterListIndexRoute
+  '/$team/mileage-log/': typeof TeamTeamMileageLogIndexRoute
+  '/$team/mileage-report/': typeof TeamTeamMileageReportIndexRoute
+  '/$team/referral-list/': typeof TeamTeamReferralListIndexRoute
+  '/$team/import/master-list/': typeof TeamTeamImportMasterListIndexRoute
+  '/$team/import/referral-list/': typeof TeamTeamImportReferralListIndexRoute
+=======
   '/$team/import': typeof TeamTeamImportIndexRoute
   '/$team/master-list': typeof TeamTeamMasterListIndexRoute
   '/$team/referral-list': typeof TeamTeamReferralListIndexRoute
@@ -254,8 +265,9 @@ export interface FileRoutesByFullPath {
   '/$team/report/expense': typeof TeamTeamReportExpenseIndexRoute
   '/$team/report/marketing': typeof TeamTeamReportMarketingIndexRoute
   '/$team/report/mileage': typeof TeamTeamReportMileageIndexRoute
+>>>>>>> 5f1457a6671c0c0a6e56d453d8fcd7e79e3c0eca
   '/$team/master-list/leads/$lead/timeline': typeof TeamTeamMasterListLeadsLeadTimelineRoute
-  '/$team/master-list/leads/$lead': typeof TeamTeamMasterListLeadsLeadIndexRoute
+  '/$team/master-list/leads/$lead/': typeof TeamTeamMasterListLeadsLeadIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -347,9 +359,20 @@ export interface FileRouteTypes {
     | '/$team/settings'
     | '/$team/success'
     | '/$team/team'
-    | '/reset-password'
-    | '/$team'
+    | '/reset-password/'
+    | '/$team/'
     | '/$team/settings/billing'
+<<<<<<< HEAD
+    | '/$team/import/'
+    | '/$team/marketing-log/'
+    | '/$team/marketing-report/'
+    | '/$team/master-list/'
+    | '/$team/mileage-log/'
+    | '/$team/mileage-report/'
+    | '/$team/referral-list/'
+    | '/$team/import/master-list/'
+    | '/$team/import/referral-list/'
+=======
     | '/$team/import'
     | '/$team/master-list'
     | '/$team/referral-list'
@@ -361,8 +384,9 @@ export interface FileRouteTypes {
     | '/$team/report/expense'
     | '/$team/report/marketing'
     | '/$team/report/mileage'
+>>>>>>> 5f1457a6671c0c0a6e56d453d8fcd7e79e3c0eca
     | '/$team/master-list/leads/$lead/timeline'
-    | '/$team/master-list/leads/$lead'
+    | '/$team/master-list/leads/$lead/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -463,14 +487,14 @@ declare module '@tanstack/react-router' {
     '/_team': {
       id: '/_team'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof TeamRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
       id: '/_auth'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -512,14 +536,14 @@ declare module '@tanstack/react-router' {
     '/_team/$team/': {
       id: '/_team/$team/'
       path: '/$team'
-      fullPath: '/$team'
+      fullPath: '/$team/'
       preLoaderRoute: typeof TeamTeamIndexRouteImport
       parentRoute: typeof TeamRoute
     }
     '/_auth/reset-password/': {
       id: '/_auth/reset-password/'
       path: '/reset-password'
-      fullPath: '/reset-password'
+      fullPath: '/reset-password/'
       preLoaderRoute: typeof AuthResetPasswordIndexRouteImport
       parentRoute: typeof AuthRoute
     }
@@ -589,21 +613,55 @@ declare module '@tanstack/react-router' {
     '/_team/$team/referral-list/': {
       id: '/_team/$team/referral-list/'
       path: '/$team/referral-list'
-      fullPath: '/$team/referral-list'
+      fullPath: '/$team/referral-list/'
       preLoaderRoute: typeof TeamTeamReferralListIndexRouteImport
       parentRoute: typeof TeamRoute
     }
+<<<<<<< HEAD
+    '/_team/$team/mileage-report/': {
+      id: '/_team/$team/mileage-report/'
+      path: '/$team/mileage-report'
+      fullPath: '/$team/mileage-report/'
+      preLoaderRoute: typeof TeamTeamMileageReportIndexRouteImport
+      parentRoute: typeof TeamRoute
+    }
+    '/_team/$team/mileage-log/': {
+      id: '/_team/$team/mileage-log/'
+      path: '/$team/mileage-log'
+      fullPath: '/$team/mileage-log/'
+      preLoaderRoute: typeof TeamTeamMileageLogIndexRouteImport
+      parentRoute: typeof TeamRoute
+    }
+=======
+>>>>>>> 5f1457a6671c0c0a6e56d453d8fcd7e79e3c0eca
     '/_team/$team/master-list/': {
       id: '/_team/$team/master-list/'
       path: '/$team/master-list'
-      fullPath: '/$team/master-list'
+      fullPath: '/$team/master-list/'
       preLoaderRoute: typeof TeamTeamMasterListIndexRouteImport
       parentRoute: typeof TeamRoute
     }
+<<<<<<< HEAD
+    '/_team/$team/marketing-report/': {
+      id: '/_team/$team/marketing-report/'
+      path: '/$team/marketing-report'
+      fullPath: '/$team/marketing-report/'
+      preLoaderRoute: typeof TeamTeamMarketingReportIndexRouteImport
+      parentRoute: typeof TeamRoute
+    }
+    '/_team/$team/marketing-log/': {
+      id: '/_team/$team/marketing-log/'
+      path: '/$team/marketing-log'
+      fullPath: '/$team/marketing-log/'
+      preLoaderRoute: typeof TeamTeamMarketingLogIndexRouteImport
+      parentRoute: typeof TeamRoute
+    }
+=======
+>>>>>>> 5f1457a6671c0c0a6e56d453d8fcd7e79e3c0eca
     '/_team/$team/import/': {
       id: '/_team/$team/import/'
       path: '/$team/import'
-      fullPath: '/$team/import'
+      fullPath: '/$team/import/'
       preLoaderRoute: typeof TeamTeamImportIndexRouteImport
       parentRoute: typeof TeamRoute
     }
@@ -659,21 +717,21 @@ declare module '@tanstack/react-router' {
     '/_team/$team/import/referral-list/': {
       id: '/_team/$team/import/referral-list/'
       path: '/$team/import/referral-list'
-      fullPath: '/$team/import/referral-list'
+      fullPath: '/$team/import/referral-list/'
       preLoaderRoute: typeof TeamTeamImportReferralListIndexRouteImport
       parentRoute: typeof TeamRoute
     }
     '/_team/$team/import/master-list/': {
       id: '/_team/$team/import/master-list/'
       path: '/$team/import/master-list'
-      fullPath: '/$team/import/master-list'
+      fullPath: '/$team/import/master-list/'
       preLoaderRoute: typeof TeamTeamImportMasterListIndexRouteImport
       parentRoute: typeof TeamRoute
     }
     '/_team/$team/master-list/leads/$lead/': {
       id: '/_team/$team/master-list/leads/$lead/'
       path: '/$team/master-list/leads/$lead'
-      fullPath: '/$team/master-list/leads/$lead'
+      fullPath: '/$team/master-list/leads/$lead/'
       preLoaderRoute: typeof TeamTeamMasterListLeadsLeadIndexRouteImport
       parentRoute: typeof TeamRoute
     }
