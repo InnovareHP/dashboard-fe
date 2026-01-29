@@ -1,8 +1,10 @@
 import { EditableCell } from "@/components/reusable-table/editable-cell";
 import { type ColumnDef } from "@tanstack/react-table";
+import { Clock } from "lucide-react";
 import { CreateColumnModal } from "../reusable-table/create-column";
 import { Checkbox } from "../ui/checkbox";
 import { AnalyzeLeadDialog } from "./analyze-cell";
+import { MasterListView } from "./master-list-view";
 
 type ColumnType = {
   id: string;
@@ -20,10 +22,13 @@ type LeadRow = {
 export function generateLeadColumns(
   columnsFromApi: ColumnType[]
 ): ColumnDef<LeadRow>[] {
-  const dynamicColumns: ColumnDef<LeadRow>[] = columnsFromApi.map((col) => ({
+  const filteredApiColumns = columnsFromApi.filter(
+    (col) => col.name !== "History" && col.type !== "TIMELINE"
+  );
+  const dynamicColumns: ColumnDef<LeadRow>[] = filteredApiColumns.map((col) => ({
     id: col.id,
     header: col.name,
-    accessorKey: col.name, // column name from API
+    accessorKey: col.name,
     cell: ({ row }) => (
       <EditableCell
         id={row.original.id}
@@ -53,20 +58,28 @@ export function generateLeadColumns(
     header: "Organization",
     accessorKey: "Organization",
     cell: ({ row }) => (
-      <EditableCell
-        id={row.original.id}
-        fieldName="Organization"
-        fieldKey="Lead"
-        value={row.original.lead_name}
-        type="TEXT"
-      />
+      <div className="group flex items-center gap-2 w-full min-w-0">
+        <div className="min-w-0 flex-1">
+          <EditableCell
+            id={row.original.id}
+            fieldName="Organization"
+            fieldKey="Lead"
+            value={row.original.lead_name}
+            type="TEXT"
+          />
+        </div>
+        <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+          <AnalyzeLeadDialog leadId={row.original.id} />
+          <MasterListView
+            leadId={row.original.id}
+            isReferral={false}
+            initialTab="history"
+            triggerLabel="History"
+            TriggerIcon={Clock}
+          />
+        </div>
+      </div>
     ),
-  };
-
-  const AnalyzeColumn: ColumnDef<LeadRow> = {
-    header: "Analyze",
-    accessorKey: "analyze",
-    cell: ({ row }) => <AnalyzeLeadDialog leadId={row.original.id} />,
   };
 
   const AssignedToColumn: ColumnDef<LeadRow> = {
@@ -92,7 +105,6 @@ export function generateLeadColumns(
   return [
     selectColumn,
     OrganizerColumn,
-    AnalyzeColumn,
     AssignedToColumn,
     ...dynamicColumns,
     createNewColumn,

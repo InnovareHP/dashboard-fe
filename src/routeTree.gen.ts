@@ -244,6 +244,9 @@ export interface FileRoutesByFullPath {
   '/$team/': typeof TeamTeamIndexRoute
   '/$team/settings/billing': typeof TeamTeamSettingsBillingRoute
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 22caa28f94e87630b062e0ef92a3e12cf408467e
   '/$team/import/': typeof TeamTeamImportIndexRoute
   '/$team/marketing-log/': typeof TeamTeamMarketingLogIndexRoute
   '/$team/marketing-report/': typeof TeamTeamMarketingReportIndexRoute
@@ -253,6 +256,8 @@ export interface FileRoutesByFullPath {
   '/$team/referral-list/': typeof TeamTeamReferralListIndexRoute
   '/$team/import/master-list/': typeof TeamTeamImportMasterListIndexRoute
   '/$team/import/referral-list/': typeof TeamTeamImportReferralListIndexRoute
+<<<<<<< HEAD
+=======
 =======
   '/$team/import': typeof TeamTeamImportIndexRoute
   '/$team/master-list': typeof TeamTeamMasterListIndexRoute
@@ -266,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/$team/report/marketing': typeof TeamTeamReportMarketingIndexRoute
   '/$team/report/mileage': typeof TeamTeamReportMileageIndexRoute
 >>>>>>> 5f1457a6671c0c0a6e56d453d8fcd7e79e3c0eca
+>>>>>>> 22caa28f94e87630b062e0ef92a3e12cf408467e
   '/$team/master-list/leads/$lead/timeline': typeof TeamTeamMasterListLeadsLeadTimelineRoute
   '/$team/master-list/leads/$lead/': typeof TeamTeamMasterListLeadsLeadIndexRoute
 }
@@ -363,6 +369,9 @@ export interface FileRouteTypes {
     | '/$team/'
     | '/$team/settings/billing'
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 22caa28f94e87630b062e0ef92a3e12cf408467e
     | '/$team/import/'
     | '/$team/marketing-log/'
     | '/$team/marketing-report/'
@@ -372,6 +381,8 @@ export interface FileRouteTypes {
     | '/$team/referral-list/'
     | '/$team/import/master-list/'
     | '/$team/import/referral-list/'
+<<<<<<< HEAD
+=======
 =======
     | '/$team/import'
     | '/$team/master-list'
@@ -385,6 +396,7 @@ export interface FileRouteTypes {
     | '/$team/report/marketing'
     | '/$team/report/mileage'
 >>>>>>> 5f1457a6671c0c0a6e56d453d8fcd7e79e3c0eca
+>>>>>>> 22caa28f94e87630b062e0ef92a3e12cf408467e
     | '/$team/master-list/leads/$lead/timeline'
     | '/$team/master-list/leads/$lead/'
   fileRoutesByTo: FileRoutesByTo
