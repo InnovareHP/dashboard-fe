@@ -23,6 +23,7 @@ export function MasterListFilters({
   isMileage = false,
   isMarketing = false,
   refetch,
+  isExpense = false,
 }: {
   columns: { id: string; name: string; type: string }[];
   filterMeta: any;
@@ -31,9 +32,12 @@ export function MasterListFilters({
   isMileage?: boolean;
   isMarketing?: boolean;
   refetch: () => void;
+  isExpense?: boolean;
 }) {
   const [searchValue, setSearchValue] = useState("");
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  const [initialFilterMeta, setInitialFilterMeta] = useState<any>({});
 
   const updateFilter = (key: string, value: any) => {
     setFilterMeta((prev: any) => ({
@@ -50,6 +54,12 @@ export function MasterListFilters({
       ...prev,
       search: searchValue,
     }));
+  };
+
+  const handleApplyFilters = () => {
+    setFilterMeta({
+      ...initialFilterMeta,
+    });
   };
 
   const handleRefresh = () => {
@@ -128,6 +138,49 @@ export function MasterListFilters({
               }
             />
 
+            <Button
+              variant="secondary"
+              onClick={() =>
+                setFilterMeta({
+                  filters: {},
+                  filter: {},
+                  limit: filterMeta.limit,
+                })
+              }
+            >
+              Reset
+            </Button>
+          </div>
+        </div>
+      </>
+    );
+  }
+  if (isExpense) {
+    return (
+      <>
+        <div className="mb-6 p-4 border rounded-lg bg-white shadow-sm space-y-4">
+          <div className="flex justify-start flex-wrap items-start gap-4">
+            <Button onClick={handleRefresh}>
+              Refresh <RefreshCcw className="w-4 h-4" />
+            </Button>
+
+            {/* ONLY DATE RANGE SHOWN */}
+            <DateRangeFilter
+              from={initialFilterMeta?.filter?.expenseDateFrom || null}
+              to={initialFilterMeta?.filter?.expenseDateTo || null}
+              onChange={(range) =>
+                setInitialFilterMeta((prev: any) => ({
+                  ...prev,
+                  filter: {
+                    ...prev.filter,
+                    expenseDateFrom: range.from,
+                    expenseDateTo: range.to,
+                  },
+                }))
+              }
+            />
+
+            <Button onClick={handleApplyFilters}>Apply Filters</Button>
             <Button
               variant="secondary"
               onClick={() =>
