@@ -64,6 +64,11 @@ export default function MarketingReportPage() {
               header: "Notes",
               render: (row) => row.notes || "N/A",
             },
+            {
+              key: "Reason For Visit",
+              header: "Reason For Visit",
+              render: (row) => row.reasonForVisit || "N/A",
+            },
           ]}
           isLoading={isFetchingNextPage || isFetching}
           emptyMessage="No marketing logs found"

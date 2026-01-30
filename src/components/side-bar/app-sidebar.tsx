@@ -72,11 +72,15 @@ export function AppSidebar({
             ? [
                 {
                   title: "Mileage Log",
-                  url: `/${activeOrganizationId}/mileage-log`,
+                  url: `/${activeOrganizationId}/log/mileage`,
                 },
                 {
                   title: "Marketing Log",
-                  url: `/${activeOrganizationId}/marketing-log`,
+                  url: `/${activeOrganizationId}/log/marketing`,
+                },
+                {
+                  title: "Expense Log",
+                  url: `/${activeOrganizationId}/log/expense`,
                 },
               ]
             : []),
@@ -91,12 +95,16 @@ export function AppSidebar({
               items: [
                 {
                   title: "Mileage Report",
-                  url: `/${activeOrganizationId}/mileage-report`,
+                  url: `/${activeOrganizationId}/report/mileage`,
                 },
 
                 {
                   title: "Marketing Report",
-                  url: `/${activeOrganizationId}/marketing-report`,
+                  url: `/${activeOrganizationId}/report/marketing`,
+                },
+                {
+                  title: "Expense Report",
+                  url: `/${activeOrganizationId}/report/expense`,
                 },
               ],
             },

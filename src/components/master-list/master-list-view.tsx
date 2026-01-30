@@ -1,24 +1,21 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogTitle,
-  DialogTrigger,
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogTitle,
+    DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FILETYPE } from "@/lib/enum";
 import { formatDateTime } from "@/lib/utils";
 import { getLeadTimeline, getSpecificLead } from "@/services/lead/lead-service";
-import {
-  useInfiniteQuery,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Building2, CheckCircle2, Clock, FileText } from "lucide-react";
 import * as React from "react";
+import { useCallback, useMemo } from "react";
 import { EditableCell } from "../reusable-table/editable-cell";
 
 function serializeValue(value: unknown): string {
@@ -36,13 +33,18 @@ function serializeValue(value: unknown): string {
 export function MasterListView({
   leadId,
   isReferral,
+  initialTab = "details",
+  triggerLabel = "View Organization",
+  TriggerIcon = Building2,
 }: {
   leadId: string;
   isReferral: boolean;
+  initialTab?: "details" | "history";
+  triggerLabel?: string;
+  TriggerIcon?: React.ComponentType<{ className?: string }>;
 }) {
-  const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState("details");
+  const [activeTab, setActiveTab] = React.useState(initialTab);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["lead", leadId],
@@ -65,28 +67,29 @@ export function MasterListView({
     initialPageParam: 1,
   });
 
-  const columns = data?.columns ?? [];
-  const formattedData = data?.data ?? {};
-  const fieldTypes: Record<string, string> = {};
-  const fieldIds: Record<string, string> = {};
+  const { fieldTypes, fieldIds, entries } = useMemo(() => {
+    const columns = data?.columns ?? [];
+    const formattedData = data?.data ?? {};
+    const fieldTypes: Record<string, string> = {};
+    const fieldIds: Record<string, string> = {};
+    columns.forEach((col: { name: string; type: string; id: string }) => {
+      fieldTypes[col.name] = col.type;
+      fieldIds[col.name] = col.id;
+    });
+    return {
+      fieldTypes,
+      fieldIds,
+      entries: Object.entries(formattedData) as [string, unknown][],
+    };
+  }, [data]);
 
-  columns.forEach((col: any) => {
-    fieldTypes[col.name] = col.type;
-    fieldIds[col.name] = col.id;
-  });
-
-  const entries = Object.entries(formattedData) as [string, unknown][];
-
-  const handleOpenChange = (next: boolean) => {
-    setOpen(next);
-    if (next) {
-      setActiveTab("details");
-      queryClient.prefetchQuery({
-        queryKey: ["lead", leadId],
-        queryFn: () => getSpecificLead(leadId),
-      });
-    }
-  };
+  const handleOpenChange = useCallback(
+    (next: boolean) => {
+      setOpen(next);
+      if (next) setActiveTab(initialTab);
+    },
+    [initialTab]
+  );
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -96,8 +99,8 @@ export function MasterListView({
           size="sm"
           className="flex items-center gap-2 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-colors"
         >
-          <Building2 className="h-4 w-4" />
-          View Organization
+          <TriggerIcon className="h-4 w-4" />
+          {triggerLabel}
         </Button>
       </DialogTrigger>
 
@@ -156,7 +159,7 @@ export function MasterListView({
         ) : (
           <Tabs
             value={activeTab}
-            onValueChange={(v) => setActiveTab(v)}
+            onValueChange={(v) => setActiveTab(v as "details" | "history")}
             className="w-full"
           >
             <div className="px-6 border-b">
