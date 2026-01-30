@@ -17,8 +17,8 @@ export const Route = createFileRoute("/onboarding")({
       throw redirect({ to: "/login" });
     }
 
-    if (user?.user_is_onboarded || session.activeOrganizationId) {
-      throw redirect({ to: `/${session.activeOrganizationId}` as any });
+    if (user?.user_is_onboarded || session?.activeOrganizationId) {
+      throw redirect({ to: `/${session?.activeOrganizationId}` as any });
     }
   },
 });

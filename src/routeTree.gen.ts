@@ -246,7 +246,10 @@ export interface FileRoutesByFullPath {
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
 >>>>>>> 22caa28f94e87630b062e0ef92a3e12cf408467e
+>>>>>>> f5d819ad657343c846395b28ded1a68b6d3d35ef
   '/$team/import/': typeof TeamTeamImportIndexRoute
   '/$team/marketing-log/': typeof TeamTeamMarketingLogIndexRoute
   '/$team/marketing-report/': typeof TeamTeamMarketingReportIndexRoute
@@ -256,6 +259,8 @@ export interface FileRoutesByFullPath {
   '/$team/referral-list/': typeof TeamTeamReferralListIndexRoute
   '/$team/import/master-list/': typeof TeamTeamImportMasterListIndexRoute
   '/$team/import/referral-list/': typeof TeamTeamImportReferralListIndexRoute
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
 =======
 =======
@@ -272,6 +277,7 @@ export interface FileRoutesByFullPath {
   '/$team/report/mileage': typeof TeamTeamReportMileageIndexRoute
 >>>>>>> 5f1457a6671c0c0a6e56d453d8fcd7e79e3c0eca
 >>>>>>> 22caa28f94e87630b062e0ef92a3e12cf408467e
+>>>>>>> f5d819ad657343c846395b28ded1a68b6d3d35ef
   '/$team/master-list/leads/$lead/timeline': typeof TeamTeamMasterListLeadsLeadTimelineRoute
   '/$team/master-list/leads/$lead/': typeof TeamTeamMasterListLeadsLeadIndexRoute
 }
@@ -371,7 +377,10 @@ export interface FileRouteTypes {
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
 >>>>>>> 22caa28f94e87630b062e0ef92a3e12cf408467e
+>>>>>>> f5d819ad657343c846395b28ded1a68b6d3d35ef
     | '/$team/import/'
     | '/$team/marketing-log/'
     | '/$team/marketing-report/'
@@ -381,6 +390,8 @@ export interface FileRouteTypes {
     | '/$team/referral-list/'
     | '/$team/import/master-list/'
     | '/$team/import/referral-list/'
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
 =======
 =======
@@ -397,6 +408,7 @@ export interface FileRouteTypes {
     | '/$team/report/mileage'
 >>>>>>> 5f1457a6671c0c0a6e56d453d8fcd7e79e3c0eca
 >>>>>>> 22caa28f94e87630b062e0ef92a3e12cf408467e
+>>>>>>> f5d819ad657343c846395b28ded1a68b6d3d35ef
     | '/$team/master-list/leads/$lead/timeline'
     | '/$team/master-list/leads/$lead/'
   fileRoutesByTo: FileRoutesByTo

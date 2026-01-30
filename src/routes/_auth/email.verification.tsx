@@ -90,10 +90,10 @@ function RouteComponent() {
               </p>
 
               <Link
-                to="/"
+                to="/login"
                 className="w-full px-4 py-2 text-center rounded-md bg-blue-600 text-white hover:bg-blue-700"
               >
-                Return Home
+                Go to Login
               </Link>
             </>
           )}
