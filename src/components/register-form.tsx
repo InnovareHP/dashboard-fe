@@ -6,24 +6,23 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "@tanstack/react-router";
 import {
-    CheckCircle2,
-    Loader2,
-    Lock,
-    Mail,
-    User,
-    UserPlus,
-    Zap,
+  CheckCircle2,
+  Loader2,
+  Lock,
+  Mail,
+  User,
+  Zap,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod/v3";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "./ui/form";
 
 export function RegisterForm({
@@ -78,59 +77,74 @@ export function RegisterForm({
   return (
     <div
       className={cn(
-        "flex items-center justify-center gap-12 p-4 lg:gap-16",
+        "flex items-center justify-center gap-0 p-4",
         className
       )}
       {...props}
     >
-      {/* Left Side - Branding/Benefits */}
-      <div className="hidden lg:flex flex-col justify-center w-full max-w-xl space-y-10">
-        <div className="space-y-6">
-          <h1 className="text-5xl font-bold text-gray-900 leading-tight">
-            Join{" "}
-            <span className="text-blue-600 whitespace-nowrap">Innovare HP</span>
-            <br />
-            Referral Intelligence Dashboard
-          </h1>
-          <p className="text-xl text-gray-600 leading-relaxed">
-            Start optimizing your healthcare marketing today
-          </p>
-        </div>
+      <div className="flex items-stretch w-full max-w-6xl overflow-hidden rounded-2xl shadow-xl">
+        {/* Left Side - Image background + text */}
+        <div className="hidden lg:block relative lg:w-3/5 min-h-[28rem]">
+          <div
+            className="absolute inset-0 bg-cover bg-center brightness-95"
+            style={{ backgroundImage: "url(/login-page/login-img-2.jpg)" }}
+            aria-hidden
+          />
+          <div
+            className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/75"
+            aria-hidden
+          />
+          <div className="relative z-10 flex flex-col justify-center h-full p-10 text-white">
+            <div className="flex flex-col gap-0 space-y-10 [text-shadow:_0_1px_2px_rgba(0,0,0,0.3)]">
+              <div className="flex flex-col gap-0">
+                <img
+                  src="/login-page/rfid.png"
+                  alt="Innovare HP Referral Intelligence"
+                  className="w-full h-auto object-contain max-h-52 invert brightness-0 drop-shadow-md"
+                />
+                <div className="space-y-6 mt-4">
+                  <p className="text-xl text-white leading-relaxed">
+                    Start optimizing your healthcare marketing today
+                  </p>
+                </div>
+              </div>
 
-        <div className="space-y-6">
-          <div className="flex items-start gap-4">
-            <div className="p-3 rounded-xl bg-emerald-50 flex-shrink-0">
-              <CheckCircle2 className="w-7 h-7 text-emerald-600" />
-            </div>
-            <div>
-              <h3 className="font-bold text-gray-900 mb-2 text-lg">
-                Get Started in Minutes
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Simple setup process to get your team up and running quickly
-              </p>
+              <div className="space-y-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-xl bg-white/15 backdrop-blur-sm border border-white/10 flex-shrink-0">
+                    <CheckCircle2 className="w-7 h-7 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-white mb-2 text-lg">
+                      Get Started in Minutes
+                    </h3>
+                    <p className="text-white/95 leading-relaxed">
+                      Simple setup process to get your team up and running quickly
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-xl bg-white/15 backdrop-blur-sm border border-white/10 flex-shrink-0">
+                    <Zap className="w-7 h-7 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-white mb-2 text-lg">
+                      Instant Access
+                    </h3>
+                    <p className="text-white/95 leading-relaxed">
+                      Start tracking metrics and analytics immediately after signup
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-
-          <div className="flex items-start gap-4">
-            <div className="p-3 rounded-xl bg-blue-50 flex-shrink-0">
-              <Zap className="w-7 h-7 text-blue-600" />
-            </div>
-            <div>
-              <h3 className="font-bold text-gray-900 mb-2 text-lg">
-                Instant Access
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Start tracking metrics and analytics immediately after signup
-              </p>
-            </div>
-          </div>
         </div>
-      </div>
 
-      {/* Right Side - Register Form */}
-      <div className="w-full max-w-md">
-        <Card className="border-2 shadow-xl bg-white">
+        {/* Right Side - Register Form */}
+        <div className="w-full lg:w-2/5">
+          <Card className="border-2 border-l-0 lg:border-l-2 shadow-none rounded-none lg:rounded-r-2xl h-full">
           <CardContent className="p-8">
             <Form {...form}>
               <form
@@ -138,9 +152,11 @@ export function RegisterForm({
                 onSubmit={form.handleSubmit(handleRegister)}
               >
                 <div className="space-y-2 text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-50 rounded-xl mb-4">
-                    <UserPlus className="w-8 h-8 text-blue-600" />
-                  </div>
+                  <img
+                    src="/login-page/tarsier.png"
+                    alt=""
+                    className="w-16 h-16 mx-auto mb-4 object-contain"
+                  />
                   <h2 className="text-3xl font-bold text-gray-900">
                     Create Account
                   </h2>
@@ -273,8 +289,7 @@ export function RegisterForm({
             </Form>
           </CardContent>
         </Card>
-
-        <div className="mt-6 text-center text-xs text-gray-500">
+        <div className="mt-6 text-center text-xs text-gray-500 px-4">
           By creating an account, you agree to our{" "}
           <a
             href="#"
@@ -290,6 +305,7 @@ export function RegisterForm({
             Privacy Policy
           </a>
           .
+        </div>
         </div>
       </div>
     </div>
