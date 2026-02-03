@@ -1,6 +1,6 @@
 import { EditableCell } from "@/components/reusable-table/editable-cell";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Clock } from "lucide-react";
+import { Bell, Clock } from "lucide-react";
 import { CreateColumnModal } from "../reusable-table/create-column";
 import { Checkbox } from "../ui/checkbox";
 import { AnalyzeLeadDialog } from "./analyze-cell";
@@ -25,20 +25,22 @@ export function generateLeadColumns(
   const filteredApiColumns = columnsFromApi.filter(
     (col) => col.name !== "History" && col.type !== "TIMELINE"
   );
-  const dynamicColumns: ColumnDef<LeadRow>[] = filteredApiColumns.map((col) => ({
-    id: col.id,
-    header: col.name,
-    accessorKey: col.name,
-    cell: ({ row }) => (
-      <EditableCell
-        id={row.original.id}
-        fieldKey={col.id}
-        fieldName={col.name}
-        value={row.original[col.name] ?? ""}
-        type={col.type}
-      />
-    ),
-  }));
+  const dynamicColumns: ColumnDef<LeadRow>[] = filteredApiColumns.map(
+    (col) => ({
+      id: col.id,
+      header: col.name,
+      accessorKey: col.name,
+      cell: ({ row }) => (
+        <EditableCell
+          id={row.original.id}
+          fieldKey={col.id}
+          fieldName={col.name}
+          value={row.original[col.name] ?? ""}
+          type={col.type}
+        />
+      ),
+    })
+  );
 
   const selectColumn: ColumnDef<LeadRow> = {
     id: "select",
@@ -59,6 +61,15 @@ export function generateLeadColumns(
     accessorKey: "Organization",
     cell: ({ row }) => (
       <div className="group flex items-center gap-2 w-full min-w-0">
+        {row.original.has_notification && (
+          <div className="relative flex items-center justify-center shrink-0 animate-bounce">
+            <Bell className="h-4 w-4 text-red-500 fill-red-500 drop-shadow-md" />
+            <span className="absolute -top-1 -right-1 flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500 shadow-lg"></span>
+            </span>
+          </div>
+        )}
         <div className="min-w-0 flex-1">
           <EditableCell
             id={row.original.id}
@@ -73,6 +84,7 @@ export function generateLeadColumns(
           <MasterListView
             leadId={row.original.id}
             isReferral={false}
+            hasNotification={row.original.has_notification}
             initialTab="history"
             triggerLabel="History"
             TriggerIcon={Clock}

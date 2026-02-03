@@ -10,6 +10,7 @@ export type LeadRow = {
   phone: string;
   last_interaction: string;
   active_sequences: number;
+  has_notification: string;
   [key: string]: string | number;
 };
 
@@ -185,6 +186,7 @@ export type Organization = {
 
 export type MileageLogRow = {
   id: string;
+  createdAt: string;
   destination: string;
   countiesMarketed: string;
   beginningMileage: number;
@@ -219,4 +221,14 @@ export type LiaisonAnalyticsCardData = {
   facilitiesCovered: string[];
   touchpointsUsed: { type: string; count: number }[];
   peopleContacted: string[];
+};
+
+export type MarketLogRow = {
+  id: string;
+  createdAt: string;
+  facility: string;
+  touchpoint: string[];
+  talkedTo: string;
+  reasonForVisit: string;
+  notes: string;
 };

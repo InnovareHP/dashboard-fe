@@ -59,6 +59,18 @@ export const createDropdownOption = async (
   return response.data;
 };
 
+export const seenLeads = async (leadId: string) => {
+  const response = await axiosClient.post("/api/leads/notification-state", {
+    lead_id: leadId,
+  });
+
+  if (response.status !== 200) {
+    throw new Error("Failed to seen leads");
+  }
+
+  return response.data;
+};
+
 export const getSpecificLead = async (leadId: string) => {
   const response = await axiosClient.get(`/api/leads/${leadId}`);
 

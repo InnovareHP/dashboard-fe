@@ -1,9 +1,15 @@
 import { formatDateTime } from "@/lib/utils";
-import { getExpenseLogs } from "@/services/expense/expense-service";
+import {
+  exportExpenseLogs,
+  getExpenseLogs,
+} from "@/services/expense/expense-service";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { Download } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { MasterListFilters } from "../master-list/master-list-filter";
 import { ReusableTable } from "../reusable-table/generic-table";
+import { Button } from "../ui/button";
 import { ReceiptViewer } from "../ui/receipt-viewer";
 
 export default function ExpenseReportPage() {
@@ -24,9 +30,25 @@ export default function ExpenseReportPage() {
 
   const rows = data?.pages.flatMap((p) => p.data) ?? [];
 
+  const handleExportCSV = async () => {
+    if (rows.length === 0) {
+      toast.error("No expense logs available to export.");
+      return;
+    }
+
+    await exportExpenseLogs(appliedFilterMeta);
+  };
+
   return (
     <div className="p-8 bg-gray-50 space-y-6">
       <h1 className="text-3xl font-bold text-gray-900">Expense Report</h1>
+
+      <div className="flex justify-end">
+        <Button variant="outline" onClick={handleExportCSV}>
+          <Download className="h-4 w-4" />
+          Export PDF
+        </Button>
+      </div>
 
       <MasterListFilters
         columns={data?.pages[0]?.columns ?? []}
