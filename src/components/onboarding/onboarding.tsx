@@ -166,8 +166,6 @@ const OnBoardingPage = () => {
     },
   ];
 
-  console.log(session);
-
   const handleContinue = () => {
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
