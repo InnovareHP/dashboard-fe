@@ -129,6 +129,8 @@ function TeamLayout() {
       activeSubscription.status !== "trialing"
     ) {
       window.location.href = "/billing";
+    } else if (!activeSubscription) {
+      window.location.href = "/billing";
     }
   }, [subscriptionLoading, activeSubscription]);
 

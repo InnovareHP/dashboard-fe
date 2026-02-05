@@ -94,7 +94,12 @@ export function MasterListView({
     (next: boolean) => {
       setOpen(next);
 
-      if (next && initialTab === "history" && hasNotification && !hasSeenRef.current) {
+      if (
+        next &&
+        initialTab === "history" &&
+        hasNotification &&
+        !hasSeenRef.current
+      ) {
         seenLeads(leadId);
         hasSeenRef.current = true;
       }

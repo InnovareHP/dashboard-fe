@@ -15,6 +15,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
+import { useQueryClient } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
 import type { User as BetterAuthUser } from "better-auth";
 import { ChevronsUpDown, CreditCard, LogOut, User } from "lucide-react";
@@ -27,12 +28,18 @@ type NavUserProps = {
 export function NavUser({ user, activeOrganizationId }: NavUserProps) {
   const { isMobile } = useSidebar();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  const handleLogout = () => {
-    authClient.signOut();
+  const handleLogout = async () => {
+    try {
+      queryClient.clear();
 
-    router.navigate({ to: "/login" });
-    router.invalidate();
+      await authClient.signOut();
+
+      router.navigate({ to: "/login" });
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (
@@ -49,7 +56,9 @@ export function NavUser({ user, activeOrganizationId }: NavUserProps) {
                   src={user?.image ?? undefined}
                   alt={user?.name ?? undefined}
                 />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {user?.name?.charAt(0) ?? undefined}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">
@@ -75,7 +84,9 @@ export function NavUser({ user, activeOrganizationId }: NavUserProps) {
                     src={user?.image ?? undefined}
                     alt={user?.name ?? undefined}
                   />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
+                    {user?.name?.charAt(0) ?? undefined}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">

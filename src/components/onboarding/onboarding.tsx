@@ -42,7 +42,7 @@ const OnBoardingPage = () => {
   const [selectedUsage, setSelectedUsage] = useState("");
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
 
-  const { refetch } = useSession();
+  const { data: session } = useSession();
 
   const navigate = useNavigate();
 
@@ -166,6 +166,8 @@ const OnBoardingPage = () => {
     },
   ];
 
+  console.log(session);
+
   const handleContinue = () => {
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
@@ -195,32 +197,16 @@ const OnBoardingPage = () => {
 
   const onSubmit = async (data: FormValues) => {
     try {
-      const slug = toSlug(data.organizationName);
-
-      const { data: slugData } = await authClient.organization.checkSlug({
-        slug,
-      });
-
-      if (!slugData?.status) {
-        form.setError("organizationName", {
-          message: "Organization name already exists",
-        });
-        return;
-      }
-
       const { data: createRes } = await authClient.organization.create({
         name: data.organizationName.trim(),
-        slug,
+        slug: toSlug(data.organizationName.trim()),
+        metadata: {
+          user_id: session?.user?.id,
+        },
+        logo: "https://example.com/logo.png",
+        userId: session?.user?.id,
         keepCurrentActiveOrganization: false,
       });
-
-      refetch();
-
-      await authClient.organization.setActive({
-        organizationId: createRes?.id,
-      });
-
-      refetch();
 
       navigate({ to: `/${createRes?.id}` });
     } catch (err: any) {

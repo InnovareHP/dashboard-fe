@@ -315,7 +315,7 @@ export function EditableCell({
               Remove value
             </Button>
           )}
-          {fieldName === "County" && !isReferral ? (
+          {fieldName === "County" || !isReferral ? (
             <>
               {adding ? (
                 <div className="flex items-center gap-2 px-2 py-1">
