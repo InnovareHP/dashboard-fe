@@ -5,12 +5,7 @@ import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "@tanstack/react-router";
-import {
-  ArrowLeft,
-  CheckCircle2,
-  Loader2,
-  Mail,
-} from "lucide-react";
+import { ArrowLeft, CheckCircle2, Loader2, Mail } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod/v3";
@@ -42,6 +37,7 @@ export function ResetPasswordForm({
     try {
       const { error } = await authClient.requestPasswordReset({
         email: values.email,
+        redirectTo: `${import.meta.env.VITE_APP_URL}/reset-password/verify`,
       });
 
       if (error) {
@@ -56,10 +52,7 @@ export function ResetPasswordForm({
 
   return (
     <div
-      className={cn(
-        "flex items-center justify-center gap-0 p-4",
-        className
-      )}
+      className={cn("flex items-center justify-center gap-0 p-4", className)}
       {...props}
     >
       <div className="flex items-stretch w-full max-w-6xl overflow-hidden rounded-2xl shadow-xl">
@@ -125,88 +118,88 @@ export function ResetPasswordForm({
         {/* Right Side - Form */}
         <div className="w-full lg:w-2/5">
           <Card className="border-2 border-l-0 lg:border-l-2 shadow-none rounded-none lg:rounded-r-2xl h-full">
-          <CardContent className="p-8">
-            <Form {...form}>
-              <form
-                className="space-y-6"
-                onSubmit={form.handleSubmit(handleResetPassword)}
-              >
-                <div className="space-y-2 text-center">
-                  <img
-                    src="/login-page/tarsier.png"
-                    alt=""
-                    className="w-16 h-16 mx-auto mb-4 object-contain"
-                  />
-                  <h2 className="text-3xl font-bold text-gray-900">
-                    Forgot Password?
-                  </h2>
-                  <p className="text-gray-600">
-                    Enter your email address and we'll send you a reset link
-                  </p>
-                </div>
-
-                <div className="space-y-5">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-semibold text-gray-700">
-                          Email Address
-                        </FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                            <Input
-                              {...field}
-                              placeholder="you@example.com"
-                              className="h-12 pl-11 border-2 border-gray-200 focus:border-blue-500 rounded-lg transition-colors"
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Button
-                    disabled={form.formState.isSubmitting}
-                    type="submit"
-                    className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-sm mt-2"
-                  >
-                    {form.formState.isSubmitting ? (
-                      <div className="flex items-center gap-2">
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        <span>Sending reset link...</span>
-                      </div>
-                    ) : (
-                      "Send Reset Link"
-                    )}
-                  </Button>
-
-                  <div className="text-center text-sm text-gray-600 pt-4">
-                    <Link
-                      to="/"
-                      className="font-semibold text-blue-600 hover:text-blue-700 transition-colors inline-flex items-center gap-2"
-                    >
-                      <ArrowLeft className="w-4 h-4" />
-                      Back to Sign In
-                    </Link>
+            <CardContent className="p-8">
+              <Form {...form}>
+                <form
+                  className="space-y-6"
+                  onSubmit={form.handleSubmit(handleResetPassword)}
+                >
+                  <div className="space-y-2 text-center">
+                    <img
+                      src="/login-page/tarsier.png"
+                      alt=""
+                      className="w-16 h-16 mx-auto mb-4 object-contain"
+                    />
+                    <h2 className="text-3xl font-bold text-gray-900">
+                      Forgot Password?
+                    </h2>
+                    <p className="text-gray-600">
+                      Enter your email address and we'll send you a reset link
+                    </p>
                   </div>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-        <div className="mt-6 text-center text-xs text-gray-500 px-4">
-          Need help?{" "}
-          <a
-            href="#"
-            className="text-blue-600 hover:text-blue-700 underline underline-offset-2 transition-colors"
-          >
-            Contact Support
-          </a>
-        </div>
+
+                  <div className="space-y-5">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-semibold text-gray-700">
+                            Email Address
+                          </FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                              <Input
+                                {...field}
+                                placeholder="you@example.com"
+                                className="h-12 pl-11 border-2 border-gray-200 focus:border-blue-500 rounded-lg transition-colors"
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <Button
+                      disabled={form.formState.isSubmitting}
+                      type="submit"
+                      className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-sm mt-2"
+                    >
+                      {form.formState.isSubmitting ? (
+                        <div className="flex items-center gap-2">
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <span>Sending reset link...</span>
+                        </div>
+                      ) : (
+                        "Send Reset Link"
+                      )}
+                    </Button>
+
+                    <div className="text-center text-sm text-gray-600 pt-4">
+                      <Link
+                        to="/"
+                        className="font-semibold text-blue-600 hover:text-blue-700 transition-colors inline-flex items-center gap-2"
+                      >
+                        <ArrowLeft className="w-4 h-4" />
+                        Back to Sign In
+                      </Link>
+                    </div>
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+          <div className="mt-6 text-center text-xs text-gray-500 px-4">
+            Need help?{" "}
+            <a
+              href="#"
+              className="text-blue-600 hover:text-blue-700 underline underline-offset-2 transition-colors"
+            >
+              Contact Support
+            </a>
+          </div>
         </div>
       </div>
     </div>

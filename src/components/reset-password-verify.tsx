@@ -64,10 +64,21 @@ export function ResetPasswordVerifyForm({
 
   const handleResetPassword = async (values: z.infer<typeof formSchema>) => {
     try {
-      const { error } = await authClient.resetPassword({
-        newPassword: values.password,
-        token, // required
-      });
+      const { error } = await authClient.resetPassword(
+        {
+          newPassword: values.password,
+          token, // required
+        },
+        {
+          onSuccess: () => {
+            toast.success("Password reset successfully");
+            navigate.navigate({ to: "/login" });
+          },
+          onError: (error) => {
+            toast.error(error.error.message);
+          },
+        }
+      );
 
       if (error) {
         return toast.error(error.message);
@@ -147,9 +158,7 @@ export function ResetPasswordVerifyForm({
                   <h2 className="text-3xl font-bold text-gray-900">
                     Reset Password
                   </h2>
-                  <p className="text-gray-600">
-                    Enter your new password below
-                  </p>
+                  <p className="text-gray-600">Enter your new password below</p>
                 </div>
 
                 <div className="space-y-5">
