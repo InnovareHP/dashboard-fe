@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/sidebar";
 import { createLead } from "@/services/lead/lead-service";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { type User as BetterAuthUser } from "better-auth";
 import type { Member, Organization } from "better-auth/plugins/organization";
 import {
@@ -38,130 +39,149 @@ export function AppSidebar({
   user,
   ...props
 }: AppSidebarProps) {
-  const data = {
-    navMain: [
-      {
-        title: "Dashboard",
-        url: "#",
-        icon: SquareTerminal,
-        isActive: true,
-        items: [
-          {
-            title: "Analytics",
-            url: `/${activeOrganizationId}`,
-          },
-          // {
-          //   title: "Master List Analytics",
-          //   url: `/${activeOrganizationId}/master-list-analytics`,
-          // },
-        ],
-      },
-      {
-        title: "Marketing",
-        icon: CircuitBoard,
-        items: [
-          {
-            title: "Master List",
-            url: `/${activeOrganizationId}/master-list`,
-          },
-          // {
-          //   title: "Referral List",
-          //   url: `/${activeOrganizationId}/referral-list`,
-          // },
-          ...(memberData?.role === "liason"
-            ? [
-                {
-                  title: "Mileage Log",
-                  url: `/${activeOrganizationId}/log/mileage`,
-                },
-                {
-                  title: "Marketing Log",
-                  url: `/${activeOrganizationId}/log/marketing`,
-                },
-                {
-                  title: "Expense Log",
-                  url: `/${activeOrganizationId}/log/expense`,
-                },
-              ]
-            : []),
-        ],
-      },
-
-      ...(memberData?.role === "owner"
-        ? [
-            {
-              title: "Reports",
-              icon: FileText,
-              items: [
-                {
-                  title: "Mileage Report",
-                  url: `/${activeOrganizationId}/report/mileage`,
-                },
-
-                {
-                  title: "Marketing Report",
-                  url: `/${activeOrganizationId}/report/marketing`,
-                },
-                {
-                  title: "Expense Report",
-                  url: `/${activeOrganizationId}/report/expense`,
-                },
-              ],
-            },
-          ]
-        : []),
-      ...(memberData?.role === "owner"
-        ? [
-            {
-              title: "Import",
-              icon: Folder,
-              items: [
-                {
-                  title: "Master List",
-                  url: `/${activeOrganizationId}/import/master-list`,
-                },
-                // {
-                //   title: "Referral List",
-                //   url: `/${activeOrganizationId}/import/referral-list`,
-                // },
-              ],
-            },
-          ]
-        : []),
-      {
-        title: "Settings",
-        url: `/${activeOrganizationId}/settings`,
-        icon: Settings2,
-        items: [
-          {
-            title: "Team",
-            url: `/${activeOrganizationId}/team`,
-          },
-          ...(memberData?.role === "owner"
-            ? [
-                {
-                  title: "Plans",
-                  url: `/${activeOrganizationId}/plans`,
-                },
-                {
-                  title: "Billing",
-                  url: `/${activeOrganizationId}/settings/billing`,
-                },
-              ]
-            : []),
-
-          // {
-          //   title: "County Config",
-          //   url: `/${activeOrganizationId}/referral-list/county-config`,
-          // },
-        ],
-      },
-    ],
-  };
-
-  const { open } = useSidebar();
-
+  const { open, state } = useSidebar();
   const queryClient = useQueryClient();
+
+  // Memoize navigation data to prevent recreation on every render
+  const data = React.useMemo(
+    () => ({
+      navMain: [
+        {
+          title: "Overview",
+          url: `/${activeOrganizationId}`,
+          icon: SquareTerminal,
+        },
+        {
+          title: "Marketing",
+          icon: CircuitBoard,
+          items: [
+            {
+              title: "Master List",
+              url: `/${activeOrganizationId}/master-list`,
+            },
+            ...(memberData?.role === "liason"
+              ? [
+                  {
+                    title: "Mileage Log",
+                    url: `/${activeOrganizationId}/log/mileage`,
+                  },
+                  {
+                    title: "Marketing Log",
+                    url: `/${activeOrganizationId}/log/marketing`,
+                  },
+                  {
+                    title: "Expense Log",
+                    url: `/${activeOrganizationId}/log/expense`,
+                  },
+                ]
+              : []),
+          ],
+        },
+        ...(memberData?.role === "owner"
+          ? [
+              {
+                title: "Reports",
+                icon: FileText,
+                items: [
+                  {
+                    title: "Mileage Report",
+                    url: `/${activeOrganizationId}/report/mileage`,
+                  },
+                  {
+                    title: "Marketing Report",
+                    url: `/${activeOrganizationId}/report/marketing`,
+                  },
+                  {
+                    title: "Expense Report",
+                    url: `/${activeOrganizationId}/report/expense`,
+                  },
+                ],
+              },
+            ]
+          : []),
+        ...(memberData?.role === "owner"
+          ? [
+              {
+                title: "Import",
+                icon: Folder,
+                items: [
+                  {
+                    title: "Master List",
+                    url: `/${activeOrganizationId}/import/master-list`,
+                  },
+                ],
+              },
+            ]
+          : []),
+        {
+          title: "Settings",
+          url: `/${activeOrganizationId}/settings`,
+          icon: Settings2,
+          items: [
+            {
+              title: "Team",
+              url: `/${activeOrganizationId}/team`,
+            },
+            ...(memberData?.role === "owner"
+              ? [
+                  {
+                    title: "Plans",
+                    url: `/${activeOrganizationId}/plans`,
+                  },
+                  {
+                    title: "Billing",
+                    url: `/${activeOrganizationId}/settings/billing`,
+                  },
+                ]
+              : []),
+          ],
+        },
+      ],
+    }),
+    [activeOrganizationId, memberData?.role]
+  );
+
+  // Preload both images for smooth switching (only once on mount)
+  React.useEffect(() => {
+    const rfidImage = new Image();
+    rfidImage.src = "/login-page/rfid.png";
+    const tarsierImage = new Image();
+    tarsierImage.src = "/login-page/tarsier.png";
+    
+    // Cleanup function to abort loading if component unmounts
+    return () => {
+      rfidImage.src = "";
+      tarsierImage.src = "";
+    };
+  }, []);
+
+  // Memoize image source to prevent unnecessary recalculations
+  const logoSrc = React.useMemo(
+    () =>
+      state === "collapsed"
+        ? "/login-page/tarsier.png"
+        : "/login-page/rfid.png",
+    [state]
+  );
+
+  // Memoize logo container style to prevent object recreation
+  const logoContainerStyle = React.useMemo(
+    () => ({
+      height: state === "collapsed" ? "3rem" : "auto",
+    }),
+    [state]
+  );
+
+  // Memoize image style to prevent object recreation
+  const imageStyle = React.useMemo(
+    () => ({
+      height: state === "collapsed" ? "3rem" : "auto",
+      width: "100%",
+      objectFit: "contain" as const,
+      objectPosition: "center" as const,
+    }),
+    [state]
+  );
 
   const addLeadMutation = useMutation({
     mutationFn: createLead,
@@ -192,27 +212,50 @@ export function AppSidebar({
     },
   });
 
-  const handleAddNewLead = (value: string) => {
-    const newLead = [
-      {
-        id: uuidv4(),
-        lead_name: value,
-        status: "",
-        activities_time: 0,
-        create_contact: "",
-        company: "",
-        title: "",
-        email: "",
-        phone: "",
-        last_interaction: "",
-        active_sequences: 0,
-      },
-    ];
-    addLeadMutation.mutate(newLead);
-  };
+  // Memoize callback to prevent recreation on every render
+  const handleAddNewLead = React.useCallback(
+    (value: string) => {
+      const newLead = [
+        {
+          id: uuidv4(),
+          lead_name: value,
+          status: "",
+          activities_time: 0,
+          create_contact: "",
+          company: "",
+          title: "",
+          email: "",
+          phone: "",
+          last_interaction: "",
+          active_sequences: 0,
+        },
+      ];
+      addLeadMutation.mutate(newLead);
+    },
+    [addLeadMutation]
+  );
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
+        <div
+          className="mb-2 w-full overflow-hidden"
+          style={logoContainerStyle}
+        >
+          <Link
+            to="/$team"
+            params={{ team: activeOrganizationId }}
+            className="block w-full h-full"
+          >
+            <img
+              src={logoSrc}
+              alt="Dashboard Logo"
+              className="w-full cursor-pointer"
+              loading="eager"
+              decoding="async"
+              style={imageStyle}
+            />
+          </Link>
+        </div>
         <TeamSwitcher
           activeOrganizationId={activeOrganizationId}
           organizations={organizations}

@@ -45,7 +45,7 @@ const AddRow = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="flex gap-2">
+        <Button className="flex gap-2 bg-blue-600 hover:bg-blue-700 text-white">
           <Plus className="h-4 w-4" />
           {isReferral ? "Add New Referral" : "Add New organization"}
         </Button>
