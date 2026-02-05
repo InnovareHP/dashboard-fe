@@ -110,20 +110,24 @@ export function AppSidebar({
             },
           ]
         : []),
-      {
-        title: "Import",
-        icon: Folder,
-        items: [
-          {
-            title: "Master List",
-            url: `/${activeOrganizationId}/import/master-list`,
-          },
-          // {
-          //   title: "Referral List",
-          //   url: `/${activeOrganizationId}/import/referral-list`,
-          // },
-        ],
-      },
+      ...(memberData?.role === "owner"
+        ? [
+            {
+              title: "Import",
+              icon: Folder,
+              items: [
+                {
+                  title: "Master List",
+                  url: `/${activeOrganizationId}/import/master-list`,
+                },
+                // {
+                //   title: "Referral List",
+                //   url: `/${activeOrganizationId}/import/referral-list`,
+                // },
+              ],
+            },
+          ]
+        : []),
       {
         title: "Settings",
         url: `/${activeOrganizationId}/settings`,

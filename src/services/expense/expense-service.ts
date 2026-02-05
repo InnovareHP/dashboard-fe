@@ -22,6 +22,35 @@ export const getExpenseLogs = async (filters?: any) => {
   };
 };
 
+export const exportExpenseLogs = async (filters?: any) => {
+  const response = await axiosClient.get("/api/liason/expense/export", {
+    params: {
+      ...filters,
+      filter: filters?.filter ? JSON.stringify(filters.filter) : undefined,
+    },
+    responseType: "blob", // ✅ REQUIRED
+  });
+
+  if (response.status !== 200) {
+    throw new Error("Failed to export expense logs");
+  }
+
+  const blob = new Blob([response.data], {
+    type: "application/pdf",
+  });
+
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "expense-report.pdf";
+  document.body.appendChild(link);
+  link.click();
+
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};
+
 export const createExpenseLog = async (data: any) => {
   const response = await axiosClient.post("/api/liason/expense", {
     ...data,

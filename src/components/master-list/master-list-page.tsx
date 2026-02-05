@@ -59,7 +59,6 @@ export default function MasterListPage() {
     type: string;
   }[];
 
-  // --- Table Instance ---
   const table = useReactTable({
     data: rows,
     columns,
@@ -67,7 +66,6 @@ export default function MasterListPage() {
     manualPagination: true,
   });
 
-  // --- Mutations ---
   const addLeadMutation = useMutation({
     mutationFn: createLead,
     onMutate: async (newLead) => {

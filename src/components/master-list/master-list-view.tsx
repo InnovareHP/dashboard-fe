@@ -1,17 +1,21 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogTitle,
-    DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FILETYPE } from "@/lib/enum";
 import { formatDateTime } from "@/lib/utils";
-import { getLeadTimeline, getSpecificLead } from "@/services/lead/lead-service";
+import {
+  getLeadTimeline,
+  getSpecificLead,
+  seenLeads,
+} from "@/services/lead/lead-service";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Building2, CheckCircle2, Clock, FileText } from "lucide-react";
 import * as React from "react";
@@ -32,6 +36,7 @@ function serializeValue(value: unknown): string {
 
 export function MasterListView({
   leadId,
+  hasNotification = false,
   isReferral,
   initialTab = "details",
   triggerLabel = "View Organization",
@@ -39,12 +44,14 @@ export function MasterListView({
 }: {
   leadId: string;
   isReferral: boolean;
+  hasNotification?: boolean;
   initialTab?: "details" | "history";
   triggerLabel?: string;
   TriggerIcon?: React.ComponentType<{ className?: string }>;
 }) {
   const [open, setOpen] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState(initialTab);
+  const hasSeenRef = React.useRef(false);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["lead", leadId],
@@ -86,9 +93,19 @@ export function MasterListView({
   const handleOpenChange = useCallback(
     (next: boolean) => {
       setOpen(next);
+
+      if (
+        next &&
+        initialTab === "history" &&
+        hasNotification &&
+        !hasSeenRef.current
+      ) {
+        seenLeads(leadId);
+        hasSeenRef.current = true;
+      }
       if (next) setActiveTab(initialTab);
     },
-    [initialTab]
+    [initialTab, hasNotification, leadId]
   );
 
   return (

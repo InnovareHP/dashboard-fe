@@ -1,5 +1,6 @@
 import {
   Award,
+  Camera,
   Check,
   Clock,
   Mail,
@@ -7,11 +8,12 @@ import {
   MoreVertical,
   Search,
   Send,
+  User,
   UserPlus,
   Users,
   X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -45,10 +47,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
 import { formatCapitalize } from "@/lib/utils";
-import { useTeamLayoutContext } from "@/routes/_team";
+import { deleteImage, uploadImage } from "@/services/image/image-service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Invitation } from "better-auth/plugins";
+import type { Member } from "better-auth/plugins/organization";
 import { formatDate } from "date-fns";
 import debounce from "lodash.debounce";
 import { useForm } from "react-hook-form";
@@ -64,11 +67,16 @@ const formSchema = z.object({
 });
 
 const TeamPage = () => {
-  const { memberData } = useTeamLayoutContext();
   const { data: organizationData } = authClient.useActiveOrganization();
   const queryClient = useQueryClient();
+  const memberData = queryClient.getQueryData<Member>([
+    "member-data",
+    organizationData?.id,
+  ]);
 
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -162,7 +170,7 @@ const TeamPage = () => {
     try {
       await authClient.organization.inviteMember({
         email: data.email,
-        role: data.role as "liason" | "admin" | "owner",
+        role: data.role as "owner" | "liason",
         organizationId: organizationData?.id ?? "",
         resend: true,
       });
@@ -181,7 +189,7 @@ const TeamPage = () => {
     try {
       await authClient.organization.inviteMember({
         email: data.email,
-        role: data.role as "liason" | "admin" | "owner",
+        role: data.role as "owner" | "liason",
         organizationId: data.organizationId,
         resend: true,
       });
@@ -238,6 +246,52 @@ const TeamPage = () => {
     );
   };
 
+  const handleLogoClick = () => {
+    if (memberData?.role === "owner") {
+      logoInputRef.current?.click();
+    }
+  };
+
+  const handleLogoUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingLogo(true);
+
+    const data = await uploadImage(file);
+    if (!data?.url) throw new Error("Failed to upload image");
+
+    try {
+      await authClient.organization.update(
+        {
+          organizationId: organizationData?.id,
+          data: {
+            logo: data.url,
+          },
+        },
+        {
+          onSuccess: () => {
+            toast.success("Team logo uploaded successfully");
+            queryClient.invalidateQueries({ queryKey: ["organizationData"] });
+          },
+          onError: async () => {
+            await deleteImage(data.asset_id);
+            toast.error("Failed to upload team logo");
+          },
+        }
+      );
+    } catch (error) {
+      toast.error("Failed to upload team logo");
+    } finally {
+      setIsUploadingLogo(false);
+      if (logoInputRef.current) {
+        logoInputRef.current.value = "";
+      }
+    }
+  };
+
   const teamStats = useMemo(() => {
     return {
       totalMembers: employees?.data?.total,
@@ -247,7 +301,7 @@ const TeamPage = () => {
   }, [employees, invitations]);
 
   return (
-    <div className="min-h-screen p-0 bg-gray-50 sm:p-8 rounded-xl">
+    <div className="min-h-screen p-4 bg-gray-50 sm:p-8 rounded-xl">
       <div className="max-w-8xl mx-auto space-y-8">
         <div className="flex flex-wrap space-y-4 items-center justify-between">
           <div>
@@ -341,9 +395,58 @@ const TeamPage = () => {
           <CardContent className="p-6">
             <div className="flex flex-wrap sm:flex-nowrap justify-center items-center space-x-6">
               <div className="flex-1">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  {organizationData?.name}
-                </h2>
+                <div className="flex items-center space-x-2">
+                  <div className="relative group">
+                    <div
+                      onClick={handleLogoClick}
+                      className={`relative w-16 h-16 rounded-full bg-transparent overflow-hidden border-2 border-gray-200 ${
+                        memberData?.role === "owner"
+                          ? "cursor-pointer hover:border-blue-500 transition-all"
+                          : ""
+                      }`}
+                    >
+                      {organizationData?.logo ? (
+                        <img
+                          src={organizationData?.logo ?? undefined}
+                          alt={organizationData?.name.replaceAll("-", " ")}
+                          className="w-full h-full object-cover z-50"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <User className="w-8 h-8 text-gray-400" />
+                        </div>
+                      )}
+                      {memberData?.role === "owner" &&
+                        !organizationData?.logo && (
+                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center">
+                            <Camera className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </div>
+                        )}
+                      {isUploadingLogo && (
+                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                        </div>
+                      )}
+                    </div>
+                    <input
+                      ref={logoInputRef}
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                    />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      {organizationData?.name.replaceAll("-", " ")}
+                    </h2>
+                    {memberData?.role === "owner" && (
+                      <p className="text-xs text-gray-500">
+                        Click logo to upload
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
               <div className="text-right">
                 <p className="text-sm text-gray-500">Founded</p>

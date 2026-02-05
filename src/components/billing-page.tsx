@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
 import type { Subscription } from "@/lib/types";
 import { cn, formatCapitalize } from "@/lib/utils";
-import { useRouteContext } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import type { Member } from "better-auth/plugins/organization";
-import { Calendar } from "lucide-react";
+import { Calendar, LogOut } from "lucide-react";
 import { useCallback } from "react";
 import { toast } from "sonner";
 import { PlansPage } from "./plans-page";
@@ -30,15 +31,25 @@ export function BillingPage({
     memberData: Member;
   };
 
-  const activeOrganizationId = propOrgId ?? context.activeOrganizationId;
-  const activeSubscription = propSub ?? context.activeSubscription;
-  const memberData = propMember ?? context.memberData;
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const subscriptions = queryClient.getQueryData<Subscription[]>([
+    "subscription",
+    context.activeOrganizationId,
+  ]) as unknown as Subscription | null;
 
-  const billingInfo = activeSubscription && {
-    currentPlan: activeSubscription.plan,
+  const activeOrganizationId = propOrgId ?? context.activeOrganizationId;
+
+  const memberData = queryClient.getQueryData([
+    "member-data",
+    activeOrganizationId,
+  ]);
+
+  const billingInfo = subscriptions && {
+    currentPlan: subscriptions?.plan,
     billingCycle: "monthly",
-    nextBillingDate: activeSubscription.periodEnd,
-    status: activeSubscription.status,
+    nextBillingDate: subscriptions?.periodEnd,
+    status: subscriptions?.status,
   };
 
   const openBillingPortal = useCallback(async () => {
@@ -53,8 +64,20 @@ export function BillingPage({
     if (data?.url) window.location.href = data.url;
   }, [activeOrganizationId]);
 
+  const handleLogout = useCallback(async () => {
+    try {
+      await authClient.signOut();
+
+      queryClient.clear();
+      navigate({ to: "/login" });
+      toast.success("Logged out successfully");
+    } catch (error) {
+      toast.error("Failed to logout");
+    }
+  }, [navigate]);
+
   if (!billingInfo) {
-    return <PlansPage context={propContext} />;
+    return <PlansPage context={propContext} handleLogout={handleLogout} />;
   }
 
   return (
@@ -95,7 +118,8 @@ export function BillingPage({
               </Badge>
             </div>
 
-            {billingInfo.nextBillingDate && memberData?.role === "owner" ? (
+            {billingInfo.nextBillingDate &&
+            (memberData as Member)?.role === "owner" ? (
               <div className="flex items-center gap-2 text-sm mt-2 text-muted-foreground">
                 <Calendar className="w-4 h-4" />
                 <span>
@@ -110,13 +134,22 @@ export function BillingPage({
             )}
           </div>
 
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={openBillingPortal}
-          >
-            Manage Billing
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={openBillingPortal}
+            >
+              Manage Billing
+            </Button>
+
+            {propContext === "/billing" && (
+              <Button variant="ghost" className="flex-1" onClick={handleLogout}>
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>
