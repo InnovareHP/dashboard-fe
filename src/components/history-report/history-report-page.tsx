@@ -29,7 +29,7 @@ export default function HistoryReportPage() {
     isFetching,
     hasNextPage,
     fetchNextPage,
-  } = useInfiniteQuery({
+    } = useInfiniteQuery({
     queryKey: ["history-report", appliedFilterMeta],
     queryFn: () => getLeadHistory(appliedFilterMeta),
     getNextPageParam: (lastPage) => lastPage.nextPage,
@@ -39,16 +39,7 @@ export default function HistoryReportPage() {
   const rows = data?.pages?.flatMap((p) => p.data) ?? [];
 
   const handleOpenRestoreModal = (historyItem: any) => {
-    setSelectedHistoryItem({
-      id: historyItem.id,
-      leadId: historyItem.lead_id || historyItem.leadId || historyItem.entity_id,
-      action: historyItem.action,
-      entityType: historyItem.entityType || historyItem.entity_type || "Lead",
-      old_value: historyItem.old_value,
-      new_value: historyItem.new_value,
-      created_at: historyItem.created_at,
-      created_by: historyItem.created_by,
-    });
+    setSelectedHistoryItem(historyItem);
     setRestoreModalOpen(true);
   };
 
