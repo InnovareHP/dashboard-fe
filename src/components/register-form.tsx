@@ -69,10 +69,10 @@ export function RegisterForm({
 
   return (
     <div
-      className={cn("flex items-center justify-center gap-0 p-4", className)}
+      className={cn("gap-0 p-4", className)}
       {...props}
     >
-      <div className="flex items-stretch w-full max-w-6xl overflow-hidden rounded-2xl shadow-xl">
+      <div className="flex items-stretch w-full overflow-hidden rounded-2xl shadow-xl">
         {/* Left Side - Image background + text */}
         <div className="hidden lg:block relative lg:w-3/5 min-h-[28rem]">
           <div

@@ -1,5 +1,8 @@
 import { EditableCell } from "@/components/reusable-table/editable-cell";
+import { ROLES } from "@/lib/constant";
 import { type ColumnDef } from "@tanstack/react-table";
+import type { User } from "better-auth";
+import type { Member } from "better-auth/plugins/organization";
 import { Bell, Clock } from "lucide-react";
 import { CreateColumnModal } from "../reusable-table/create-column";
 import { Checkbox } from "../ui/checkbox";
@@ -16,11 +19,13 @@ type LeadRow = {
   id: string;
   lead_name: string;
   assigned_to: string;
+  user: User;
   [key: string]: any;
 };
 
 export function generateLeadColumns(
-  columnsFromApi: ColumnType[]
+  columnsFromApi: ColumnType[],
+  memberData: Member
 ): ColumnDef<LeadRow>[] {
   const filteredApiColumns = columnsFromApi.filter(
     (col) => col.name !== "History" && col.type !== "TIMELINE"
@@ -70,6 +75,7 @@ export function generateLeadColumns(
             </span>
           </div>
         )}
+
         <div className="min-w-0 flex-1">
           <EditableCell
             id={row.original.id}
@@ -81,14 +87,16 @@ export function generateLeadColumns(
         </div>
         <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
           <AnalyzeLeadDialog leadId={row.original.id} />
-          <MasterListView
-            leadId={row.original.id}
-            isReferral={false}
-            hasNotification={row.original.has_notification}
-            initialTab="history"
-            triggerLabel="History"
-            TriggerIcon={Clock}
-          />
+          {memberData.role === ROLES.OWNER && (
+            <MasterListView
+              leadId={row.original.id}
+              isReferral={false}
+              hasNotification={row.original.has_notification}
+              initialTab="history"
+              triggerLabel="History"
+              TriggerIcon={Clock}
+            />
+          )}
         </div>
       </div>
     ),

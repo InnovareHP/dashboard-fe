@@ -24,3 +24,15 @@ export const getLiaisons = async (isLiaison: boolean) => {
 
   return response.data as OptionsResponse[];
 };
+
+export const deleteDropdownOption = async (optionId: string) => {
+  const response = await axiosClient.delete(
+    `/api/leads/field/options/${optionId}`
+  );
+
+  if (response.status !== 200) {
+    throw new Error("Failed to delete dropdown option");
+  }
+
+  return response.data;
+};

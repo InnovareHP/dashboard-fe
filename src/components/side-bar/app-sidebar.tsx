@@ -9,6 +9,7 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { ROLES } from "@/lib/constant";
 import { createLead } from "@/services/lead/lead-service";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -59,7 +60,15 @@ export function AppSidebar({
               title: "Master List",
               url: `/${activeOrganizationId}/master-list`,
             },
-            ...(memberData?.role === "liason"
+            ...(memberData?.role !== ROLES.LIASON
+              ? [
+                  {
+                    title: "History Check",
+                    url: `/${activeOrganizationId}/master-list/history`,
+                  },
+                ]
+              : []),
+            ...(memberData?.role !== ROLES.OWNER
               ? [
                   {
                     title: "Mileage Log",
@@ -77,7 +86,7 @@ export function AppSidebar({
               : []),
           ],
         },
-        ...(memberData?.role === "owner"
+        ...(memberData?.role === ROLES.OWNER
           ? [
               {
                 title: "Reports",
@@ -99,7 +108,7 @@ export function AppSidebar({
               },
             ]
           : []),
-        ...(memberData?.role === "owner"
+        ...(memberData?.role === ROLES.OWNER
           ? [
               {
                 title: "Import",
@@ -122,7 +131,7 @@ export function AppSidebar({
               title: "Team",
               url: `/${activeOrganizationId}/team`,
             },
-            ...(memberData?.role === "owner"
+            ...(memberData?.role === ROLES.OWNER
               ? [
                   {
                     title: "Plans",
@@ -147,7 +156,7 @@ export function AppSidebar({
     rfidImage.src = "/login-page/rfid.png";
     const tarsierImage = new Image();
     tarsierImage.src = "/login-page/tarsier.png";
-    
+
     // Cleanup function to abort loading if component unmounts
     return () => {
       rfidImage.src = "";
@@ -164,19 +173,11 @@ export function AppSidebar({
     [state]
   );
 
-  // Memoize logo container style to prevent object recreation
-  const logoContainerStyle = React.useMemo(
-    () => ({
-      height: state === "collapsed" ? "3rem" : "auto",
-    }),
-    [state]
-  );
-
   // Memoize image style to prevent object recreation
   const imageStyle = React.useMemo(
     () => ({
       height: state === "collapsed" ? "3rem" : "auto",
-      width: "100%",
+      width: state === "collapsed" ? "2rem" : "70%",
       objectFit: "contain" as const,
       objectPosition: "center" as const,
     }),
@@ -237,19 +238,16 @@ export function AppSidebar({
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <div
-          className="mb-2 w-full overflow-hidden"
-          style={logoContainerStyle}
-        >
+        <div className="mb-2 w-full overflow-hidden flex items-center justify-center">
           <Link
             to="/$team"
             params={{ team: activeOrganizationId }}
-            className="block w-full h-full"
+            className="block w-full h-full flex items-center justify-center"
           >
             <img
               src={logoSrc}
               alt="Dashboard Logo"
-              className="w-full cursor-pointer"
+              className="cursor-pointer transition-all duration-300"
               loading="eager"
               decoding="async"
               style={imageStyle}

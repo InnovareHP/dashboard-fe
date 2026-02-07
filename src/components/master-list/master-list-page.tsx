@@ -3,22 +3,38 @@ import ReusableTable from "@/components/reusable-table/reusable-table";
 import { Button } from "@/components/ui/button";
 import type { LeadRow, OptionsResponse } from "@/lib/types";
 import { exportToCSV } from "@/lib/utils";
+import { Route } from "@/routes/_team";
 import { createLead, deleteLead, getLeads } from "@/services/lead/lead-service";
 import {
   useInfiniteQuery,
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import {
+  getCoreRowModel,
+  useReactTable,
+  type Header,
+} from "@tanstack/react-table";
+import type { Member } from "better-auth/plugins/organization";
 import { Download } from "lucide-react";
-import { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import AddRow from "../reusable-table/add-row";
+import ColumnFilter from "./column-filter";
 import { MasterListFilters } from "./master-list-filter";
 
 export default function MasterListPage() {
+  const { activeOrganizationId } = Route.useRouteContext() as {
+    activeOrganizationId: string;
+  };
+
   const queryClient = useQueryClient();
+  const memberData = queryClient.getQueryData([
+    "member-data",
+    activeOrganizationId,
+  ]) as Member;
+
   const [filterMeta, setFilterMeta] = useState({
     leadDateFrom: null,
     leadDateTo: null,
@@ -53,7 +69,10 @@ export default function MasterListPage() {
 
   const rows = data?.pages.flatMap((p) => p.data) ?? [];
 
-  const columns = generateLeadColumns(data?.pages[0].columns ?? []) as {
+  const columns = generateLeadColumns(
+    data?.pages[0].columns ?? [],
+    memberData
+  ) as {
     id: string;
     name: string;
     type: string;
@@ -182,6 +201,50 @@ export default function MasterListPage() {
     toast.success("CSV download started.");
   };
 
+  const tableColumns = useMemo(() => {
+    return table
+      .getAllColumns()
+      .filter((column) => column.id !== "create_column")
+      .map((column) => {
+        const header = column.columnDef.header;
+        let columnLabel = column.id || "Unnamed Column"; // Default to column id
+
+        if (typeof header === "string") {
+          columnLabel = header;
+        } else if (typeof header === "function") {
+          const renderedHeader = header({
+            column,
+            header: column.columnDef.header as unknown as Header<
+              LeadRow,
+              unknown
+            >,
+            table,
+          });
+
+          if (React.isValidElement(renderedHeader)) {
+            const props = renderedHeader.props as {
+              children: string | string[];
+            };
+            if (typeof props.children === "string") {
+              columnLabel = props.children;
+            } else if (Array.isArray(props.children)) {
+              columnLabel = props.children
+                .map((child) => (typeof child === "string" ? child : ""))
+                .join("");
+            }
+          }
+        }
+
+        return {
+          label: columnLabel, // Extracted column name
+          accessorFn: column.id,
+          getCanHide: column.getCanHide,
+          getIsVisible: column.getIsVisible,
+          toggleVisibility: column.toggleVisibility,
+        };
+      });
+  }, [table]);
+
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
       <div className="space-y-6">
@@ -206,6 +269,7 @@ export default function MasterListPage() {
               Export CSV
             </Button>
             <AddRow isReferral={false} onAdd={handleAddNewLead} />
+            <ColumnFilter tableColumns={tableColumns as any} />
           </div>
         </div>
 

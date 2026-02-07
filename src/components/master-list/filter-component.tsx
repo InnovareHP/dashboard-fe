@@ -1,3 +1,4 @@
+import type { OptionsResponse } from "@/lib/types";
 import { getDropdownOptions } from "@/services/lead/lead-service";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -68,7 +69,7 @@ export function FilterComponent({
             <SelectValue placeholder={`Filter by ${col.name}`} />
           </SelectTrigger>
           <SelectContent>
-            {options.map((option) => (
+            {options.map((option: OptionsResponse) => (
               <SelectItem key={option.id} value={option.value}>
                 {option.value}
               </SelectItem>

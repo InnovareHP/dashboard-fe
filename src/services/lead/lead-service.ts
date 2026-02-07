@@ -1,5 +1,5 @@
 import { axiosClient } from "@/lib/axios-client";
-import type { LeadAnalyze, LeadHistoryItem, LeadOptions } from "@/lib/types";
+import type { LeadAnalyze, LeadHistoryItem } from "@/lib/types";
 
 export const getLeads = async (filters: any) => {
   const response = await axiosClient.get("/api/leads", {
@@ -33,16 +33,20 @@ export const getLeadAnalysis = async (leadId: string) => {
   return response.data as LeadAnalyze;
 };
 
-export const getDropdownOptions = async (fieldKey: string) => {
+export const getDropdownOptions = async (
+  fieldKey: string,
+  page?: number,
+  limit?: number
+) => {
   const response = await axiosClient.get(
-    `/api/leads/field/${fieldKey}/options`
+    `/api/leads/field/${fieldKey}/options?page=${page}&limit=${limit}`
   );
 
   if (response.status !== 200) {
     throw new Error("Failed to fetch dropdown options");
   }
 
-  return response.data as LeadOptions[];
+  return response.data as any;
 };
 
 export const createDropdownOption = async (
@@ -106,10 +110,29 @@ export const createLead = async (data: any) => {
   return response.data;
 };
 
-export const createColumn = async (lead_type: string, column_name: string) => {
+export const createColumn = async (
+  isReferral: boolean,
+  column: string,
+  name: string
+) => {
   const response = await axiosClient.post("/api/leads/column", {
-    lead_type,
-    column_name,
+    isReferral: isReferral,
+    column: column,
+    name: name,
+  });
+
+  return response.data;
+};
+
+export const restoreLeadHistory = async (
+  lead_id: string,
+  history_id: string,
+  event_type: string
+) => {
+  const response = await axiosClient.post(`/api/leads/restore-history`, {
+    lead_id: lead_id,
+    history_id: history_id,
+    event_type: event_type,
   });
 
   return response.data;

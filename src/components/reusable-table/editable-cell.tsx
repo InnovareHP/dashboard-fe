@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { LeadRow } from "@/lib/types";
+import type { LeadRow, OptionsResponse } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
   createDropdownOption,
@@ -254,7 +254,7 @@ export function EditableCell({
         </SelectTrigger>
 
         <SelectContent>
-          {assignedToOptions.map((opt) => (
+          {assignedToOptions.map((opt: OptionsResponse) => (
             <SelectItem key={opt.id} value={opt.id}>
               {opt.value}
             </SelectItem>
@@ -281,7 +281,8 @@ export function EditableCell({
 
   // ---- DROPDOWN ----
   if (type === "DROPDOWN") {
-    const hasCurrentVal = !!val && !options.some((opt) => opt.value === val);
+    const hasCurrentVal =
+      !!val && !options.some((opt: OptionsResponse) => opt.value === val);
 
     return (
       <Select defaultValue={val} onValueChange={(v) => handleUpdate(String(v))}>
@@ -293,7 +294,7 @@ export function EditableCell({
         </SelectTrigger>
 
         <SelectContent>
-          {options.map((opt) => (
+          {options.map((opt: OptionsResponse) => (
             <SelectItem key={opt.id} value={opt.value}>
               {opt.value}
             </SelectItem>
@@ -335,13 +336,25 @@ export function EditableCell({
                   </Button>
                 </div>
               ) : (
-                <Button
-                  variant="ghost"
-                  className="w-full text-xs text-blue-600"
-                  onClick={() => setAdding(true)}
-                >
-                  + Add more option
-                </Button>
+                <div>
+                  <Button
+                    variant="ghost"
+                    className="w-full text-xs text-blue-600"
+                    onClick={() => setAdding(true)}
+                  >
+                    + Add more option
+                  </Button>
+                  <Link
+                    to={`/$team/master-list/leads/option/${fieldKey}` as string}
+                  >
+                    <Button
+                      variant="ghost"
+                      className="w-full text-xs text-blue-600"
+                    >
+                      Proceed to Option Configuration
+                    </Button>
+                  </Link>
+                </div>
               )}
             </>
           ) : (
@@ -424,7 +437,7 @@ export function EditableCell({
 
         <PopoverContent className="w-[180px] p-2" align="start">
           <div className="max-h-[200px] overflow-y-auto space-y-1">
-            {options.map((opt) => (
+            {options.map((opt: OptionsResponse) => (
               <div
                 key={opt.id}
                 className="flex items-center space-x-2 cursor-pointer hover:bg-accent rounded-sm px-2 py-1"

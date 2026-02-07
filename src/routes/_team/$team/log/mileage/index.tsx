@@ -1,18 +1,12 @@
 import MileageLogPage from "@/components/mileage-log/mileage-log-page";
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import type { Session } from "better-auth";
+import { ROLES } from "@/lib/constant";
+import { AuthorizedRole } from "@/lib/helper/helper";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_team/$team/log/mileage/")({
   component: RouteComponent,
   beforeLoad: async (context) => {
-    const session = context.context.session as unknown as Session & {
-      memberRole: string;
-      activeOrganizationId: string;
-    };
-
-    if (session?.memberRole !== "liason") {
-      throw redirect({ to: `/${session.activeOrganizationId}` as any });
-    }
+    return AuthorizedRole(context, [ROLES.LIASON, ROLES.ACCOUNT_MANAGER]);
   },
 });
 

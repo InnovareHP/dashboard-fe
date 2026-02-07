@@ -1,16 +1,11 @@
 import MarketingReportPage from "@/components/marketing-report/marketing-report-page";
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import type { Session } from "better-auth";
+import { ROLES } from "@/lib/constant";
+import { AuthorizedRole } from "@/lib/helper/helper";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_team/$team/report/marketing/")({
   beforeLoad: async (context) => {
-    const session = context.context.session as unknown as Session & {
-      memberRole: string;
-      activeOrganizationId: string;
-    };
-    if (session?.memberRole !== "owner") {
-      throw redirect({ to: `/${session.activeOrganizationId}` as any });
-    }
+    return AuthorizedRole(context, [ROLES.OWNER, ROLES.ACCOUNT_MANAGER]);
   },
   component: RouteComponent,
 });

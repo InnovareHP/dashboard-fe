@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
+import { ROLES } from "@/lib/constant";
 import type { Subscription } from "@/lib/types";
 import { cn, formatCapitalize } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
@@ -119,7 +120,7 @@ export function BillingPage({
             </div>
 
             {billingInfo.nextBillingDate &&
-            (memberData as Member)?.role === "owner" ? (
+            (memberData as Member)?.role === ROLES.OWNER ? (
               <div className="flex items-center gap-2 text-sm mt-2 text-muted-foreground">
                 <Calendar className="w-4 h-4" />
                 <span>

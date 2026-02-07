@@ -46,6 +46,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
+import { ROLES } from "@/lib/constant";
 import { formatCapitalize } from "@/lib/utils";
 import { deleteImage, uploadImage } from "@/services/image/image-service";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -62,7 +63,7 @@ import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 
 const formSchema = z.object({
   email: z.email(),
-  role: z.enum(["liason", "owner"]),
+  role: z.enum([ROLES.LIASON, ROLES.OWNER, ROLES.ACCOUNT_MANAGER]),
   message: z.string(),
 });
 
@@ -82,7 +83,7 @@ const TeamPage = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
-      role: "liason",
+      role: ROLES.LIASON,
       message: "",
     },
     mode: "onChange",
@@ -170,7 +171,7 @@ const TeamPage = () => {
     try {
       await authClient.organization.inviteMember({
         email: data.email,
-        role: data.role as "owner" | "liason",
+        role: data.role as any,
         organizationId: organizationData?.id ?? "",
         resend: true,
       });
@@ -189,7 +190,7 @@ const TeamPage = () => {
     try {
       await authClient.organization.inviteMember({
         email: data.email,
-        role: data.role as "owner" | "liason",
+        role: data.role as any,
         organizationId: data.organizationId,
         resend: true,
       });
@@ -247,7 +248,7 @@ const TeamPage = () => {
   };
 
   const handleLogoClick = () => {
-    if (memberData?.role === "owner") {
+    if (memberData?.role === ROLES.OWNER) {
       logoInputRef.current?.click();
     }
   };
@@ -312,7 +313,7 @@ const TeamPage = () => {
               Manage your team members and collaborate effectively
             </p>
           </div>
-          {memberData?.role === "owner" && (
+          {memberData?.role === ROLES.OWNER && (
             <Dialog
               open={isInviteDialogOpen}
               onOpenChange={setIsInviteDialogOpen}
@@ -344,16 +345,22 @@ const TeamPage = () => {
                     <Select
                       {...form.register("role")}
                       onValueChange={(value) =>
-                        form.setValue("role", value as "liason" | "owner")
+                        form.setValue(
+                          "role",
+                          value as (typeof ROLES)[keyof typeof ROLES]
+                        )
                       }
-                      defaultValue="liason"
+                      defaultValue={ROLES.LIASON}
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="liason">Liason</SelectItem>
-                        <SelectItem value="owner">Owner</SelectItem>
+                        <SelectItem value={ROLES.LIASON}>Liason</SelectItem>
+                        <SelectItem value={ROLES.OWNER}>Owner</SelectItem>
+                        <SelectItem value={ROLES.ACCOUNT_MANAGER}>
+                          Account Manager
+                        </SelectItem>
                       </SelectContent>
                     </Select>
 
@@ -400,7 +407,7 @@ const TeamPage = () => {
                     <div
                       onClick={handleLogoClick}
                       className={`relative w-16 h-16 rounded-full bg-transparent overflow-hidden border-2 border-gray-200 ${
-                        memberData?.role === "owner"
+                        memberData?.role === ROLES.OWNER
                           ? "cursor-pointer hover:border-blue-500 transition-all"
                           : ""
                       }`}
@@ -440,7 +447,7 @@ const TeamPage = () => {
                     <h2 className="text-2xl font-bold text-gray-900">
                       {organizationData?.name.replaceAll("-", " ")}
                     </h2>
-                    {memberData?.role === "owner" && (
+                    {memberData?.role === ROLES.OWNER && (
                       <p className="text-xs text-gray-500">
                         Click logo to upload
                       </p>
@@ -518,7 +525,7 @@ const TeamPage = () => {
 
         <Tabs defaultValue="members" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">
-            {memberData?.role === "owner" && (
+            {memberData?.role === ROLES.OWNER && (
               <>
                 <TabsTrigger value="members">Team Members</TabsTrigger>
                 <TabsTrigger value="invitations">
@@ -528,7 +535,7 @@ const TeamPage = () => {
             )}
           </TabsList>
 
-          {memberData?.role === "owner" && (
+          {memberData?.role === ROLES.OWNER && (
             <TabsContent value="members" className="space-y-6">
               <Card className="bg-white/95 backdrop-blur border-0">
                 <CardHeader>
@@ -650,11 +657,14 @@ const TeamPage = () => {
                                   </SelectTrigger>
 
                                   <SelectContent>
-                                    <SelectItem value="liason">
-                                      {formatCapitalize("liason")}
+                                    <SelectItem value={ROLES.LIASON}>
+                                      {formatCapitalize(ROLES.LIASON)}
                                     </SelectItem>
-                                    <SelectItem value="owner">
-                                      {formatCapitalize("owner")}
+                                    <SelectItem value={ROLES.OWNER}>
+                                      {formatCapitalize(ROLES.OWNER)}
+                                    </SelectItem>
+                                    <SelectItem value={ROLES.ACCOUNT_MANAGER}>
+                                      {formatCapitalize(ROLES.ACCOUNT_MANAGER)}
                                     </SelectItem>
                                   </SelectContent>
                                 </Select>
@@ -680,7 +690,7 @@ const TeamPage = () => {
               </Card>
             </TabsContent>
           )}
-          {memberData?.role === "owner" && (
+          {memberData?.role === ROLES.OWNER && (
             <TabsContent value="invitations" className="space-y-6">
               <Card className="shadow-lg border-0">
                 <CardHeader>

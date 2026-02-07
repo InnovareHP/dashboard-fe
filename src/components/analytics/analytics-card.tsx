@@ -66,9 +66,9 @@ export function LiaisonAnalyticsCard({ data }: Props) {
   );
 
   return (
-    <Card className="group h-full hover:shadow-2xl transition-all duration-300 border-0 bg-gradient-to-br from-white via-gray-50/50 to-gray-100/30 overflow-hidden">
+    <Card className="group h-full hover:shadow-md transition-all duration-300 border-2 border-gray-300 hover:border-blue-400 bg-white overflow-hidden">
       {/* Decorative top gradient bar */}
-      <div className={`h-1.5 bg-gradient-to-r ${config.gradient}`} />
+      <div className={`h-2 bg-gradient-to-r ${config.gradient}`} />
 
       <CardHeader className="space-y-4 pb-4">
         {/* Header with engagement badge */}
@@ -83,7 +83,7 @@ export function LiaisonAnalyticsCard({ data }: Props) {
           </div>
 
           <div
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r ${config.bgGradient} ring-2 ${config.ringColor}`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r ${config.bgGradient} border-2 ${config.ringColor.replace('ring-', 'border-')}`}
           >
             <EngagementIcon className={`h-3.5 w-3.5 ${config.color}`} />
             <span className={`text-xs font-semibold ${config.color}`}>
@@ -94,7 +94,7 @@ export function LiaisonAnalyticsCard({ data }: Props) {
 
         {/* Interaction Stats - Large & Bold */}
         <div
-          className={`relative rounded-xl bg-gradient-to-br ${config.bgGradient} p-5 ring-1 ${config.ringColor}`}
+          className={`relative rounded-xl bg-gradient-to-br ${config.bgGradient} p-5 border-2 ${config.ringColor.replace('ring-', 'border-')}`}
         >
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
@@ -159,11 +159,11 @@ export function LiaisonAnalyticsCard({ data }: Props) {
         {/* People Contacted Section */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-purple-600" />
+            <Users className="h-4 w-4 text-blue-600" />
             <p className="text-sm font-semibold text-gray-900">
               People Contacted
             </p>
-            <span className="ml-auto text-xs font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full">
+            <span className="ml-auto text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
               {data.peopleContacted.length}
             </span>
           </div>
@@ -178,7 +178,7 @@ export function LiaisonAnalyticsCard({ data }: Props) {
                 <Badge
                   key={person}
                   variant="secondary"
-                  className="bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 font-medium"
+                  className="bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 font-medium"
                 >
                   {person}
                 </Badge>
@@ -190,7 +190,7 @@ export function LiaisonAnalyticsCard({ data }: Props) {
         {/* Touchpoints Section - Enhanced */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Phone className="h-4 w-4 text-indigo-600" />
+            <Phone className="h-4 w-4 text-blue-600" />
             <p className="text-sm font-semibold text-gray-900">
               Touchpoints Used
             </p>
@@ -210,12 +210,12 @@ export function LiaisonAnalyticsCard({ data }: Props) {
                   <div key={tp.type} className="space-y-1">
                     <div className="flex items-center justify-between text-sm">
                       <div className="flex items-center gap-2">
-                        <Icon className="h-3.5 w-3.5 text-indigo-600" />
+                        <Icon className="h-3.5 w-3.5 text-blue-600" />
                         <span className="text-gray-700 font-medium capitalize">
                           {tp.type.replace(/_/g, " ")}
                         </span>
                       </div>
-                      <span className="font-bold text-indigo-600">
+                      <span className="font-bold text-blue-600">
                         {tp.count}
                       </span>
                     </div>
@@ -223,7 +223,7 @@ export function LiaisonAnalyticsCard({ data }: Props) {
                     {/* Mini progress bar */}
                     <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500"
+                        className="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-500"
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
@@ -237,7 +237,7 @@ export function LiaisonAnalyticsCard({ data }: Props) {
 
       {/* Hover effect overlay */}
       <div
-        className={`absolute inset-0 bg-gradient-to-br ${config.bgGradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none`}
+        className="absolute inset-0 bg-gradient-to-br from-blue-50/0 to-blue-100/0 group-hover:from-blue-50/30 group-hover:to-blue-100/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
       />
     </Card>
   );

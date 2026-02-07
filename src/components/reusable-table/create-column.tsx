@@ -11,7 +11,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { createColumn } from "@/services/lead/lead-service";
-import { createReferralColumn } from "@/services/referral/referral-service";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   AlignLeft,
@@ -46,7 +45,7 @@ export function CreateColumnModal({
 
     setLoading(true);
     try {
-      await (isReferral ? createReferralColumn : createColumn)(type, name);
+      await createColumn(isReferral, type, name);
 
       queryClient.invalidateQueries({
         queryKey: isReferral ? ["referrals"] : ["leads"],

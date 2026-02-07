@@ -39,6 +39,7 @@ export const useTeamLayoutContext = () => {
       "useTeamLayoutContext must be used inside <TeamLayoutContext.Provider>"
     );
   }
+  
   return ctx;
 };
 

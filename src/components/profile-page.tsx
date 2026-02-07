@@ -17,7 +17,18 @@ import { useTeamLayoutContext } from "@/routes/_team";
 import { uploadImage } from "@/services/image/image-service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "@tanstack/react-router";
-import { AlertCircle, LogOut, Mail, Shield, Upload } from "lucide-react";
+import {
+  AlertCircle,
+  Camera,
+  CheckCircle,
+  Calendar,
+  LogOut,
+  Mail,
+  Shield,
+  Upload,
+  User,
+  Loader2,
+} from "lucide-react";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -142,18 +153,24 @@ export function ProfilePage({
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg">
-          <CardContent className="p-12 text-center">
-            <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">
-              Error Loading Profile
-            </h2>
-            <p className="text-muted-foreground mb-4">
-              Could not load user profile.
-            </p>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 via-blue-50/20 to-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white border-2 border-red-200 rounded-lg p-8 text-center max-w-lg">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-16 w-16 rounded-full bg-red-100 flex items-center justify-center">
+              <AlertCircle className="h-8 w-8 text-red-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-red-900">
+                Error Loading Profile
+              </h3>
+              <p className="text-red-700 mt-1">Could not load user profile.</p>
+              <p className="text-sm text-gray-600 mt-2">
+                Please try refreshing the page or contact support if the problem
+                persists.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -162,170 +179,264 @@ export function ProfilePage({
 
   return (
     <div
-      className={cn("w-full max-w-7xl mx-auto p-6 space-y-8", className)}
+      className={cn(
+        "min-h-screen w-full bg-gradient-to-br from-gray-50 via-blue-50/20 to-gray-50",
+        className
+      )}
       {...props}
     >
-      <div className="text-center space-y-2 mb-12">
-        <h1 className="text-4xl font-bold tracking-tight">Profile Settings</h1>
-        <p className="text-lg text-muted-foreground">
-          Manage your account, profile image, and security
-        </p>
+      {/* Header */}
+      <div className="sticky top-0 z-50 border-b-2 border-blue-200 bg-white shadow-md">
+        <div className="max-w-7xl mx-auto p-6 sm:p-8">
+          <div className="flex items-center gap-3">
+            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+              <User className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
+                Profile Settings
+              </h1>
+              <p className="text-sm text-gray-600 mt-0.5">
+                Manage your account, profile image, and security
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* ---------------- PROFILE CARD ---------------- */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Profile Information</CardTitle>
-            <CardDescription>Your account details</CardDescription>
-          </CardHeader>
+      {/* Content */}
+      <div className="max-w-7xl mx-auto p-6 sm:p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* ---------------- PROFILE CARD ---------------- */}
+          <Card className="lg:col-span-2 border-2 border-gray-300 shadow-sm">
+            <CardHeader className="border-b-2 border-gray-300 bg-blue-50">
+              <div className="flex items-center gap-2">
+                <User className="h-5 w-5 text-blue-600" />
+                <div>
+                  <CardTitle className="text-blue-900">
+                    Profile Information
+                  </CardTitle>
+                  <CardDescription>Your account details</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
 
-          <CardContent className="space-y-6">
-            <div className="flex items-center gap-6">
-              <div
-                className="relative cursor-pointer group"
-                onClick={handleAvatarClick}
-              >
-                <Avatar className="h-28 w-28 border shadow-sm transition hover:ring-2 hover:ring-primary/50">
-                  {user?.image ? (
-                    <AvatarImage
-                      src={`${user.image}?t=${Date.now()}`}
-                      alt={user.name ?? "User"}
-                    />
-                  ) : (
-                    <AvatarFallback className="bg-muted flex items-center justify-center">
-                      <Upload className="w-8 h-8 text-muted-foreground" />
-                    </AvatarFallback>
-                  )}
-                </Avatar>
+            <CardContent className="space-y-6 p-6">
+              {/* Avatar Section */}
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                <div className="relative">
+                  <div
+                    className="relative cursor-pointer group"
+                    onClick={handleAvatarClick}
+                  >
+                    <Avatar className="h-32 w-32 border-4 border-blue-200 shadow-lg transition-all hover:border-blue-400 hover:shadow-xl">
+                      {user?.image ? (
+                        <AvatarImage
+                          src={`${user.image}?t=${Date.now()}`}
+                          alt={user.name ?? "User"}
+                        />
+                      ) : (
+                        <AvatarFallback className="bg-blue-100 flex items-center justify-center text-blue-600 text-2xl font-bold">
+                          {user.name?.charAt(0).toUpperCase() || "U"}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    {/* Camera overlay */}
+                    <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center">
+                      <Camera className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                    {isUploading && (
+                      <div className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center">
+                        <Loader2 className="h-8 w-8 text-white animate-spin" />
+                      </div>
+                    )}
+                  </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleProfileImageUpload}
+                  />
+                </div>
+
+                <div className="flex-1 text-center sm:text-left">
+                  <h3 className="text-2xl font-bold text-gray-900">
+                    {user?.name || "No name set"}
+                  </h3>
+                  <p className="text-gray-600 flex items-center justify-center sm:justify-start gap-2 mt-1">
+                    <Mail className="w-4 h-4 text-blue-600" />
+                    {user?.email}
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-4 border-blue-300 hover:bg-blue-50"
+                    onClick={handleAvatarClick}
+                    disabled={isUploading}
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {isUploading ? "Uploading..." : "Change Photo"}
+                  </Button>
+                </div>
               </div>
 
-              <input
-                ref={fileInputRef}
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={handleProfileImageUpload}
-              />
+              <Separator className="bg-gray-300" />
 
-              <div>
-                <h3 className="text-2xl font-semibold">
-                  {user?.name || "No name set"}
-                </h3>
-                <p className="text-muted-foreground flex items-center gap-2">
-                  <Mail className="w-4 h-4" />
-                  {user?.email}
-                </p>
-                {isUploading && (
-                  <p className="text-sm text-muted-foreground">
-                    Uploading image…
-                  </p>
+              {/* Account Details Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Mail className="h-4 w-4 text-blue-600" />
+                    <p className="text-sm font-medium text-blue-900">Email Address</p>
+                  </div>
+                  <p className="font-semibold text-gray-900">{user?.email}</p>
+                </div>
+
+                {user?.emailVerified && (
+                  <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <p className="text-sm font-medium text-green-900">
+                        Email Status
+                      </p>
+                    </div>
+                    <Badge className="bg-green-100 text-green-700 border-2 border-green-300 font-semibold">
+                      Verified
+                    </Badge>
+                  </div>
+                )}
+
+                {memberData?.createdAt && (
+                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Calendar className="h-4 w-4 text-blue-600" />
+                      <p className="text-sm font-medium text-blue-900">
+                        Member Since
+                      </p>
+                    </div>
+                    <p className="font-semibold text-gray-900">
+                      {new Date(memberData.createdAt).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </p>
+                  </div>
+                )}
+
+                {memberData?.role && (
+                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Shield className="h-4 w-4 text-blue-600" />
+                      <p className="text-sm font-medium text-blue-900">Role</p>
+                    </div>
+                    <Badge className="bg-blue-100 text-blue-700 border-2 border-blue-300 font-semibold capitalize">
+                      {memberData.role}
+                    </Badge>
+                  </div>
                 )}
               </div>
-            </div>
+            </CardContent>
+          </Card>
 
-            <Separator />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <p className="text-sm text-muted-foreground">Email</p>
-                <p className="font-medium">{user?.email}</p>
+          {/* ---------------- ACCOUNT ACTIONS ---------------- */}
+          <Card className="border-2 border-gray-300 shadow-sm">
+            <CardHeader className="border-b-2 border-gray-300 bg-blue-50">
+              <div className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-blue-600" />
+                <div>
+                  <CardTitle className="text-blue-900">
+                    Account Actions
+                  </CardTitle>
+                  <CardDescription>
+                    Security and account management
+                  </CardDescription>
+                </div>
               </div>
+            </CardHeader>
 
-              {user?.emailVerified && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Email Status</p>
-                  <Badge className="bg-green-100 text-green-700 border-green-200">
-                    Verified
-                  </Badge>
-                </div>
-              )}
-
-              {memberData?.createdAt && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Member Since</p>
-                  <p className="font-medium">
-                    {new Date(memberData.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* ---------------- ACCOUNT ACTIONS ---------------- */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Account Actions</CardTitle>
-            <CardDescription>
-              Security and account management tools
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent className="space-y-4">
-            <Button
-              variant="outline"
-              className="w-full justify-start"
-              onClick={() => setShowPasswordForm((prev) => !prev)}
-              disabled={isChangingPassword}
-            >
-              <Shield className="w-4 h-4 mr-2" />
-              {showPasswordForm ? "Cancel" : "Change Password"}
-            </Button>
-
-            {showPasswordForm && (
-              <form
-                onSubmit={passwordForm.handleSubmit(handlePasswordSubmit)}
-                className="space-y-4 border rounded-lg p-4"
+            <CardContent className="space-y-4 p-6">
+              {/* Change Password Button */}
+              <Button
+                variant="outline"
+                className="w-full justify-start border-blue-300 hover:bg-blue-50"
+                onClick={() => setShowPasswordForm((prev) => !prev)}
+                disabled={isChangingPassword}
               >
-                <div className="space-y-2">
-                  <Label>Current Password</Label>
-                  <Input
-                    type="password"
-                    {...passwordForm.register("currentPassword")}
-                  />
-                  {passwordForm.formState.errors.currentPassword && (
-                    <p className="text-sm text-red-500">
-                      {passwordForm.formState.errors.currentPassword.message}
-                    </p>
-                  )}
-                </div>
+                <Shield className="w-4 h-4 mr-2" />
+                {showPasswordForm ? "Cancel" : "Change Password"}
+              </Button>
 
-                <div className="space-y-2">
-                  <Label>New Password</Label>
-                  <Input
-                    type="password"
-                    {...passwordForm.register("newPassword")}
-                  />
-                  {passwordForm.formState.errors.newPassword && (
-                    <p className="text-sm text-red-500">
-                      {passwordForm.formState.errors.newPassword.message}
-                    </p>
-                  )}
-                </div>
-
-                <Button
-                  className="w-full"
-                  type="submit"
-                  disabled={isChangingPassword}
+              {/* Password Form */}
+              {showPasswordForm && (
+                <form
+                  onSubmit={passwordForm.handleSubmit(handlePasswordSubmit)}
+                  className="space-y-4 border-2 border-blue-200 rounded-lg p-4 bg-blue-50"
                 >
-                  {isChangingPassword ? "Updating..." : "Update Password"}
-                </Button>
-              </form>
-            )}
+                  <div className="space-y-2">
+                    <Label className="text-blue-900 font-medium">
+                      Current Password
+                    </Label>
+                    <Input
+                      type="password"
+                      className="border-blue-300 focus:ring-2 focus:ring-blue-500"
+                      {...passwordForm.register("currentPassword")}
+                    />
+                    {passwordForm.formState.errors.currentPassword && (
+                      <p className="text-sm text-red-600 font-medium">
+                        {passwordForm.formState.errors.currentPassword.message}
+                      </p>
+                    )}
+                  </div>
 
-            <Separator />
+                  <div className="space-y-2">
+                    <Label className="text-blue-900 font-medium">
+                      New Password
+                    </Label>
+                    <Input
+                      type="password"
+                      className="border-blue-300 focus:ring-2 focus:ring-blue-500"
+                      {...passwordForm.register("newPassword")}
+                    />
+                    {passwordForm.formState.errors.newPassword && (
+                      <p className="text-sm text-red-600 font-medium">
+                        {passwordForm.formState.errors.newPassword.message}
+                      </p>
+                    )}
+                  </div>
 
-            <Button
-              variant="destructive"
-              className="w-full justify-start"
-              onClick={handleSignOut}
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
-          </CardContent>
-        </Card>
+                  <Button
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    type="submit"
+                    disabled={isChangingPassword}
+                  >
+                    {isChangingPassword ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Updating...
+                      </>
+                    ) : (
+                      "Update Password"
+                    )}
+                  </Button>
+                </form>
+              )}
+
+              <Separator className="bg-gray-300" />
+
+              {/* Sign Out Button */}
+              <Button
+                variant="destructive"
+                className="w-full justify-start"
+                onClick={handleSignOut}
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

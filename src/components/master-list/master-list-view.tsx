@@ -14,12 +14,24 @@ import { formatDateTime } from "@/lib/utils";
 import {
   getLeadTimeline,
   getSpecificLead,
+  restoreLeadHistory,
   seenLeads,
 } from "@/services/lead/lead-service";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { Building2, CheckCircle2, Clock, FileText } from "lucide-react";
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import {
+  Building2,
+  CheckCircle2,
+  Clock,
+  FileText,
+  RotateCcw,
+} from "lucide-react";
 import * as React from "react";
 import { useCallback, useMemo } from "react";
+import { toast } from "sonner";
 import { EditableCell } from "../reusable-table/editable-cell";
 
 function serializeValue(value: unknown): string {
@@ -49,9 +61,13 @@ export function MasterListView({
   triggerLabel?: string;
   TriggerIcon?: React.ComponentType<{ className?: string }>;
 }) {
+  const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState(initialTab);
   const hasSeenRef = React.useRef(false);
+  const [restoringHistoryId, setRestoringHistoryId] = React.useState<
+    string | null
+  >(null);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["lead", leadId],
@@ -69,8 +85,11 @@ export function MasterListView({
     enabled: open && activeTab === "history",
     queryFn: ({ pageParam = 1 }) =>
       getLeadTimeline(leadId, 15, pageParam as number),
-    getNextPageParam: (lastPage, pages) =>
-      lastPage.total > 0 ? pages.length + 1 : undefined,
+    getNextPageParam: (lastPage, pages) => {
+      const pageSize = 15;
+
+      return lastPage.data.length === pageSize ? pages.length + 1 : undefined;
+    },
     initialPageParam: 1,
   });
 
@@ -107,6 +126,28 @@ export function MasterListView({
     },
     [initialTab, hasNotification, leadId]
   );
+
+  const handleRestoreHistory = async (
+    leadId: string,
+    historyId: string,
+    eventType: string
+  ) => {
+    try {
+      setRestoringHistoryId(historyId);
+      await restoreLeadHistory(leadId, historyId, eventType);
+      toast.success("History restored successfully");
+
+      await queryClient.invalidateQueries({ queryKey: ["lead", leadId] });
+      await queryClient.invalidateQueries({ queryKey: ["leads"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["lead-history", leadId],
+      });
+    } catch (error) {
+      toast.error("Failed to restore history");
+    } finally {
+      setRestoringHistoryId(null);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -262,7 +303,8 @@ export function MasterListView({
                         .flatMap((p) => p.data)
                         .map((item) => {
                           const Icon =
-                            FILETYPE[item.action as keyof typeof FILETYPE];
+                            FILETYPE[item.action as keyof typeof FILETYPE] ||
+                            FILETYPE.update;
                           return (
                             <div key={item.id} className="relative pl-12">
                               <div className="absolute left-0 w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center border-4 border-white">
@@ -290,22 +332,53 @@ export function MasterListView({
                                     </div>
                                   </div>
 
-                                  <div className="flex items-center gap-1 text-xs text-gray-500">
-                                    <Clock className="h-3 w-3" />
-                                    {formatDateTime(item.created_at)}
+                                  <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                                      <Clock className="h-3 w-3" />
+                                      {formatDateTime(item.created_at)}
+                                    </div>
+
+                                    {(item.action.toLowerCase() === "update" ||
+                                      item.action.toLowerCase() ===
+                                        "delete") && (
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="h-7 gap-1.5 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300"
+                                        onClick={() =>
+                                          handleRestoreHistory(
+                                            leadId,
+                                            item.id,
+                                            item.action
+                                          )
+                                        }
+                                        disabled={restoringHistoryId !== null}
+                                      >
+                                        <RotateCcw
+                                          className={`h-3 w-3 ${
+                                            restoringHistoryId === item.id
+                                              ? "animate-spin"
+                                              : ""
+                                          }`}
+                                        />
+                                        {restoringHistoryId === item.id
+                                          ? "Restoring..."
+                                          : "Restore"}
+                                      </Button>
+                                    )}
                                   </div>
                                 </div>
 
-                                {item.old_value && item.new_value && (
-                                  <div className="mt-3 pt-3 border-t flex flex-col gap-2">
-                                    <p className="text-sm font-bold">
-                                      {item.column} Column
-                                    </p>
-                                    <p className="text-sm text-gray-700 bg-gray-50 rounded-lg p-2.5">
-                                      {item.old_value} → {item.new_value}
-                                    </p>
-                                  </div>
-                                )}
+                                <div className="mt-3 pt-3 border-t flex flex-col gap-2">
+                                  <p className="text-sm font-bold">
+                                    {item.column} Column
+                                  </p>
+                                  <p className="text-sm text-gray-700 bg-gray-50 rounded-lg p-2.5">
+                                    {item.old_value && item.new_value
+                                      ? item.old_value + " → " + item.new_value
+                                      : item.old_value || item.new_value}
+                                  </p>
+                                </div>
                               </div>
                             </div>
                           );

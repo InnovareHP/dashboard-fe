@@ -33,7 +33,7 @@ export const NavMain = React.memo(function NavMain({
 }) {
   const location = useLocation();
   const pathname = React.useMemo(() => location.pathname, [location.pathname]);
-  
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
