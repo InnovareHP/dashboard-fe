@@ -63,7 +63,7 @@ import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 
 const formSchema = z.object({
   email: z.email(),
-  role: z.enum([ROLES.LIASON, ROLES.OWNER, ROLES.ACCOUNT_MANAGER]),
+  role: z.enum([ROLES.LIASON, ROLES.OWNER, ROLES.ADMISSION_MANAGER]),
   message: z.string(),
 });
 
@@ -358,8 +358,8 @@ const TeamPage = () => {
                       <SelectContent>
                         <SelectItem value={ROLES.LIASON}>Liason</SelectItem>
                         <SelectItem value={ROLES.OWNER}>Owner</SelectItem>
-                        <SelectItem value={ROLES.ACCOUNT_MANAGER}>
-                          Account Manager
+                        <SelectItem value={ROLES.ADMISSION_MANAGER}>
+                          Admission Manager
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -663,8 +663,10 @@ const TeamPage = () => {
                                     <SelectItem value={ROLES.OWNER}>
                                       {formatCapitalize(ROLES.OWNER)}
                                     </SelectItem>
-                                    <SelectItem value={ROLES.ACCOUNT_MANAGER}>
-                                      {formatCapitalize(ROLES.ACCOUNT_MANAGER)}
+                                    <SelectItem value={ROLES.ADMISSION_MANAGER}>
+                                      {formatCapitalize(
+                                        ROLES.ADMISSION_MANAGER
+                                      )}
                                     </SelectItem>
                                   </SelectContent>
                                 </Select>

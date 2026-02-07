@@ -36,7 +36,7 @@ export const liason = ac.newRole({
   project: ["create", "update"],
 });
 
-export const account_manager = ac.newRole({
+export const admission_manager = ac.newRole({
   project: ["create", "update"],
 });
 

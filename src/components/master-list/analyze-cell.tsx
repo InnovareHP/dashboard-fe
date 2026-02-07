@@ -131,30 +131,30 @@ export function AnalyzeLeadDialog({
           Analyze
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0 gap-0">
-        {/* Custom Header */}
-        <div className="px-6 pt-6 pb-4 border-b bg-slate-50">
+      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
+        {/* Custom Header with Gradient */}
+        <div className="px-6 pt-6 pb-5 border-b bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 rounded-lg bg-blue-100">
-                  <BarChart3 className="h-5 w-5 text-blue-700" />
+                <div className="p-2.5 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg">
+                  <BarChart3 className="h-5 w-5 text-white" />
                 </div>
                 <div>
                   <DialogTitle className="text-xl font-bold text-gray-900">
                     Organization Analysis
                   </DialogTitle>
                   {data && (
-                    <p className="text-sm text-gray-600 mt-0.5">
+                    <p className="text-sm text-gray-600 mt-0.5 font-medium">
                       {data.leadName || data.leadId}
                     </p>
                   )}
                 </div>
               </div>
-              <DialogDescription className="text-sm text-gray-600">
+              <DialogDescription className="text-sm text-gray-600 leading-relaxed">
                 Comprehensive insights and engagement metrics
                 {(dateStart || dateEnd) && (
-                  <span className="text-blue-600 font-medium ml-2">
+                  <span className="text-blue-700 font-semibold ml-2">
                     • {dateStart || "Start"} to {dateEnd || "End"}
                   </span>
                 )}
@@ -196,13 +196,13 @@ export function AnalyzeLeadDialog({
                 </div>
               ) : (
                 <div className="space-y-6 py-6">
-                  {/* Top Stats Row */}
+                  {/* Top Stats Row with Enhanced Design */}
                   <div className="grid grid-cols-3 gap-4">
                     {/* Engagement Level */}
-                    <Card className="border-2">
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    <Card className="border-2 hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-gray-50">
+                      <CardContent className="p-5">
+                        <div className="flex items-center justify-between mb-3">
+                          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">
                             Engagement
                           </p>
                           {(() => {
@@ -211,18 +211,20 @@ export function AnalyzeLeadDialog({
                             );
                             const EngagementIcon = config.icon;
                             return (
-                              <EngagementIcon
-                                className={`h-4 w-4 ${config.text}`}
-                              />
+                              <div className={`p-1.5 rounded-lg ${config.badge.split(' ')[0]}`}>
+                                <EngagementIcon
+                                  className={`h-4 w-4 ${config.text}`}
+                                />
+                              </div>
                             );
                           })()}
                         </div>
                         <Badge
                           variant="outline"
-                          className={
+                          className={`${
                             getEngagementConfig(data.summary.engagementLevel)
                               .badge
-                          }
+                          } text-sm font-semibold px-3 py-1`}
                         >
                           {data.summary.engagementLevel}
                         </Badge>
@@ -230,26 +232,31 @@ export function AnalyzeLeadDialog({
                     </Card>
 
                     {/* Total Interactions */}
-                    <Card className="border-2">
-                      <CardContent className="p-4">
-                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                    <Card className="border-2 hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-blue-50">
+                      <CardContent className="p-5">
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
                           Total Interactions
                         </p>
-                        <p className="text-2xl font-bold text-gray-900">
-                          {data.summary.totalInteractions}
-                        </p>
+                        <div className="flex items-baseline gap-2">
+                          <p className="text-3xl font-bold text-blue-600">
+                            {data.summary.totalInteractions}
+                          </p>
+                          <span className="text-xs text-gray-500 font-medium">events</span>
+                        </div>
                       </CardContent>
                     </Card>
 
                     {/* Assigned To */}
-                    <Card className="border-2">
-                      <CardContent className="p-4">
-                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                    <Card className="border-2 hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-purple-50">
+                      <CardContent className="p-5">
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
                           Assigned To
                         </p>
-                        <div className="flex items-center gap-2">
-                          <UserCheck className="h-4 w-4 text-blue-600" />
-                          <span className="text-sm font-semibold text-gray-900 truncate">
+                        <div className="flex items-center gap-2.5">
+                          <div className="p-1.5 rounded-lg bg-purple-100">
+                            <UserCheck className="h-4 w-4 text-purple-600" />
+                          </div>
+                          <span className="text-sm font-bold text-gray-900 truncate">
                             {data.assignedTo}
                           </span>
                         </div>
@@ -257,16 +264,18 @@ export function AnalyzeLeadDialog({
                     </Card>
                   </div>
 
-                  {/* Executive Summary */}
-                  <Card className="border-l-4 border-l-blue-500 shadow-sm">
+                  {/* Executive Summary with Enhanced Design */}
+                  <Card className="border-l-4 border-l-blue-500 shadow-md hover:shadow-xl transition-shadow bg-gradient-to-r from-blue-50/50 to-indigo-50/30">
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-base font-semibold flex items-center gap-2 text-gray-900">
-                        <MessageSquare className="h-4 w-4 text-blue-600" />
+                      <CardTitle className="text-base font-bold flex items-center gap-2.5 text-gray-900">
+                        <div className="p-2 rounded-lg bg-blue-100">
+                          <MessageSquare className="h-4 w-4 text-blue-600" />
+                        </div>
                         Executive Summary
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm leading-relaxed text-gray-700">
+                      <p className="text-sm leading-relaxed text-gray-700 font-medium">
                         {data.summary.narrative}
                       </p>
                     </CardContent>
@@ -274,122 +283,144 @@ export function AnalyzeLeadDialog({
 
                   <Separator />
 
-                  {/* Detailed Metrics Grid */}
+                  {/* Detailed Metrics Grid with Enhanced Cards */}
                   <div className="grid gap-6 md:grid-cols-2">
                     {/* Touchpoints */}
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="p-2 rounded-lg bg-indigo-50">
-                          <BarChart3 className="h-4 w-4 text-indigo-600" />
+                    <Card className="border-2 shadow-md hover:shadow-lg transition-shadow">
+                      <CardHeader className="pb-4">
+                        <div className="flex items-center gap-2.5">
+                          <div className="p-2 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-md">
+                            <BarChart3 className="h-4 w-4 text-white" />
+                          </div>
+                          <h4 className="text-base font-bold text-gray-900">
+                            Touchpoints
+                          </h4>
                         </div>
-                        <h4 className="text-base font-bold text-gray-900">
-                          Touchpoints
-                        </h4>
-                      </div>
-
-                      {data.summary.touchpointsUsed.length > 0 ? (
-                        <div className="space-y-2">
-                          {data.summary.touchpointsUsed.map((tp) => {
-                            const Icon = getTouchpointIcon(tp.type);
-                            return (
-                              <div
-                                key={tp.type}
-                                className="flex items-center justify-between p-3 rounded-lg border-2 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <Icon className="h-4 w-4 text-indigo-600" />
-                                  <span className="text-sm font-medium text-gray-700 capitalize">
-                                    {tp.type.replace(/_/g, " ")}
-                                  </span>
+                      </CardHeader>
+                      <CardContent>
+                        {data.summary.touchpointsUsed.length > 0 ? (
+                          <div className="space-y-2.5">
+                            {data.summary.touchpointsUsed.map((tp) => {
+                              const Icon = getTouchpointIcon(tp.type);
+                              return (
+                                <div
+                                  key={tp.type}
+                                  className="flex items-center justify-between p-3.5 rounded-xl border-2 hover:border-indigo-300 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all group"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div className="p-2 rounded-lg bg-indigo-100 group-hover:bg-indigo-200 transition-colors">
+                                      <Icon className="h-4 w-4 text-indigo-600" />
+                                    </div>
+                                    <span className="text-sm font-semibold text-gray-700 capitalize">
+                                      {tp.type.replace(/_/g, " ")}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xl font-bold text-indigo-600">
+                                      {tp.count}
+                                    </span>
+                                  </div>
                                 </div>
-                                <span className="text-lg font-bold text-gray-900">
-                                  {tp.count}
-                                </span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-500 italic p-4 bg-slate-50 rounded-lg">
-                          No touchpoints recorded in this range.
-                        </p>
-                      )}
-                    </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center py-8 text-center">
+                            <div className="p-3 rounded-full bg-slate-100 mb-2">
+                              <MessageSquare className="h-6 w-6 text-slate-400" />
+                            </div>
+                            <p className="text-sm text-gray-500 font-medium">
+                              No touchpoints recorded
+                            </p>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
 
                     {/* Facilities & People */}
-                    <div className="space-y-6">
-                      {/* Facilities */}
-                      <div>
-                        <div className="flex items-center gap-2 mb-3">
-                          <div className="p-2 rounded-lg bg-blue-50">
-                            <Building2 className="h-4 w-4 text-blue-600" />
+                    <Card className="border-2 shadow-md hover:shadow-lg transition-shadow">
+                      <CardContent className="p-6 space-y-6">
+                        {/* Facilities */}
+                        <div>
+                          <div className="flex items-center gap-2.5 mb-4">
+                            <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 shadow-md">
+                              <Building2 className="h-4 w-4 text-white" />
+                            </div>
+                            <h4 className="text-base font-bold text-gray-900">
+                              Facilities Covered
+                            </h4>
+                            <Badge
+                              variant="outline"
+                              className="ml-auto bg-blue-50 text-blue-700 border-blue-300 font-bold px-2.5 py-1"
+                            >
+                              {data.summary.facilitiesCovered.length}
+                            </Badge>
                           </div>
-                          <h4 className="text-base font-bold text-gray-900">
-                            Facilities Covered
-                          </h4>
-                          <Badge
-                            variant="outline"
-                            className="ml-auto bg-blue-50 text-blue-700 border-blue-200"
-                          >
-                            {data.summary.facilitiesCovered.length}
-                          </Badge>
-                        </div>
-                        <div className="flex flex-wrap gap-2 p-3 bg-slate-50 rounded-lg min-h-[3rem]">
-                          {data.summary.facilitiesCovered.length > 0 ? (
-                            data.summary.facilitiesCovered.map((facility) => (
-                              <Badge
-                                key={facility}
-                                variant="secondary"
-                                className="bg-white border-2 font-medium"
-                              >
-                                {facility}
-                              </Badge>
-                            ))
-                          ) : (
-                            <span className="text-xs text-gray-500 italic">
-                              No facilities recorded
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* People Contacted */}
-                      <div>
-                        <div className="flex items-center gap-2 mb-3">
-                          <div className="p-2 rounded-lg bg-purple-50">
-                            <Users className="h-4 w-4 text-purple-600" />
-                          </div>
-                          <h4 className="text-base font-bold text-gray-900">
-                            Stakeholders
-                          </h4>
-                          <Badge
-                            variant="outline"
-                            className="ml-auto bg-purple-50 text-purple-700 border-purple-200"
-                          >
-                            {data.summary.peopleContacted.length}
-                          </Badge>
-                        </div>
-                        <div className="p-3 bg-slate-50 rounded-lg min-h-[3rem]">
-                          {data.summary.peopleContacted.length > 0 ? (
-                            <ul className="space-y-2">
-                              {data.summary.peopleContacted.map((person) => (
-                                <li
-                                  key={person}
-                                  className="flex items-center gap-2 text-sm text-gray-700"
+                          <div className="flex flex-wrap gap-2 p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl min-h-[4rem] border-2 border-blue-100">
+                            {data.summary.facilitiesCovered.length > 0 ? (
+                              data.summary.facilitiesCovered.map((facility) => (
+                                <Badge
+                                  key={facility}
+                                  variant="secondary"
+                                  className="bg-white border-2 border-blue-200 font-semibold text-blue-700 px-3 py-1.5 hover:bg-blue-100 transition-colors"
                                 >
-                                  <div className="h-2 w-2 rounded-full bg-purple-500" />
-                                  <span className="font-medium">{person}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <span className="text-xs text-gray-500 italic">
-                              No stakeholders recorded
-                            </span>
-                          )}
+                                  {facility}
+                                </Badge>
+                              ))
+                            ) : (
+                              <div className="w-full flex flex-col items-center justify-center py-4">
+                                <Building2 className="h-6 w-6 text-blue-300 mb-1" />
+                                <span className="text-xs text-blue-500 font-medium">
+                                  No facilities recorded
+                                </span>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </div>
+
+                        <Separator />
+
+                        {/* People Contacted */}
+                        <div>
+                          <div className="flex items-center gap-2.5 mb-4">
+                            <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 shadow-md">
+                              <Users className="h-4 w-4 text-white" />
+                            </div>
+                            <h4 className="text-base font-bold text-gray-900">
+                              Stakeholders
+                            </h4>
+                            <Badge
+                              variant="outline"
+                              className="ml-auto bg-purple-50 text-purple-700 border-purple-300 font-bold px-2.5 py-1"
+                            >
+                              {data.summary.peopleContacted.length}
+                            </Badge>
+                          </div>
+                          <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl min-h-[4rem] border-2 border-purple-100">
+                            {data.summary.peopleContacted.length > 0 ? (
+                              <ul className="space-y-2.5">
+                                {data.summary.peopleContacted.map((person) => (
+                                  <li
+                                    key={person}
+                                    className="flex items-center gap-3 text-sm bg-white rounded-lg p-2.5 border border-purple-200 hover:border-purple-300 transition-colors"
+                                  >
+                                    <div className="h-2.5 w-2.5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500" />
+                                    <span className="font-semibold text-gray-700">{person}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <div className="w-full flex flex-col items-center justify-center py-4">
+                                <Users className="h-6 w-6 text-purple-300 mb-1" />
+                                <span className="text-xs text-purple-500 font-medium">
+                                  No stakeholders recorded
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
                 </div>
               )}

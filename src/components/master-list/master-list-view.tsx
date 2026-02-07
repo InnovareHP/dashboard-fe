@@ -23,6 +23,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import {
+  ArrowRight,
   Building2,
   CheckCircle2,
   Clock,
@@ -32,6 +33,7 @@ import {
 import * as React from "react";
 import { useCallback, useMemo } from "react";
 import { toast } from "sonner";
+import { RestoreHistoryModal } from "../history-report/restore-history-modal";
 import { EditableCell } from "../reusable-table/editable-cell";
 
 function serializeValue(value: unknown): string {
@@ -65,9 +67,11 @@ export function MasterListView({
   const [open, setOpen] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState(initialTab);
   const hasSeenRef = React.useRef(false);
-  const [restoringHistoryId, setRestoringHistoryId] = React.useState<
-    string | null
-  >(null);
+
+  const [restoreModalOpen, setRestoreModalOpen] = React.useState(false);
+  const [selectedHistoryItem, setSelectedHistoryItem] =
+    React.useState<any>(null);
+  const [isRestoring, setIsRestoring] = React.useState(false);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["lead", leadId],
@@ -127,13 +131,27 @@ export function MasterListView({
     [initialTab, hasNotification, leadId]
   );
 
+  const handleOpenRestoreModal = (historyItem: any) => {
+    setSelectedHistoryItem({
+      id: historyItem.id,
+      leadId: leadId,
+      action: historyItem.action,
+      entityType: "Lead",
+      old_value: historyItem.old_value,
+      new_value: historyItem.new_value,
+      created_at: historyItem.created_at,
+      created_by: historyItem.created_by,
+    });
+    setRestoreModalOpen(true);
+  };
+
   const handleRestoreHistory = async (
     leadId: string,
     historyId: string,
     eventType: string
   ) => {
+    setIsRestoring(true);
     try {
-      setRestoringHistoryId(historyId);
       await restoreLeadHistory(leadId, historyId, eventType);
       toast.success("History restored successfully");
 
@@ -145,265 +163,329 @@ export function MasterListView({
     } catch (error) {
       toast.error("Failed to restore history");
     } finally {
-      setRestoringHistoryId(null);
+      setIsRestoring(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="flex items-center gap-2 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-colors"
-        >
-          <TriggerIcon className="h-4 w-4" />
-          {triggerLabel}
-        </Button>
-      </DialogTrigger>
-
-      <DialogContent className="max-w-5xl max-h-[90vh] p-0 gap-0">
-        {/* Custom Header */}
-        <div className="px-6 pt-6 pb-4 border-b bg-slate-50">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-blue-100">
-                <Building2 className="h-5 w-5 text-blue-700" />
-              </div>
-              <div>
-                <DialogTitle className="text-xl font-bold text-gray-900">
-                  {isReferral ? "Referral Details" : "Organization Details"}
-                </DialogTitle>
-                <p className="text-sm text-gray-600 mt-0.5">
-                  Complete organization information
-                </p>
-              </div>
-            </div>
-
-            {data?.data.Status && (
-              <Badge
-                variant="outline"
-                className="bg-emerald-50 text-emerald-700 border-emerald-200 flex items-center gap-1.5"
-              >
-                <CheckCircle2 className="h-3 w-3" />
-                {data.data.Status}
-              </Badge>
-            )}
-          </div>
-        </div>
-
-        {isLoading ? (
-          <div className="px-6 pb-6">
-            <div className="space-y-3">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-16 w-full rounded-xl border bg-gray-100 animate-pulse"
-                />
-              ))}
-            </div>
-          </div>
-        ) : isError ? (
-          <div className="px-6 pb-6">
-            <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-sm">
-              <div className="font-semibold text-red-900 mb-2">
-                Failed to load referral
-              </div>
-              <div className="text-red-700">
-                {(error as Error)?.message || "Something went wrong."}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <Tabs
-            value={activeTab}
-            onValueChange={(v) => setActiveTab(v as "details" | "history")}
-            className="w-full"
+    <>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-colors"
           >
-            <div className="px-6 border-b">
-              <TabsList className="bg-transparent border-b-0">
-                <TabsTrigger
-                  value="details"
-                  className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none"
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  Details
-                </TabsTrigger>
+            <TriggerIcon className="h-4 w-4" />
+            {triggerLabel}
+          </Button>
+        </DialogTrigger>
 
-                <TabsTrigger
-                  value="history"
-                  className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none"
-                >
-                  <Clock className="h-4 w-4 mr-2" />
-                  History
-                </TabsTrigger>
-              </TabsList>
-            </div>
-
-            <TabsContent value="details" className="mt-0">
-              <ScrollArea className="h-[calc(90vh-240px)] px-6 py-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {entries
-                    .filter(([key]) => key !== "History")
-                    .map(([key, rawValue]) => {
-                      const value = serializeValue(rawValue);
-                      const type = fieldTypes[key] ?? "TEXT";
-                      const fieldId = fieldIds[key] ?? "";
-
-                      return (
-                        <div
-                          key={key}
-                          className="group rounded-xl border p-4 hover:shadow-md transition-all"
-                        >
-                          <div className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
-                            {key.split("_").join(" ")}
-                          </div>
-
-                          <EditableCell
-                            id={leadId}
-                            fieldKey={fieldId}
-                            fieldName={key}
-                            value={value}
-                            type={type}
-                            isReferral
-                          />
-                        </div>
-                      );
-                    })}
+        <DialogContent className="max-w-5xl max-h-[90vh] p-0 gap-0 overflow-hidden">
+          {/* Custom Header with Gradient */}
+          <div className="px-6 pt-6 pb-5 border-b bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg">
+                  <Building2 className="h-5 w-5 text-white" />
                 </div>
-              </ScrollArea>
-            </TabsContent>
+                <div>
+                  <DialogTitle className="text-xl font-bold text-gray-900">
+                    {isReferral ? "Referral Details" : "Organization Details"}
+                  </DialogTitle>
+                  <p className="text-sm text-gray-600 mt-0.5 font-medium">
+                    Complete organization information
+                  </p>
+                </div>
+              </div>
 
-            <TabsContent value="history" className="mt-0">
-              <ScrollArea className="h-[calc(90vh-240px)] px-6 py-4">
-                {historyLoading && (
-                  <div className="space-y-3">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="h-14 w-full rounded-md bg-gray-100 animate-pulse"
-                      />
-                    ))}
+              {data?.data.Status && (
+                <Badge
+                  variant="outline"
+                  className="bg-emerald-100 text-emerald-700 border-emerald-300 flex items-center gap-1.5 font-semibold px-3 py-1.5 shadow-sm"
+                >
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  {data.data.Status}
+                </Badge>
+              )}
+            </div>
+          </div>
+
+          {isLoading ? (
+            <div className="px-6 pb-6">
+              <div className="space-y-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-16 w-full rounded-xl border bg-gray-100 animate-pulse"
+                  />
+                ))}
+              </div>
+            </div>
+          ) : isError ? (
+            <div className="px-6 pb-6">
+              <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-sm">
+                <div className="font-semibold text-red-900 mb-2">
+                  Failed to load referral
+                </div>
+                <div className="text-red-700">
+                  {(error as Error)?.message || "Something went wrong."}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <Tabs
+              value={activeTab}
+              onValueChange={(v) => setActiveTab(v as "details" | "history")}
+              className="w-full"
+            >
+              <div className="px-6 border-b bg-gradient-to-r from-gray-50 to-slate-50">
+                <TabsList className="bg-transparent border-b-0">
+                  <TabsTrigger
+                    value="details"
+                    className="data-[state=active]:border-b-3 data-[state=active]:border-blue-500 data-[state=active]:text-blue-600 data-[state=active]:font-bold rounded-none transition-all"
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Details
+                  </TabsTrigger>
+
+                  <TabsTrigger
+                    value="history"
+                    className="data-[state=active]:border-b-3 data-[state=active]:border-indigo-500 data-[state=active]:text-indigo-600 data-[state=active]:font-bold rounded-none transition-all"
+                  >
+                    <Clock className="h-4 w-4 mr-2" />
+                    History
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+
+              <TabsContent value="details" className="mt-0">
+                <ScrollArea className="h-[calc(90vh-240px)] px-6 py-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {entries
+                      .filter(([key]) => key !== "History")
+                      .map(([key, rawValue]) => {
+                        const value = serializeValue(rawValue);
+                        const type = fieldTypes[key] ?? "TEXT";
+                        const fieldId = fieldIds[key] ?? "";
+
+                        return (
+                          <div
+                            key={key}
+                            className="group rounded-xl border-2 border-gray-200 hover:border-blue-300 p-4 hover:shadow-lg transition-all bg-gradient-to-br from-white to-gray-50"
+                          >
+                            <div className="text-xs font-bold uppercase tracking-wider text-gray-600 mb-3 flex items-center gap-2">
+                              <div className="h-1.5 w-1.5 rounded-full bg-blue-500"></div>
+                              {key.split("_").join(" ")}
+                            </div>
+
+                            <EditableCell
+                              id={leadId}
+                              fieldKey={fieldId}
+                              fieldName={key}
+                              value={value}
+                              type={type}
+                              isReferral
+                            />
+                          </div>
+                        );
+                      })}
                   </div>
-                )}
+                </ScrollArea>
+              </TabsContent>
 
-                {historyData &&
-                  historyData.pages.flatMap((p) => p.data).length === 0 && (
-                    <div className="text-center text-gray-500 py-10">
-                      No history found
+              <TabsContent value="history" className="mt-0">
+                <ScrollArea className="h-[calc(90vh-240px)] px-6 py-4">
+                  {historyLoading && (
+                    <div className="space-y-4">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className="h-24 w-full rounded-xl bg-gradient-to-r from-gray-100 to-gray-50 animate-pulse"
+                        />
+                      ))}
                     </div>
                   )}
 
-                {historyData && historyData.pages.length > 0 && (
-                  <div className="relative">
-                    <div className="absolute left-[19px] top-0 bottom-0 w-0.5 bg-gray-200"></div>
+                  {historyData &&
+                    historyData.pages.flatMap((p) => p.data).length === 0 && (
+                      <div className="flex flex-col items-center justify-center py-16">
+                        <div className="p-4 rounded-full bg-gray-100 mb-3">
+                          <Clock className="h-8 w-8 text-gray-400" />
+                        </div>
+                        <p className="text-center text-gray-500 font-medium">
+                          No history found
+                        </p>
+                      </div>
+                    )}
 
-                    <div className="space-y-6">
-                      {historyData.pages
-                        .flatMap((p) => p.data)
-                        .map((item) => {
-                          const Icon =
-                            FILETYPE[item.action as keyof typeof FILETYPE] ||
-                            FILETYPE.update;
-                          return (
-                            <div key={item.id} className="relative pl-12">
-                              <div className="absolute left-0 w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center border-4 border-white">
-                                <Icon className="h-5 w-5 text-white" />
-                              </div>
+                  {historyData && historyData.pages.length > 0 && (
+                    <div className="relative">
+                      {/* Modern Timeline Line with Gradient */}
+                      <div className="absolute left-[19px] top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500 via-indigo-400 to-purple-500"></div>
 
-                              <div className="bg-white rounded-xl border p-4">
-                                <div className="flex items-start justify-between mb-2">
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-semibold">
-                                      {item.created_by
-                                        .split(" ")
-                                        .map((n: string) => n[0])
-                                        .join("")}
+                      <div className="space-y-5">
+                        {historyData.pages
+                          .flatMap((p) => p.data)
+                          .map((item) => {
+                            const Icon =
+                              FILETYPE[item.action as keyof typeof FILETYPE] ||
+                              FILETYPE.update;
+
+                            const actionColors = {
+                              create: "from-green-500 to-emerald-600",
+                              update: "from-blue-500 to-indigo-600",
+                              delete: "from-red-500 to-rose-600",
+                            };
+
+                            const actionColor =
+                              actionColors[
+                                item.action.toLowerCase() as keyof typeof actionColors
+                              ] || actionColors.update;
+
+                            return (
+                              <div
+                                key={item.id}
+                                className="relative pl-12 group"
+                              >
+                                {/* Enhanced Timeline Icon */}
+                                <div
+                                  className={`absolute left-0 w-10 h-10 rounded-full bg-gradient-to-br ${actionColor} flex items-center justify-center border-4 border-white shadow-lg group-hover:scale-110 transition-transform`}
+                                >
+                                  <Icon className="h-5 w-5 text-white" />
+                                </div>
+
+                                {/* Enhanced History Card */}
+                                <div className="bg-white rounded-xl border-2 border-gray-200 hover:border-blue-300 p-5 shadow-sm hover:shadow-md transition-all">
+                                  <div className="flex items-start justify-between mb-3">
+                                    <div className="flex items-center gap-3">
+                                      <div
+                                        className={`w-10 h-10 rounded-full bg-gradient-to-br ${actionColor} text-white flex items-center justify-center text-sm font-bold shadow-md`}
+                                      >
+                                        {item.created_by
+                                          .split(" ")
+                                          .map((n: string) => n[0])
+                                          .join("")
+                                          .toUpperCase()}
+                                      </div>
+
+                                      <div>
+                                        <p className="text-sm font-bold text-gray-900">
+                                          {item.created_by}
+                                        </p>
+                                        <Badge
+                                          variant="outline"
+                                          className={`text-xs font-semibold mt-1 ${
+                                            item.action.toLowerCase() ===
+                                            "create"
+                                              ? "bg-green-50 text-green-700 border-green-300"
+                                              : item.action.toLowerCase() ===
+                                                "delete"
+                                              ? "bg-red-50 text-red-700 border-red-300"
+                                              : "bg-blue-50 text-blue-700 border-blue-300"
+                                          }`}
+                                        >
+                                          {item.action.charAt(0).toUpperCase() +
+                                            item.action.slice(1)}
+                                        </Badge>
+                                      </div>
                                     </div>
 
-                                    <div>
-                                      <p className="text-sm font-semibold">
-                                        {item.created_by}
-                                      </p>
-                                      <p className="text-xs text-gray-500">
-                                        {item.action.charAt(0).toUpperCase() +
-                                          item.action.slice(1)}
-                                      </p>
+                                    <div className="flex items-center gap-3">
+                                      <div className="flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 px-3 py-1.5 rounded-lg font-medium">
+                                        <Clock className="h-3.5 w-3.5" />
+                                        {formatDateTime(item.created_at)}
+                                      </div>
+
+                                      {(item.action.toLowerCase() ===
+                                        "update" ||
+                                        item.action.toLowerCase() ===
+                                          "delete") && (
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          className="h-8 gap-2 hover:bg-orange-50 hover:text-orange-600 hover:border-orange-300 font-semibold transition-colors"
+                                          onClick={() =>
+                                            handleOpenRestoreModal(item)
+                                          }
+                                          disabled={isRestoring}
+                                        >
+                                          <RotateCcw className="h-3.5 w-3.5" />
+                                          Restore
+                                        </Button>
+                                      )}
                                     </div>
                                   </div>
 
-                                  <div className="flex items-center gap-3">
-                                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                                      <Clock className="h-3 w-3" />
-                                      {formatDateTime(item.created_at)}
+                                  {/* Enhanced Change Display */}
+                                  <div className="mt-4 pt-4 border-t-2 border-gray-100">
+                                    <div className="flex items-center gap-2 mb-3">
+                                      <FileText className="h-4 w-4 text-indigo-600" />
+                                      <p className="text-sm font-bold text-gray-900">
+                                        {item.column}
+                                      </p>
                                     </div>
 
-                                    {(item.action.toLowerCase() === "update" ||
-                                      item.action.toLowerCase() ===
-                                        "delete") && (
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        className="h-7 gap-1.5 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300"
-                                        onClick={() =>
-                                          handleRestoreHistory(
-                                            leadId,
-                                            item.id,
-                                            item.action
-                                          )
-                                        }
-                                        disabled={restoringHistoryId !== null}
-                                      >
-                                        <RotateCcw
-                                          className={`h-3 w-3 ${
-                                            restoringHistoryId === item.id
-                                              ? "animate-spin"
-                                              : ""
-                                          }`}
-                                        />
-                                        {restoringHistoryId === item.id
-                                          ? "Restoring..."
-                                          : "Restore"}
-                                      </Button>
+                                    {item.old_value && item.new_value ? (
+                                      <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border-2 border-blue-200">
+                                        <span className="px-3 py-1.5 bg-red-100 text-red-700 rounded-md text-sm font-semibold border border-red-300">
+                                          {item.old_value}
+                                        </span>
+                                        <ArrowRight className="h-4 w-4 text-indigo-600 flex-shrink-0" />
+                                        <span className="px-3 py-1.5 bg-green-100 text-green-700 rounded-md text-sm font-semibold border border-green-300">
+                                          {item.new_value}
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <p className="text-sm text-gray-700 bg-gray-100 rounded-lg p-3 font-medium border border-gray-300">
+                                        {item.old_value ||
+                                          item.new_value ||
+                                          "No value"}
+                                      </p>
                                     )}
                                   </div>
                                 </div>
-
-                                <div className="mt-3 pt-3 border-t flex flex-col gap-2">
-                                  <p className="text-sm font-bold">
-                                    {item.column} Column
-                                  </p>
-                                  <p className="text-sm text-gray-700 bg-gray-50 rounded-lg p-2.5">
-                                    {item.old_value && item.new_value
-                                      ? item.old_value + " → " + item.new_value
-                                      : item.old_value || item.new_value}
-                                  </p>
-                                </div>
                               </div>
-                            </div>
-                          );
-                        })}
+                            );
+                          })}
+                      </div>
                     </div>
+                  )}
+                </ScrollArea>
+                {hasNextPage && (
+                  <div className="flex justify-center items-center py-4 border-t bg-gray-50">
+                    <Button
+                      variant="outline"
+                      onClick={() => fetchNextPage()}
+                      className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 font-semibold"
+                    >
+                      Load More
+                    </Button>
                   </div>
                 )}
-              </ScrollArea>
-              {hasNextPage && (
-                <div className="flex justify-center items-center py-4">
-                  <Button variant="outline" onClick={() => fetchNextPage()}>
-                    Load More
-                  </Button>
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
-        )}
+              </TabsContent>
+            </Tabs>
+          )}
 
-        <DialogFooter className="px-6 py-4 bg-gray-50 border-t">
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Close
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <DialogFooter className="px-6 py-4 bg-gradient-to-r from-gray-50 to-slate-50 border-t">
+            <Button
+              variant="outline"
+              onClick={() => setOpen(false)}
+              className="font-semibold hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300"
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <RestoreHistoryModal
+        open={restoreModalOpen}
+        onOpenChange={setRestoreModalOpen}
+        historyItem={selectedHistoryItem}
+        onConfirm={handleRestoreHistory}
+        isRestoring={isRestoring}
+      />
+    </>
   );
 }

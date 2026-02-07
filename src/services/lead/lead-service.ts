@@ -124,8 +124,20 @@ export const createColumn = async (
   return response.data;
 };
 
+export const getLeadHistory = async (filters: any) => {
+  const response = await axiosClient.get(`/api/leads/history`, {
+    params: { ...filters },
+  });
+
+  if (response.status !== 200) {
+    throw new Error("Failed to fetch lead history");
+  }
+
+  return response.data;
+};
+
 export const restoreLeadHistory = async (
-  lead_id: string,
+  lead_id: string | undefined,
   history_id: string,
   event_type: string
 ) => {
