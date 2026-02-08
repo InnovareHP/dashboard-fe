@@ -463,6 +463,7 @@ export function EditableCell({
       opt.value.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    const goToCountyConfig = fieldName === "County" && isReferral;
     return (
       <Select
         defaultValue={val}
@@ -552,7 +553,16 @@ export function EditableCell({
                     Remove value
                   </div>
                 )}
-                {fieldName === "County" || !isReferral ? (
+                {goToCountyConfig ? (
+                  <Link
+                    to={"/$team/county-config" as any}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex items-center gap-2 px-2 py-2 text-xs text-blue-600 hover:bg-blue-50 cursor-pointer">
+                      + County Config
+                    </div>
+                  </Link>
+                ) : (
                   <>
                     {adding ? (
                       <div className="flex items-center gap-2 px-2 py-2">
@@ -562,6 +572,7 @@ export function EditableCell({
                           onChange={(e) => setNewOption(e.target.value)}
                           onKeyDown={(e) => {
                             e.stopPropagation();
+
                             if (e.key === "Enter") handleAddOption();
                             if (e.key === "Escape") setAdding(false);
                           }}
@@ -569,6 +580,7 @@ export function EditableCell({
                           autoFocus
                           onClick={(e) => e.stopPropagation()}
                         />
+
                         <Button
                           size="sm"
                           variant="outline"
@@ -588,6 +600,7 @@ export function EditableCell({
                             "Add"
                           )}
                         </Button>
+
                         <Button
                           size="sm"
                           variant="ghost"
@@ -612,9 +625,14 @@ export function EditableCell({
                         >
                           + Add more option
                         </div>
+
                         <Link
                           to={
-                            `/$team/master-list/leads/option/${fieldKey}` as any
+                            `${
+                              isReferral
+                                ? "/$team/referral-list/option"
+                                : "/$team/master-list/leads/option"
+                            }/${fieldKey}` as any
                           }
                           onClick={(e) => e.stopPropagation()}
                         >
@@ -625,15 +643,6 @@ export function EditableCell({
                       </div>
                     )}
                   </>
-                ) : (
-                  <Link
-                    to={"/$team/county-config" as any}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <div className="flex items-center gap-2 px-2 py-2 text-xs text-blue-600 hover:bg-blue-50 cursor-pointer">
-                      + County Config
-                    </div>
-                  </Link>
                 )}
               </div>
             </>

@@ -1,8 +1,9 @@
 import { EditableCell } from "@/components/reusable-table/editable-cell";
 import { type ColumnDef } from "@tanstack/react-table";
+import { Bell, Clock } from "lucide-react";
+import { MasterListView } from "../master-list/master-list-view";
 import { CreateColumnModal } from "../reusable-table/create-column";
 import { Checkbox } from "../ui/checkbox";
-import { ReferralCellView } from "./referral-cell-view";
 
 type ColumnType = {
   id: string;
@@ -12,7 +13,7 @@ type ColumnType = {
 
 type ReferralRow = {
   id: string;
-  lead_name: string;
+  referral_name: string;
   [key: string]: any;
 };
 
@@ -50,23 +51,42 @@ export function generateReferralColumns(
     enableHiding: false,
   };
 
-  //   const leadNameColumn: ColumnDef<LeadRow> = {
-  //     header: "Lead Name",
-  //     accessorKey: "lead_name",
-  //     cell: ({ row }) => (
-  //       <EditableCell
-  //         leadId={row.original.id}
-  //         fieldKey="lead_name"
-  //         value={row.original.lead_name}
-  //         type="TEXT"
-  //       />
-  //     ),
-  //   };
+  const referralNameColumn: ColumnDef<ReferralRow> = {
+    header: "Referral Name",
+    accessorKey: "referral_name",
+    cell: ({ row }) => (
+      <div className="group flex items-center gap-2 w-full min-w-0">
+        {row.original.has_notification && (
+          <div className="relative flex items-center justify-center shrink-0 animate-bounce">
+            <Bell className="h-4 w-4 text-red-500 fill-red-500 drop-shadow-md" />
+            <span className="absolute -top-1 -right-1 flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500 shadow-lg"></span>
+            </span>
+          </div>
+        )}
 
-  const viewReferralColumn: ColumnDef<ReferralRow> = {
-    header: () => <></>,
-    cell: ({ row }) => <ReferralCellView referralId={row.original.id} />,
-    accessorKey: " view_referral",
+        <div className="min-w-0 flex-1">
+          <EditableCell
+            id={row.original.id}
+            fieldName="Referral Name"
+            fieldKey="Referral Name"
+            value={row.original.referral_name}
+            type="TEXT"
+          />
+        </div>
+        <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+          <MasterListView
+            leadId={row.original.id}
+            isReferral={true}
+            hasNotification={row.original.has_notification}
+            initialTab="history"
+            triggerLabel="History"
+            TriggerIcon={Clock}
+          />
+        </div>
+      </div>
+    ),
   };
 
   const createNewColumn: ColumnDef<ReferralRow> = {
@@ -74,5 +94,5 @@ export function generateReferralColumns(
     accessorKey: " create_column",
   };
 
-  return [selectColumn, viewReferralColumn, ...dynamicColumns, createNewColumn];
+  return [selectColumn, referralNameColumn, ...dynamicColumns, createNewColumn];
 }

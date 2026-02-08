@@ -1,19 +1,5 @@
-import type { LeadOptions } from "@/lib/types";
-import {
-  createDropdownOption,
-  getDropdownOptions,
-} from "@/services/lead/lead-service";
-import { deleteDropdownOption } from "@/services/options/options-service";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useParams } from "@tanstack/react-router";
-import { Plus, Trash } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-import { ReusableTable } from "../reusable-table/generic-table";
-import { Button } from "../ui/button";
+import { ReusableTable } from "@/components/reusable-table/generic-table";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -30,8 +16,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import type { LeadOptions } from "@/lib/types";
+import {
+  createReferralDropdownOption,
+  deleteReferralDropdownOption,
+  getReferralDropdownOptions,
+} from "@/services/referral/referral-service";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useParams } from "@tanstack/react-router";
+import { Plus, Trash } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 const addOptionSchema = z.object({
   optionName: z
@@ -43,9 +43,9 @@ const addOptionSchema = z.object({
 
 type AddOptionFormData = z.infer<typeof addOptionSchema>;
 
-export default function LeadOption() {
+export default function ReferralOption() {
   const params = useParams({
-    from: "/_team/$team/master-list/leads/option/$option/",
+    from: "/_team/$team/referral-list/option/$option/",
   });
   const [deleteDialogId, setDeleteDialogId] = useState<string | null>(null);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -54,7 +54,7 @@ export default function LeadOption() {
   const fieldKey = params.option;
   const fieldName = fieldKey
     .replace(/_/g, " ")
-    .replace(/\b\w/g, (l) => l.toUpperCase());
+    .replace(/\b\w/g, (l: string) => l.toUpperCase());
 
   const form = useForm<AddOptionFormData>({
     resolver: zodResolver(addOptionSchema),
@@ -69,17 +69,17 @@ export default function LeadOption() {
   });
 
   const { data: optionsData = { data: [], total: 0 }, isFetching } = useQuery({
-    queryKey: ["lead-options", fieldKey, filterMeta],
+    queryKey: ["referral-options", fieldKey, filterMeta],
     queryFn: () =>
-      getDropdownOptions(fieldKey, filterMeta.page, filterMeta.limit),
+      getReferralDropdownOptions(fieldKey, filterMeta.page, filterMeta.limit),
   });
 
   const addOptionMutation = useMutation({
     mutationFn: (optionName: string) =>
-      createDropdownOption(fieldKey, optionName),
+      createReferralDropdownOption(fieldKey, optionName),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["lead-options", fieldKey, filterMeta],
+        queryKey: ["referral-options", fieldKey, filterMeta],
       });
       queryClient.invalidateQueries({
         queryKey: ["dropdown-options", fieldKey],
@@ -94,10 +94,13 @@ export default function LeadOption() {
   });
 
   const deleteOptionMutation = useMutation({
-    mutationFn: (optionId: string) => deleteDropdownOption(optionId),
+    mutationFn: (optionId: string) => deleteReferralDropdownOption(optionId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["lead-options", fieldKey, filterMeta],
+        queryKey: ["referral-options", fieldKey, filterMeta],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["dropdown-options", fieldKey],
       });
       setDeleteDialogId(null);
       toast.success("Option deleted successfully.");

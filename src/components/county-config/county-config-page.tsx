@@ -43,6 +43,7 @@ export default function CountyConfigTablePage() {
     mutationFn: createCounty,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["counties"] });
+      queryClient.invalidateQueries({ queryKey: ["dropdown-options"] });
       toast.success("County added successfully!");
       form.reset({ id: uuidv4(), name: "", assigned_to: "" });
     },

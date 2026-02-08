@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useState } from "react";
 
 function useTypewriter(text: string, speed = 12) {
@@ -43,14 +44,14 @@ function renderAIContent(content: any): React.ReactNode {
       );
 
   if (typeof content === "string") {
-    return <p className="text-sm text-muted-foreground">{content}</p>;
+    return <p className="text-sm text-gray-700 leading-relaxed">{content}</p>;
   }
 
   if (Array.isArray(content)) {
     return (
-      <ul className="list-disc ml-4 text-sm text-muted-foreground space-y-1">
+      <ul className="list-disc ml-5 text-sm text-gray-700 space-y-2">
         {content.map((item, i) => (
-          <li key={i}>{renderAIContent(item)}</li>
+          <li key={i} className="leading-relaxed">{renderAIContent(item)}</li>
         ))}
       </ul>
     );
@@ -58,18 +59,18 @@ function renderAIContent(content: any): React.ReactNode {
 
   if (typeof content === "object" && content !== null) {
     return (
-      <div className="ml-2 space-y-3">
+      <div className="ml-2 space-y-4">
         {Object.entries(content).map(([key, value]) => (
-          <div key={key}>
-            <h4 className="font-semibold text-sm">{formatKey(key)}</h4>
-            <div className="ml-3">{renderAIContent(value)}</div>
+          <div key={key} className="bg-white/50 rounded-lg p-3 border border-blue-100">
+            <h4 className="font-bold text-sm text-blue-900 mb-2">{formatKey(key)}</h4>
+            <div className="ml-2">{renderAIContent(value)}</div>
           </div>
         ))}
       </div>
     );
   }
 
-  return <p>{String(content)}</p>;
+  return <p className="text-sm text-gray-700">{String(content)}</p>;
 }
 
 export default function AiSummary({
@@ -97,18 +98,27 @@ export default function AiSummary({
   }
 
   return (
-    <Card className="border border-purple-300">
-      <CardHeader>
-        <CardTitle>AI Summary</CardTitle>
+    <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 via-white to-blue-50 shadow-sm hover:shadow-md transition-shadow">
+      <CardHeader className="border-b bg-gradient-to-r from-blue-100 to-blue-50">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-blue-600">
+            <Sparkles className="h-5 w-5 text-white" />
+          </div>
+          <CardTitle className="text-xl font-bold text-gray-900">
+            AI-Powered Insights
+          </CardTitle>
+        </div>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="pt-6">
         {/* Loading */}
         {isLoadingSummary && !summary && (
-          <p className="text-sm text-purple-700 animate-pulse">
-            Dashboard is thinking... Generating insights based on your analytics
-            data.
-          </p>
+          <div className="flex items-center gap-3">
+            <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent" />
+            <p className="text-sm text-blue-700 font-medium">
+              Analyzing your analytics data and generating insights...
+            </p>
+          </div>
         )}
 
         {/* Render object */}
@@ -120,9 +130,17 @@ export default function AiSummary({
             {isLong && (
               <button
                 onClick={() => setExpanded(!expanded)}
-                className="text-blue-600 underline text-sm"
+                className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors mt-4 group"
               >
-                {expanded ? "Show less" : "Show more"}
+                {expanded ? (
+                  <>
+                    Show less <ChevronUp className="h-4 w-4 group-hover:-translate-y-0.5 transition-transform" />
+                  </>
+                ) : (
+                  <>
+                    Show more <ChevronDown className="h-4 w-4 group-hover:translate-y-0.5 transition-transform" />
+                  </>
+                )}
               </button>
             )}
           </div>

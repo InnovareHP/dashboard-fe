@@ -49,8 +49,18 @@ export function AppSidebar({
       navMain: [
         {
           title: "Overview",
-          url: `/${activeOrganizationId}`,
           icon: SquareTerminal,
+          isActive: true,
+          items: [
+            {
+              title: "Master List",
+              url: `/${activeOrganizationId}`,
+            },
+            {
+              title: "Referral",
+              url: `/${activeOrganizationId}/referral-analytics`,
+            },
+          ],
         },
         {
           title: "Marketing",
@@ -59,6 +69,10 @@ export function AppSidebar({
             {
               title: "Master List",
               url: `/${activeOrganizationId}/master-list`,
+            },
+            {
+              title: "Referral",
+              url: `/${activeOrganizationId}/referral-list`,
             },
             ...(memberData?.role !== ROLES.LIASON
               ? [
@@ -130,6 +144,10 @@ export function AppSidebar({
             {
               title: "Team",
               url: `/${activeOrganizationId}/team`,
+            },
+            {
+              title: "County Config",
+              url: `/${activeOrganizationId}/county-config`,
             },
             ...(memberData?.role === ROLES.OWNER
               ? [

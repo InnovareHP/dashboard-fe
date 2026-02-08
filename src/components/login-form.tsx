@@ -62,13 +62,10 @@ export function LoginForm({
 
   return (
     <div
-      className={cn(
-        "flex items-center justify-center gap-0 p-4",
-        className
-      )}
+      className={cn("flex items-center justify-center gap-0 p-4", className)}
       {...props}
     >
-      <div className="flex items-stretch w-full max-w-6xl overflow-hidden rounded-2xl shadow-xl">
+      <div className="flex items-stretch w-full overflow-hidden rounded-2xl shadow-xl">
         {/* Left Side - Image background + text */}
         <div className="hidden lg:block relative lg:w-3/5 min-h-[28rem]">
           {/* Background image - slightly dimmed so overlay and text stand out */}
@@ -133,125 +130,125 @@ export function LoginForm({
         <div className="w-full lg:w-2/5">
           <Card className="border-2 border-l-0 lg:border-l-2 shadow-none rounded-none lg:rounded-r-2xl h-full">
             <CardContent className="p-8">
-            <Form {...form}>
-              <form
-                className="space-y-6"
-                onSubmit={form.handleSubmit(handleLogin)}
-              >
-                <div className="space-y-2 text-center">
-                  <img
-                    src="/login-page/tarsier.png"
-                    alt=""
-                    className="w-16 h-16 mx-auto mb-4 object-contain"
-                  />
-                  <h2 className="text-3xl font-bold text-gray-900">
-                    Welcome back
-                  </h2>
-                  <p className="text-gray-600">
-                    Sign in to your account to continue
-                  </p>
-                </div>
-
-                <div className="space-y-5">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-semibold text-gray-700">
-                          Email Address
-                        </FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                            <Input
-                              {...field}
-                              placeholder="you@example.com"
-                              className="h-12 pl-11 border-2 border-gray-200 focus:border-blue-500 rounded-lg transition-colors"
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="flex items-center justify-between mb-2">
-                          <FormLabel className="text-sm font-semibold text-gray-700">
-                            Password
-                          </FormLabel>
-                          <Link
-                            to="/reset-password"
-                            className="text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
-                          >
-                            Forgot password?
-                          </Link>
-                        </div>
-                        <FormControl>
-                          <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                            <Input
-                              {...field}
-                              placeholder="••••••••"
-                              type="password"
-                              className="h-12 pl-11 border-2 border-gray-200 focus:border-blue-500 rounded-lg transition-colors"
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Button
-                    disabled={form.formState.isSubmitting}
-                    type="submit"
-                    className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-sm mt-2"
-                  >
-                    {form.formState.isSubmitting ? (
-                      <div className="flex items-center gap-2">
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        <span>Signing in...</span>
-                      </div>
-                    ) : (
-                      "Sign In"
-                    )}
-                  </Button>
-
-                  <div className="text-center text-sm text-gray-600 pt-4">
-                    Don't have an account?{" "}
-                    <Link
-                      to="/register"
-                      className="font-semibold text-blue-600 hover:text-blue-700 transition-colors"
-                    >
-                      Sign up for free
-                    </Link>
+              <Form {...form}>
+                <form
+                  className="space-y-6"
+                  onSubmit={form.handleSubmit(handleLogin)}
+                >
+                  <div className="space-y-2 text-center">
+                    <img
+                      src="/login-page/tarsier.png"
+                      alt=""
+                      className="w-16 h-16 mx-auto mb-4 object-contain"
+                    />
+                    <h2 className="text-3xl font-bold text-gray-900">
+                      Welcome back
+                    </h2>
+                    <p className="text-gray-600">
+                      Sign in to your account to continue
+                    </p>
                   </div>
-                </div>
-              </form>
-            </Form>
-            <div className="mt-6 text-center text-xs text-gray-500">
-              By continuing, you agree to our{" "}
-              <a
-                href="#"
-                className="text-blue-600 hover:text-blue-700 underline underline-offset-2 transition-colors"
-              >
-                Terms of Service
-              </a>{" "}
-              and{" "}
-              <a
-                href="#"
-                className="text-blue-600 hover:text-blue-700 underline underline-offset-2 transition-colors"
-              >
-                Privacy Policy
-              </a>
-              .
-            </div>
+
+                  <div className="space-y-5">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-semibold text-gray-700">
+                            Email Address
+                          </FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                              <Input
+                                {...field}
+                                placeholder="you@example.com"
+                                className="h-12 pl-11 border-2 border-gray-200 focus:border-blue-500 rounded-lg transition-colors"
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center justify-between mb-2">
+                            <FormLabel className="text-sm font-semibold text-gray-700">
+                              Password
+                            </FormLabel>
+                            <Link
+                              to="/reset-password"
+                              className="text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                            >
+                              Forgot password?
+                            </Link>
+                          </div>
+                          <FormControl>
+                            <div className="relative">
+                              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                              <Input
+                                {...field}
+                                placeholder="••••••••"
+                                type="password"
+                                className="h-12 pl-11 border-2 border-gray-200 focus:border-blue-500 rounded-lg transition-colors"
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <Button
+                      disabled={form.formState.isSubmitting}
+                      type="submit"
+                      className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-sm mt-2"
+                    >
+                      {form.formState.isSubmitting ? (
+                        <div className="flex items-center gap-2">
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <span>Signing in...</span>
+                        </div>
+                      ) : (
+                        "Sign In"
+                      )}
+                    </Button>
+
+                    <div className="text-center text-sm text-gray-600 pt-4">
+                      Don't have an account?{" "}
+                      <Link
+                        to="/register"
+                        className="font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+                      >
+                        Sign up for free
+                      </Link>
+                    </div>
+                  </div>
+                </form>
+              </Form>
+              <div className="mt-6 text-center text-xs text-gray-500">
+                By continuing, you agree to our{" "}
+                <a
+                  href="#"
+                  className="text-blue-600 hover:text-blue-700 underline underline-offset-2 transition-colors"
+                >
+                  Terms of Service
+                </a>{" "}
+                and{" "}
+                <a
+                  href="#"
+                  className="text-blue-600 hover:text-blue-700 underline underline-offset-2 transition-colors"
+                >
+                  Privacy Policy
+                </a>
+                .
+              </div>
             </CardContent>
           </Card>
         </div>

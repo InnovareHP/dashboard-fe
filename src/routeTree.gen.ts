@@ -23,6 +23,7 @@ import { Route as AuthResetPasswordIndexRouteImport } from './routes/_auth/reset
 import { Route as TeamTeamTeamRouteImport } from './routes/_team/$team/team'
 import { Route as TeamTeamSuccessRouteImport } from './routes/_team/$team/success'
 import { Route as TeamTeamSettingsRouteImport } from './routes/_team/$team/settings'
+import { Route as TeamTeamReferralAnalyticsRouteImport } from './routes/_team/$team/referral-analytics'
 import { Route as TeamTeamProfileRouteImport } from './routes/_team/$team/profile'
 import { Route as TeamTeamPlansRouteImport } from './routes/_team/$team/plans'
 import { Route as TeamTeamMasterListAnalyticsRouteImport } from './routes/_team/$team/master-list-analytics'
@@ -33,6 +34,7 @@ import { Route as TeamTeamReferralListIndexRouteImport } from './routes/_team/$t
 import { Route as TeamTeamMasterListIndexRouteImport } from './routes/_team/$team/master-list/index'
 import { Route as TeamTeamImportIndexRouteImport } from './routes/_team/$team/import/index'
 import { Route as TeamTeamSettingsBillingRouteImport } from './routes/_team/$team/settings/billing'
+import { Route as TeamTeamReferralListCreateRouteImport } from './routes/_team/$team/referral-list/create'
 import { Route as TeamTeamReportMileageIndexRouteImport } from './routes/_team/$team/report/mileage/index'
 import { Route as TeamTeamReportMarketingIndexRouteImport } from './routes/_team/$team/report/marketing/index'
 import { Route as TeamTeamReportExpenseIndexRouteImport } from './routes/_team/$team/report/expense/index'
@@ -42,6 +44,7 @@ import { Route as TeamTeamLogMarketingIndexRouteImport } from './routes/_team/$t
 import { Route as TeamTeamLogExpenseIndexRouteImport } from './routes/_team/$team/log/expense/index'
 import { Route as TeamTeamImportReferralListIndexRouteImport } from './routes/_team/$team/import/referral-list/index'
 import { Route as TeamTeamImportMasterListIndexRouteImport } from './routes/_team/$team/import/master-list/index'
+import { Route as TeamTeamReferralListOptionOptionIndexRouteImport } from './routes/_team/$team/referral-list/option/$option/index'
 import { Route as TeamTeamMasterListLeadsLeadIndexRouteImport } from './routes/_team/$team/master-list/leads/$lead/index'
 import { Route as TeamTeamMasterListLeadsLeadTimelineRouteImport } from './routes/_team/$team/master-list/leads/$lead/timeline'
 import { Route as TeamTeamMasterListLeadsOptionOptionIndexRouteImport } from './routes/_team/$team/master-list/leads/option/$option/index'
@@ -114,6 +117,12 @@ const TeamTeamSettingsRoute = TeamTeamSettingsRouteImport.update({
   path: '/$team/settings',
   getParentRoute: () => TeamRoute,
 } as any)
+const TeamTeamReferralAnalyticsRoute =
+  TeamTeamReferralAnalyticsRouteImport.update({
+    id: '/$team/referral-analytics',
+    path: '/$team/referral-analytics',
+    getParentRoute: () => TeamRoute,
+  } as any)
 const TeamTeamProfileRoute = TeamTeamProfileRouteImport.update({
   id: '/$team/profile',
   path: '/$team/profile',
@@ -166,6 +175,12 @@ const TeamTeamSettingsBillingRoute = TeamTeamSettingsBillingRouteImport.update({
   path: '/billing',
   getParentRoute: () => TeamTeamSettingsRoute,
 } as any)
+const TeamTeamReferralListCreateRoute =
+  TeamTeamReferralListCreateRouteImport.update({
+    id: '/$team/referral-list/create',
+    path: '/$team/referral-list/create',
+    getParentRoute: () => TeamRoute,
+  } as any)
 const TeamTeamReportMileageIndexRoute =
   TeamTeamReportMileageIndexRouteImport.update({
     id: '/$team/report/mileage/',
@@ -218,6 +233,12 @@ const TeamTeamImportMasterListIndexRoute =
     path: '/$team/import/master-list/',
     getParentRoute: () => TeamRoute,
   } as any)
+const TeamTeamReferralListOptionOptionIndexRoute =
+  TeamTeamReferralListOptionOptionIndexRouteImport.update({
+    id: '/$team/referral-list/option/$option/',
+    path: '/$team/referral-list/option/$option/',
+    getParentRoute: () => TeamRoute,
+  } as any)
 const TeamTeamMasterListLeadsLeadIndexRoute =
   TeamTeamMasterListLeadsLeadIndexRouteImport.update({
     id: '/$team/master-list/leads/$lead/',
@@ -251,11 +272,13 @@ export interface FileRoutesByFullPath {
   '/$team/master-list-analytics': typeof TeamTeamMasterListAnalyticsRoute
   '/$team/plans': typeof TeamTeamPlansRoute
   '/$team/profile': typeof TeamTeamProfileRoute
+  '/$team/referral-analytics': typeof TeamTeamReferralAnalyticsRoute
   '/$team/settings': typeof TeamTeamSettingsRouteWithChildren
   '/$team/success': typeof TeamTeamSuccessRoute
   '/$team/team': typeof TeamTeamTeamRoute
   '/reset-password/': typeof AuthResetPasswordIndexRoute
   '/$team/': typeof TeamTeamIndexRoute
+  '/$team/referral-list/create': typeof TeamTeamReferralListCreateRoute
   '/$team/settings/billing': typeof TeamTeamSettingsBillingRoute
   '/$team/import/': typeof TeamTeamImportIndexRoute
   '/$team/master-list/': typeof TeamTeamMasterListIndexRoute
@@ -271,6 +294,7 @@ export interface FileRoutesByFullPath {
   '/$team/report/mileage/': typeof TeamTeamReportMileageIndexRoute
   '/$team/master-list/leads/$lead/timeline': typeof TeamTeamMasterListLeadsLeadTimelineRoute
   '/$team/master-list/leads/$lead/': typeof TeamTeamMasterListLeadsLeadIndexRoute
+  '/$team/referral-list/option/$option/': typeof TeamTeamReferralListOptionOptionIndexRoute
   '/$team/master-list/leads/option/$option/': typeof TeamTeamMasterListLeadsOptionOptionIndexRoute
 }
 export interface FileRoutesByTo {
@@ -287,11 +311,13 @@ export interface FileRoutesByTo {
   '/$team/master-list-analytics': typeof TeamTeamMasterListAnalyticsRoute
   '/$team/plans': typeof TeamTeamPlansRoute
   '/$team/profile': typeof TeamTeamProfileRoute
+  '/$team/referral-analytics': typeof TeamTeamReferralAnalyticsRoute
   '/$team/settings': typeof TeamTeamSettingsRouteWithChildren
   '/$team/success': typeof TeamTeamSuccessRoute
   '/$team/team': typeof TeamTeamTeamRoute
   '/reset-password': typeof AuthResetPasswordIndexRoute
   '/$team': typeof TeamTeamIndexRoute
+  '/$team/referral-list/create': typeof TeamTeamReferralListCreateRoute
   '/$team/settings/billing': typeof TeamTeamSettingsBillingRoute
   '/$team/import': typeof TeamTeamImportIndexRoute
   '/$team/master-list': typeof TeamTeamMasterListIndexRoute
@@ -307,6 +333,7 @@ export interface FileRoutesByTo {
   '/$team/report/mileage': typeof TeamTeamReportMileageIndexRoute
   '/$team/master-list/leads/$lead/timeline': typeof TeamTeamMasterListLeadsLeadTimelineRoute
   '/$team/master-list/leads/$lead': typeof TeamTeamMasterListLeadsLeadIndexRoute
+  '/$team/referral-list/option/$option': typeof TeamTeamReferralListOptionOptionIndexRoute
   '/$team/master-list/leads/option/$option': typeof TeamTeamMasterListLeadsOptionOptionIndexRoute
 }
 export interface FileRoutesById {
@@ -326,11 +353,13 @@ export interface FileRoutesById {
   '/_team/$team/master-list-analytics': typeof TeamTeamMasterListAnalyticsRoute
   '/_team/$team/plans': typeof TeamTeamPlansRoute
   '/_team/$team/profile': typeof TeamTeamProfileRoute
+  '/_team/$team/referral-analytics': typeof TeamTeamReferralAnalyticsRoute
   '/_team/$team/settings': typeof TeamTeamSettingsRouteWithChildren
   '/_team/$team/success': typeof TeamTeamSuccessRoute
   '/_team/$team/team': typeof TeamTeamTeamRoute
   '/_auth/reset-password/': typeof AuthResetPasswordIndexRoute
   '/_team/$team/': typeof TeamTeamIndexRoute
+  '/_team/$team/referral-list/create': typeof TeamTeamReferralListCreateRoute
   '/_team/$team/settings/billing': typeof TeamTeamSettingsBillingRoute
   '/_team/$team/import/': typeof TeamTeamImportIndexRoute
   '/_team/$team/master-list/': typeof TeamTeamMasterListIndexRoute
@@ -346,6 +375,7 @@ export interface FileRoutesById {
   '/_team/$team/report/mileage/': typeof TeamTeamReportMileageIndexRoute
   '/_team/$team/master-list/leads/$lead/timeline': typeof TeamTeamMasterListLeadsLeadTimelineRoute
   '/_team/$team/master-list/leads/$lead/': typeof TeamTeamMasterListLeadsLeadIndexRoute
+  '/_team/$team/referral-list/option/$option/': typeof TeamTeamReferralListOptionOptionIndexRoute
   '/_team/$team/master-list/leads/option/$option/': typeof TeamTeamMasterListLeadsOptionOptionIndexRoute
 }
 export interface FileRouteTypes {
@@ -364,11 +394,13 @@ export interface FileRouteTypes {
     | '/$team/master-list-analytics'
     | '/$team/plans'
     | '/$team/profile'
+    | '/$team/referral-analytics'
     | '/$team/settings'
     | '/$team/success'
     | '/$team/team'
     | '/reset-password/'
     | '/$team/'
+    | '/$team/referral-list/create'
     | '/$team/settings/billing'
     | '/$team/import/'
     | '/$team/master-list/'
@@ -384,6 +416,7 @@ export interface FileRouteTypes {
     | '/$team/report/mileage/'
     | '/$team/master-list/leads/$lead/timeline'
     | '/$team/master-list/leads/$lead/'
+    | '/$team/referral-list/option/$option/'
     | '/$team/master-list/leads/option/$option/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -400,11 +433,13 @@ export interface FileRouteTypes {
     | '/$team/master-list-analytics'
     | '/$team/plans'
     | '/$team/profile'
+    | '/$team/referral-analytics'
     | '/$team/settings'
     | '/$team/success'
     | '/$team/team'
     | '/reset-password'
     | '/$team'
+    | '/$team/referral-list/create'
     | '/$team/settings/billing'
     | '/$team/import'
     | '/$team/master-list'
@@ -420,6 +455,7 @@ export interface FileRouteTypes {
     | '/$team/report/mileage'
     | '/$team/master-list/leads/$lead/timeline'
     | '/$team/master-list/leads/$lead'
+    | '/$team/referral-list/option/$option'
     | '/$team/master-list/leads/option/$option'
   id:
     | '__root__'
@@ -438,11 +474,13 @@ export interface FileRouteTypes {
     | '/_team/$team/master-list-analytics'
     | '/_team/$team/plans'
     | '/_team/$team/profile'
+    | '/_team/$team/referral-analytics'
     | '/_team/$team/settings'
     | '/_team/$team/success'
     | '/_team/$team/team'
     | '/_auth/reset-password/'
     | '/_team/$team/'
+    | '/_team/$team/referral-list/create'
     | '/_team/$team/settings/billing'
     | '/_team/$team/import/'
     | '/_team/$team/master-list/'
@@ -458,6 +496,7 @@ export interface FileRouteTypes {
     | '/_team/$team/report/mileage/'
     | '/_team/$team/master-list/leads/$lead/timeline'
     | '/_team/$team/master-list/leads/$lead/'
+    | '/_team/$team/referral-list/option/$option/'
     | '/_team/$team/master-list/leads/option/$option/'
   fileRoutesById: FileRoutesById
 }
@@ -570,6 +609,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamTeamSettingsRouteImport
       parentRoute: typeof TeamRoute
     }
+    '/_team/$team/referral-analytics': {
+      id: '/_team/$team/referral-analytics'
+      path: '/$team/referral-analytics'
+      fullPath: '/$team/referral-analytics'
+      preLoaderRoute: typeof TeamTeamReferralAnalyticsRouteImport
+      parentRoute: typeof TeamRoute
+    }
     '/_team/$team/profile': {
       id: '/_team/$team/profile'
       path: '/$team/profile'
@@ -640,6 +686,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamTeamSettingsBillingRouteImport
       parentRoute: typeof TeamTeamSettingsRoute
     }
+    '/_team/$team/referral-list/create': {
+      id: '/_team/$team/referral-list/create'
+      path: '/$team/referral-list/create'
+      fullPath: '/$team/referral-list/create'
+      preLoaderRoute: typeof TeamTeamReferralListCreateRouteImport
+      parentRoute: typeof TeamRoute
+    }
     '/_team/$team/report/mileage/': {
       id: '/_team/$team/report/mileage/'
       path: '/$team/report/mileage'
@@ -703,6 +756,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamTeamImportMasterListIndexRouteImport
       parentRoute: typeof TeamRoute
     }
+    '/_team/$team/referral-list/option/$option/': {
+      id: '/_team/$team/referral-list/option/$option/'
+      path: '/$team/referral-list/option/$option'
+      fullPath: '/$team/referral-list/option/$option/'
+      preLoaderRoute: typeof TeamTeamReferralListOptionOptionIndexRouteImport
+      parentRoute: typeof TeamRoute
+    }
     '/_team/$team/master-list/leads/$lead/': {
       id: '/_team/$team/master-list/leads/$lead/'
       path: '/$team/master-list/leads/$lead'
@@ -763,10 +823,12 @@ interface TeamRouteChildren {
   TeamTeamMasterListAnalyticsRoute: typeof TeamTeamMasterListAnalyticsRoute
   TeamTeamPlansRoute: typeof TeamTeamPlansRoute
   TeamTeamProfileRoute: typeof TeamTeamProfileRoute
+  TeamTeamReferralAnalyticsRoute: typeof TeamTeamReferralAnalyticsRoute
   TeamTeamSettingsRoute: typeof TeamTeamSettingsRouteWithChildren
   TeamTeamSuccessRoute: typeof TeamTeamSuccessRoute
   TeamTeamTeamRoute: typeof TeamTeamTeamRoute
   TeamTeamIndexRoute: typeof TeamTeamIndexRoute
+  TeamTeamReferralListCreateRoute: typeof TeamTeamReferralListCreateRoute
   TeamTeamImportIndexRoute: typeof TeamTeamImportIndexRoute
   TeamTeamMasterListIndexRoute: typeof TeamTeamMasterListIndexRoute
   TeamTeamReferralListIndexRoute: typeof TeamTeamReferralListIndexRoute
@@ -781,6 +843,7 @@ interface TeamRouteChildren {
   TeamTeamReportMileageIndexRoute: typeof TeamTeamReportMileageIndexRoute
   TeamTeamMasterListLeadsLeadTimelineRoute: typeof TeamTeamMasterListLeadsLeadTimelineRoute
   TeamTeamMasterListLeadsLeadIndexRoute: typeof TeamTeamMasterListLeadsLeadIndexRoute
+  TeamTeamReferralListOptionOptionIndexRoute: typeof TeamTeamReferralListOptionOptionIndexRoute
   TeamTeamMasterListLeadsOptionOptionIndexRoute: typeof TeamTeamMasterListLeadsOptionOptionIndexRoute
 }
 
@@ -789,10 +852,12 @@ const TeamRouteChildren: TeamRouteChildren = {
   TeamTeamMasterListAnalyticsRoute: TeamTeamMasterListAnalyticsRoute,
   TeamTeamPlansRoute: TeamTeamPlansRoute,
   TeamTeamProfileRoute: TeamTeamProfileRoute,
+  TeamTeamReferralAnalyticsRoute: TeamTeamReferralAnalyticsRoute,
   TeamTeamSettingsRoute: TeamTeamSettingsRouteWithChildren,
   TeamTeamSuccessRoute: TeamTeamSuccessRoute,
   TeamTeamTeamRoute: TeamTeamTeamRoute,
   TeamTeamIndexRoute: TeamTeamIndexRoute,
+  TeamTeamReferralListCreateRoute: TeamTeamReferralListCreateRoute,
   TeamTeamImportIndexRoute: TeamTeamImportIndexRoute,
   TeamTeamMasterListIndexRoute: TeamTeamMasterListIndexRoute,
   TeamTeamReferralListIndexRoute: TeamTeamReferralListIndexRoute,
@@ -808,6 +873,8 @@ const TeamRouteChildren: TeamRouteChildren = {
   TeamTeamMasterListLeadsLeadTimelineRoute:
     TeamTeamMasterListLeadsLeadTimelineRoute,
   TeamTeamMasterListLeadsLeadIndexRoute: TeamTeamMasterListLeadsLeadIndexRoute,
+  TeamTeamReferralListOptionOptionIndexRoute:
+    TeamTeamReferralListOptionOptionIndexRoute,
   TeamTeamMasterListLeadsOptionOptionIndexRoute:
     TeamTeamMasterListLeadsOptionOptionIndexRoute,
 }

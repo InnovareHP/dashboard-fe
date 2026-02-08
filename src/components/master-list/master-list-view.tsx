@@ -18,6 +18,11 @@ import {
   seenLeads,
 } from "@/services/lead/lead-service";
 import {
+  getReferralTimeline,
+  getSpecificReferral,
+  seenReferrals,
+} from "@/services/referral/referral-service";
+import {
   useInfiniteQuery,
   useQuery,
   useQueryClient,
@@ -74,9 +79,10 @@ export function MasterListView({
   const [isRestoring, setIsRestoring] = React.useState(false);
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["lead", leadId],
+    queryKey: [isReferral ? "referral" : "lead", leadId],
     enabled: open,
-    queryFn: () => getSpecificLead(leadId),
+    queryFn: () =>
+      isReferral ? getSpecificReferral(leadId) : getSpecificLead(leadId),
   });
 
   const {
@@ -85,10 +91,12 @@ export function MasterListView({
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery({
-    queryKey: ["lead-history", leadId],
+    queryKey: [isReferral ? "referral-history" : "lead-history", leadId],
     enabled: open && activeTab === "history",
     queryFn: ({ pageParam = 1 }) =>
-      getLeadTimeline(leadId, 15, pageParam as number),
+      isReferral
+        ? getReferralTimeline(leadId, 15, pageParam as number)
+        : getLeadTimeline(leadId, 15, pageParam as number),
     getNextPageParam: (lastPage, pages) => {
       const pageSize = 15;
 
@@ -123,7 +131,13 @@ export function MasterListView({
         hasNotification &&
         !hasSeenRef.current
       ) {
-        seenLeads(leadId);
+        isReferral
+          ? seenReferrals(leadId).then(() => {
+              hasSeenRef.current = true;
+            })
+          : seenLeads(leadId).then(() => {
+              hasSeenRef.current = true;
+            });
         hasSeenRef.current = true;
       }
       if (next) setActiveTab(initialTab);
@@ -136,7 +150,7 @@ export function MasterListView({
       id: historyItem.id,
       leadId: leadId,
       action: historyItem.action,
-      entityType: "Lead",
+      entityType: isReferral ? "Referral" : "Lead",
       old_value: historyItem.old_value,
       new_value: historyItem.new_value,
       created_at: historyItem.created_at,

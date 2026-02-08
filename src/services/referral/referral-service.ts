@@ -1,7 +1,6 @@
 import { axiosClient } from "@/lib/axios-client";
 import type {
   CountyRow,
-  LeadOptions,
   ReferralHistoryItem,
   ReferralHistoryResponse,
   ReferralResponse,
@@ -48,25 +47,29 @@ export const getReferralHistory = async (
 };
 
 export const getReferralColumnOptions = async () => {
-  const response = await axiosClient.get("/api/referral/options");
+  const response = await axiosClient.get("/api/referral/columns");
 
   if (response.status !== 200) {
-    throw new Error("Failed to fetch referrals meta");
+    throw new Error("Failed to fetch referrals columns");
   }
 
   return response.data;
 };
 
-export const getReferralDropdownOptions = async (fieldKey: string) => {
+export const getReferralDropdownOptions = async (
+  fieldKey: string,
+  page?: number,
+  limit?: number
+) => {
   const response = await axiosClient.get(
-    `/api/referral/field/${fieldKey}/options`
+    `/api/referral/field/${fieldKey}/options?page=${page}&limit=${limit}`
   );
 
   if (response.status !== 200) {
     throw new Error("Failed to fetch referrals dropdown options");
   }
 
-  return response.data as LeadOptions[];
+  return response.data as any;
 };
 
 export const createReferralDropdownOption = async (
@@ -132,9 +135,13 @@ export const deleteReferralColumn = async (columnIds: string[]) => {
   return response.data;
 };
 
-export const getReferralTimeline = async (referralId: string) => {
+export const getReferralTimeline = async (
+  referralId: string,
+  take: number,
+  skip: number
+) => {
   const response = await axiosClient.get(
-    `/api/referral/timeline/${referralId}`
+    `/api/referral/timeline/${referralId}?take=${take}&skip=${skip}`
   );
 
   if (response.status !== 200) {
@@ -214,6 +221,30 @@ export const deleteReferral = async (columnIds: string[]) => {
       column_ids: columnIds,
     },
   });
+
+  return response.data;
+};
+
+export const seenReferrals = async (referralId: string) => {
+  const response = await axiosClient.post("/api/referral/notification-state", {
+    referral_id: referralId,
+  });
+
+  if (response.status !== 200) {
+    throw new Error("Failed to seen referrals");
+  }
+
+  return response.data;
+};
+
+export const deleteReferralDropdownOption = async (optionId: string) => {
+  const response = await axiosClient.delete(
+    `/api/referral/field/options/${optionId}`
+  );
+
+  if (response.status !== 200) {
+    throw new Error("Failed to delete referral dropdown option");
+  }
 
   return response.data;
 };

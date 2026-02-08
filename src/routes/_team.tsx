@@ -32,15 +32,14 @@ export const TeamLayoutContext = createContext<TeamLayoutContextValue | null>(
   null
 );
 
-export const useTeamLayoutContext = () => {
+export const useTeamLayoutContext = (): TeamLayoutContextValue => {
   const ctx = useContext(TeamLayoutContext);
+
   if (!ctx) {
-    throw new Error(
-      "useTeamLayoutContext must be used inside <TeamLayoutContext.Provider>"
-    );
+    throw new Error("TeamLayoutContext not found");
   }
-  
-  return ctx;
+
+  return ctx as TeamLayoutContextValue;
 };
 
 export const Route = createFileRoute("/_team")({
