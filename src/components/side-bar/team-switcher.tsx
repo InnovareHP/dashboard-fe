@@ -69,6 +69,7 @@ export function TeamSwitcher({
 
   const ActiveLogo = activeTeam?.logo ?? User;
 
+  console.log(ActiveLogo);
   return (
     <SidebarMenu>
       <SidebarMenuItem>

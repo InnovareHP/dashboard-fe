@@ -201,7 +201,7 @@ const OnBoardingPage = () => {
         metadata: {
           user_id: session?.user?.id,
         },
-        logo: "https://example.com/logo.png",
+        logo: undefined,
         userId: session?.user?.id,
         keepCurrentActiveOrganization: false,
       });
